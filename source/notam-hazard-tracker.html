@@ -5,182 +5,349 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 <title>NOTAM Hazard Tracker — 6I2</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&family=Source+Code+Pro:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&display=swap');
 
 :root {
-  --bg:      #f7f6f2;
+  --bg:      #f5f5f5;
   --bg2:     #ffffff;
-  --bg3:     #f0efe9;
-  --border:  #d8d5cc;
-  --border2: #c4c0b5;
-  --text:    #1a1916;
-  --text2:   #5a5750;
-  --text3:   #9a968e;
+  --bg3:     #eeeeee;
+  --border:  #cccccc;
+  --border2: #aaaaaa;
+  --text:    #111111;
+  --text2:   #444444;
+  --text3:   #777777;
   --accent:  #1a4f8a;
-  --acc-l:   #e8eef6;
-  --green:   #1a6b3a;
-  --grn-l:   #e8f4ed;
-  --grn-b:   #b8d8c4;
-  --red:     #8b1a1a;
-  --red-l:   #f7eded;
-  --red-b:   #d8b8b8;
-  --amber:   #7a4a00;
-  --amb-l:   #fdf4e3;
-  --amb-b:   #e8d0a0;
-  --mono:    'Source Code Pro', monospace;
-  --serif:   'Source Serif 4', Georgia, serif;
-  --r:       4px;
+  --acc-l:   #dde8f5;
+  --acc-b:   #aac4e0;
+  --green:   #145a2e;
+  --grn-l:   #ddf0e6;
+  --grn-b:   #8ecba8;
+  --red:     #7a1010;
+  --red-l:   #fde8e8;
+  --red-b:   #e0a0a0;
+  --amber:   #6b3d00;
+  --amb-l:   #fef0d8;
+  --amb-b:   #e0b870;
+  --mono:    'Source Code Pro', 'Menlo', monospace;
+  --r:       5px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: var(--serif); font-weight: 300; font-size: 15px; min-height: 100vh; }
 
-/* HEADER */
-.header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: baseline; gap: 16px; }
-.header-title { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
-.header-sub { font-size: 13px; color: var(--text3); font-family: var(--mono); letter-spacing: .04em; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* MAIN */
-.main { max-width: 980px; margin: 0 auto; padding: 28px 32px 80px; }
+/* ── HEADER ── */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.header-title {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--accent);
+}
+.header-sep {
+  color: var(--border2);
+  font-weight: 300;
+}
+.header-sub {
+  font-size: 14px;
+  color: var(--text2);
+  font-weight: 400;
+}
+.header-link {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 5px 12px;
+  border: 1px solid var(--acc-b);
+  border-radius: var(--r);
+  background: var(--acc-l);
+  transition: background .15s;
+}
+.header-link:hover { background: #c8dcf0; }
 
-/* SECTION LABEL */
-.slabel { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+/* ── MAIN ── */
+.main { max-width: 960px; margin: 0 auto; padding: 24px 28px 80px; }
 
-/* DROP ZONES */
-.drop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
-.drop-zone { background: var(--bg2); border: 1.5px dashed var(--border2); border-radius: var(--r); padding: 22px 18px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; position: relative; }
+/* ── SECTION LABEL ── */
+.slabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+/* ── DROP ZONES ── */
+.drop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+.drop-zone {
+  background: var(--bg2);
+  border: 2px dashed var(--border);
+  border-radius: var(--r);
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative;
+}
 .drop-zone:hover, .drop-zone.drag { border-color: var(--accent); background: var(--acc-l); }
 .drop-zone.loaded-prev { border-style: solid; border-color: var(--amb-b); background: var(--amb-l); }
 .drop-zone.loaded-curr { border-style: solid; border-color: var(--grn-b); background: var(--grn-l); }
-.dz-role { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 7px; }
+
+.dz-role {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
 .dz-role.prev { color: var(--amber); }
 .dz-role.curr { color: var(--green); }
-.dz-icon { font-size: 20px; margin-bottom: 5px; line-height: 1; }
-.dz-label { font-size: 14px; color: var(--text2); }
-.dz-hint { font-size: 12px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
-.dz-filename { font-family: var(--mono); font-size: 12px; color: var(--text2); margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dz-clear { position: absolute; top: 9px; right: 9px; font-size: 12px; font-family: var(--mono); background: none; border: 1px solid var(--border2); border-radius: 3px; color: var(--text3); padding: 2px 7px; cursor: pointer; display: none; }
-.dz-clear:hover { border-color: var(--red); color: var(--red); }
+
+.dz-icon { font-size: 24px; margin-bottom: 6px; line-height: 1; }
+.dz-label { font-size: 15px; color: var(--text2); font-weight: 400; }
+.dz-hint  { font-size: 13px; color: var(--text3); margin-top: 4px; }
+.dz-filename { font-family: var(--mono); font-size: 12px; color: var(--text2); margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+
+.dz-clear {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 12px; font-family: var(--mono); font-weight: 500;
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 3px; color: var(--text3);
+  padding: 3px 8px; cursor: pointer; display: none;
+}
+.dz-clear:hover { border-color: var(--red); color: var(--red); background: var(--red-l); }
 .drop-zone.loaded-prev .dz-clear,
 .drop-zone.loaded-curr .dz-clear { display: block; }
 
-/* SETTINGS PANEL */
-.settings-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 22px; overflow: hidden; }
-.settings-toggle { width: 100%; background: none; border: none; padding: 11px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text3); text-align: left; }
-.settings-toggle:hover { background: var(--bg3); }
-.settings-toggle .arrow { transition: transform .2s; font-size: 9px; }
+/* ── SETTINGS PANEL ── */
+.settings-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.settings-toggle {
+  width: 100%; background: var(--bg3); border: none;
+  padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+  cursor: pointer; font-family: var(--mono); font-size: 12px;
+  font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text2); text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.settings-toggle:hover { background: #e4e4e4; }
+.settings-toggle .arrow { transition: transform .2s; font-size: 10px; }
 .settings-toggle.open .arrow { transform: rotate(90deg); }
-.settings-body { display: none; padding: 16px 20px; border-top: 1px solid var(--border); }
+
+.settings-body { display: none; padding: 18px 20px; }
 .settings-body.open { display: block; }
 
 .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 32px; }
-.field-group { display: flex; flex-direction: column; gap: 5px; }
-.field-group label { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); }
-.field-group input[type=number] { font-family: var(--mono); font-size: 14px; padding: 6px 9px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); outline: none; width: 120px; }
-.field-group input[type=number]:focus { border-color: var(--accent); }
+
+.field-group { display: flex; flex-direction: column; gap: 6px; }
+.field-group label {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--text2);
+}
+.field-group input[type=number] {
+  font-family: var(--mono); font-size: 15px; font-weight: 400;
+  padding: 7px 10px; background: var(--bg3);
+  border: 1px solid var(--border2); border-radius: var(--r);
+  color: var(--text); outline: none; width: 130px;
+}
+.field-group input[type=number]:focus { border-color: var(--accent); background: var(--bg2); }
+.field-hint { font-size: 13px; color: var(--text3); font-style: italic; }
 
 /* THRESHOLD ROWS */
-.thresh-section { margin-top: 16px; }
-.thresh-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.thresh-section { margin-top: 18px; }
+.thresh-divider { border: none; border-top: 1px solid var(--border); margin: 10px 0 14px; }
+
+.thresh-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
 .thresh-row:last-child { border-bottom: none; }
-.thresh-swatch { width: 20px; height: 20px; border-radius: 3px; border: 1px solid var(--border2); flex-shrink: 0; }
-.thresh-name { font-family: var(--mono); font-size: 13px; font-weight: 500; width: 70px; flex-shrink: 0; }
-.thresh-label-text { font-family: var(--mono); font-size: 11px; color: var(--text2); width: 160px; flex-shrink: 0; }
-.thresh-color-wrap { display: flex; align-items: center; gap: 7px; }
-.thresh-color-wrap label { font-family: var(--mono); font-size: 12px; color: var(--text3); letter-spacing: .06em; }
-input[type=color] { width: 34px; height: 26px; padding: 1px 2px; border: 1px solid var(--border2); border-radius: 3px; background: var(--bg2); cursor: pointer; }
-.thresh-agl-wrap { display: flex; align-items: center; gap: 7px; }
-.thresh-agl-wrap label { font-family: var(--mono); font-size: 12px; color: var(--text3); letter-spacing: .06em; }
-.thresh-agl-wrap input[type=number] { width: 80px; font-family: var(--mono); font-size: 13px; padding: 4px 7px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); outline: none; }
-.thresh-agl-wrap input[type=number]:focus { border-color: var(--accent); }
+
+.thresh-swatch {
+  width: 22px; height: 22px; border-radius: 4px;
+  border: 1px solid rgba(0,0,0,.2); flex-shrink: 0;
+}
+.thresh-name {
+  font-family: var(--mono); font-size: 14px; font-weight: 600;
+  color: var(--text); width: 72px; flex-shrink: 0;
+}
+.thresh-agl-wrap { display: flex; align-items: center; gap: 8px; }
+.thresh-agl-wrap label { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text2); }
+.thresh-agl-wrap input[type=number] {
+  width: 86px; font-family: var(--mono); font-size: 14px; font-weight: 400;
+  padding: 5px 8px; background: var(--bg3);
+  border: 1px solid var(--border2); border-radius: var(--r);
+  color: var(--text); outline: none;
+}
+.thresh-agl-wrap input[type=number]:focus { border-color: var(--accent); background: var(--bg2); }
+.thresh-agl-unit { font-family: var(--mono); font-size: 13px; color: var(--text3); }
+
+.thresh-color-wrap { display: flex; align-items: center; gap: 8px; }
+.thresh-color-wrap label { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text2); }
+input[type=color] {
+  width: 38px; height: 30px; padding: 2px 3px;
+  border: 1px solid var(--border2); border-radius: 4px;
+  background: var(--bg2); cursor: pointer;
+}
 .thresh-desc { font-size: 13px; color: var(--text3); font-style: italic; }
+.thresh-range-desc {
+  font-family: var(--mono); font-size: 13px; color: var(--text3);
+  width: 200px; flex-shrink: 0; line-height: 1.4;
+}
 
-/* CONTROLS */
-.controls-row { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; flex-wrap: wrap; }
-.run-btn { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; background: var(--accent); color: #fff; border: none; border-radius: var(--r); padding: 9px 22px; cursor: pointer; transition: opacity .15s; }
-.run-btn:hover { opacity: .85; }
-.run-btn:disabled { opacity: .35; cursor: not-allowed; }
+/* ── RUN BUTTON ── */
+.controls-row { margin-bottom: 20px; }
+.run-btn {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: var(--r); padding: 11px 28px;
+  cursor: pointer; transition: background .15s;
+}
+.run-btn:hover { background: #14397a; }
+.run-btn:disabled { background: var(--border2); cursor: not-allowed; }
 
-/* STATUS */
-.status-line { font-family: var(--mono); font-size: 13px; color: var(--text3); margin-bottom: 18px; min-height: 16px; }
-.status-line.err { color: var(--red); }
-.status-line.ok  { color: var(--green); }
+/* ── STATUS ── */
+.status-line { font-size: 14px; color: var(--text3); margin-bottom: 16px; min-height: 20px; font-style: italic; }
+.status-line.err { color: var(--red); font-style: normal; font-weight: 500; }
+.status-line.ok  { color: var(--green); font-style: normal; font-weight: 500; }
 
-/* SUMMARY BAR */
-.summary-bar { display: grid; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 18px; background: var(--bg2); }
-.summary-cell { padding: 14px 18px; border-right: 1px solid var(--border); }
+/* ── SUMMARY BAR ── */
+.summary-bar {
+  display: grid;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: var(--bg2);
+}
+.summary-cell { padding: 16px 20px; border-right: 1px solid var(--border); }
 .summary-cell:last-child { border-right: none; }
-.s-num { font-family: var(--mono); font-size: 32px; font-weight: 500; line-height: 1; margin-bottom: 3px; }
+.s-num { font-family: var(--mono); font-size: 34px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
 .s-num.total  { color: var(--accent); }
 .s-num.remove { color: var(--red); }
 .s-num.keep   { color: var(--text3); }
 .s-num.add    { color: var(--green); }
-.s-label { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); }
-.s-desc { font-size: 13px; color: var(--text3); margin-top: 2px; font-style: italic; }
+.s-label { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text2); }
+.s-desc { font-size: 13px; color: var(--text3); margin-top: 3px; }
 
-/* RESULT SECTIONS */
+/* ── RESULT SECTIONS ── */
 .result-section { margin-bottom: 10px; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
-.rs-head { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); }
-.rs-head.remove { background: var(--red-l); border-bottom-color: var(--red-b); }
+
+.rs-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; cursor: pointer; user-select: none;
+  border-bottom: 1px solid var(--border);
+}
+.rs-head.remove { background: var(--red-l);  border-bottom-color: var(--red-b); }
 .rs-head.keep   { background: var(--bg3); }
 .rs-head.add    { background: var(--grn-l); border-bottom-color: var(--grn-b); }
-.rs-title { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+
+.rs-title { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
 .rs-title.remove { color: var(--red); }
-.rs-title.keep   { color: var(--text3); }
+.rs-title.keep   { color: var(--text2); }
 .rs-title.add    { color: var(--green); }
-.rs-count { font-family: var(--mono); font-size: 13px; padding: 1px 8px; border-radius: 3px; }
-.rs-count.remove { background: var(--red-l); color: var(--red); border: 1px solid var(--red-b); }
-.rs-count.keep   { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
-.rs-count.add    { background: var(--grn-l); color: var(--green); border: 1px solid var(--grn-b); }
+
+.rs-count { font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 3px; }
+.rs-count.remove { background: var(--red-l);  color: var(--red);   border: 1px solid var(--red-b); }
+.rs-count.keep   { background: var(--bg3);     color: var(--text2); border: 1px solid var(--border); }
+.rs-count.add    { background: var(--grn-l);   color: var(--green); border: 1px solid var(--grn-b); }
+
 .rs-hint { font-size: 13px; color: var(--text3); font-style: italic; margin-left: 2px; }
-.rs-toggle { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--text3); }
+.rs-toggle { margin-left: auto; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text3); }
+
 .rs-body { background: var(--bg2); }
 .rs-body.collapsed { display: none; }
-.rs-empty { padding: 12px 14px; font-size: 14px; color: var(--text3); font-style: italic; }
+.rs-empty { padding: 14px 16px; font-size: 14px; color: var(--text3); font-style: italic; }
 
-/* TABLE */
+/* ── TABLE ── */
 .tbl { width: 100%; border-collapse: collapse; }
-.tbl th { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); padding: 7px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; background: var(--bg3); }
+.tbl th {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text2); padding: 8px 14px; text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3); white-space: nowrap;
+}
 .tbl th.r { text-align: right; }
-.tbl td { font-family: var(--mono); font-size: 13px; padding: 7px 14px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.tbl td {
+  font-family: var(--mono); font-size: 13px; font-weight: 400;
+  padding: 8px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text); white-space: nowrap;
+}
 .tbl tr:last-child td { border-bottom: none; }
-.tbl tr.remove-row td { background: color-mix(in srgb, var(--red-l) 60%, white); }
-.tbl tr.add-row    td { background: color-mix(in srgb, var(--grn-l) 50%, white); }
+.tbl tr.remove-row td { background: #fdf2f2; }
+.tbl tr.add-row    td { background: #f0faf4; }
 .tbl tr.keep-row:nth-child(even) td { background: var(--bg3); }
 .tbl td.r { text-align: right; }
 .tbl td.notam-id { color: var(--text2); }
 .tbl td.loc { color: var(--text3); font-size: 12px; }
-.swatch-cell { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; border: 1px solid rgba(0,0,0,.12); }
+.swatch-cell {
+  display: inline-block; width: 9px; height: 9px;
+  border-radius: 2px; margin-right: 6px;
+  vertical-align: middle; border: 1px solid rgba(0,0,0,.15);
+}
 
-/* EXPORT */
+/* ── EXPORT ── */
 .export-row { display: flex; gap: 10px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
-.export-btn { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r); color: var(--text2); padding: 7px 16px; cursor: pointer; transition: border-color .15s, color .15s; }
-.export-btn:hover        { border-color: var(--accent); color: var(--accent); }
-.export-btn.kml:hover    { border-color: var(--green); color: var(--green); }
+.export-btn {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--r); color: var(--text2);
+  padding: 8px 18px; cursor: pointer; transition: all .15s;
+}
+.export-btn:hover     { border-color: var(--accent); color: var(--accent); background: var(--acc-l); }
+.export-btn.kml:hover { border-color: var(--green);  color: var(--green);  background: var(--grn-l); }
 .export-ts { font-family: var(--mono); font-size: 12px; color: var(--text3); margin-left: auto; }
 
-/* KML LEGEND */
-.kml-legend { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--text3); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
-.kml-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; border: 1px solid rgba(0,0,0,.15); }
-
-.header-link {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--accent);
-  text-decoration: none;
-  letter-spacing: .04em;
-  opacity: 0.75;
-  transition: opacity .15s;
+.kml-legend {
+  margin-top: 8px; display: flex; gap: 16px;
+  flex-wrap: wrap; align-items: center;
+  font-size: 13px; color: var(--text3);
 }
-.header-link:hover { opacity: 1; text-decoration: underline; }
+.kml-dot {
+  display: inline-block; width: 9px; height: 9px;
+  border-radius: 50%; margin-right: 5px;
+  vertical-align: middle; border: 1px solid rgba(0,0,0,.15);
+}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-title">NOTAM // 6I2</div>
-  <div class="header-sub">Obstruction Hazard Tracker · AEL Base 173</div>
+  <span class="header-sep">·</span>
+  <div class="header-sub">Obstruction Hazard Tracker &nbsp;·&nbsp; AEL Base 173</div>
   <a class="header-link" href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener">FAA NOTAM Search ↗</a>
 </div>
 
@@ -216,29 +383,27 @@ input[type=color] { width: 34px; height: 26px; padding: 1px 2px; border: 1px sol
         <div class="field-group">
           <label>Min AGL (ft) — qualifier</label>
           <input type="number" id="min-agl" value="500" min="0" max="2000" step="50">
-          <div style="font-size:13px;color:var(--text3);margin-top:3px;font-style:italic">Towers below this are ignored entirely</div>
+          <div class="field-hint">Towers below this are ignored entirely</div>
         </div>
         <div class="field-group">
           <label>Max range (NM)</label>
           <input type="number" id="max-nm" value="70" min="1" max="200" step="5">
-          <div style="font-size:13px;color:var(--text3);margin-top:3px;font-style:italic">Towers beyond this are ignored</div>
+          <div class="field-hint">Towers beyond this are ignored</div>
         </div>
       </div>
 
       <div class="thresh-section">
-        <div class="slabel" style="margin-top:16px;margin-bottom:8px">KML Alert Levels</div>
-        <div style="font-size:13px;color:var(--text3);font-style:italic;margin-bottom:12px">
-          Level 1 is highest severity (≥ threshold). Level 3 covers everything else above the min AGL. Colors apply to the KML overlay in ForeFlight.
-        </div>
+        <div class="slabel" style="margin-top:18px;margin-bottom:6px">KML Alert Levels</div>
+        <div class="field-hint" style="margin-bottom:14px">Level 1 is highest severity. Level 3 covers everything above min AGL below Level 2. Colors apply to the ForeFlight KML overlay.</div>
+        <hr class="thresh-divider">
 
-        <!-- Level 1 -->
         <div class="thresh-row">
           <div class="thresh-swatch" id="sw-1"></div>
-          <div class="thresh-name" style="font-weight:500">Level 1</div>
+          <div class="thresh-name">Level 1</div>
           <div class="thresh-agl-wrap">
             <label>AGL ≥</label>
             <input type="number" id="t1-agl" value="800" min="0" max="5000" step="50">
-            <span style="font-family:var(--mono);font-size:11px;color:var(--text3)">ft</span>
+            <span class="thresh-agl-unit">ft</span>
           </div>
           <div class="thresh-color-wrap">
             <label>Color</label>
@@ -247,14 +412,13 @@ input[type=color] { width: 34px; height: 26px; padding: 1px 2px; border: 1px sol
           <div class="thresh-desc">Critical — highest unlit towers</div>
         </div>
 
-        <!-- Level 2 -->
         <div class="thresh-row">
           <div class="thresh-swatch" id="sw-2"></div>
-          <div class="thresh-name" style="font-weight:500">Level 2</div>
+          <div class="thresh-name">Level 2</div>
           <div class="thresh-agl-wrap">
             <label>AGL ≥</label>
             <input type="number" id="t2-agl" value="600" min="0" max="5000" step="50">
-            <span style="font-family:var(--mono);font-size:11px;color:var(--text3)">ft</span>
+            <span class="thresh-agl-unit">ft</span>
           </div>
           <div class="thresh-color-wrap">
             <label>Color</label>
@@ -263,13 +427,10 @@ input[type=color] { width: 34px; height: 26px; padding: 1px 2px; border: 1px sol
           <div class="thresh-desc">Caution</div>
         </div>
 
-        <!-- Level 3 -->
         <div class="thresh-row">
           <div class="thresh-swatch" id="sw-3"></div>
-          <div class="thresh-name" style="font-weight:500">Level 3</div>
-          <div style="font-family:var(--mono);font-size:13px;color:var(--text3);width:160px;flex-shrink:0">
-            &lt; Level 2 threshold,<br>≥ min AGL
-          </div>
+          <div class="thresh-name">Level 3</div>
+          <div class="thresh-range-desc">&lt; Level 2 threshold, ≥ min AGL</div>
           <div class="thresh-color-wrap">
             <label>Color</label>
             <input type="color" id="t3-color" value="#1a4f8a" oninput="syncSwatch(3)">
@@ -281,7 +442,7 @@ input[type=color] { width: 34px; height: 26px; padding: 1px 2px; border: 1px sol
   </div>
 
   <div class="controls-row">
-    <button class="run-btn" id="run-btn" onclick="runDiff()" disabled>Run diff</button>
+    <button class="run-btn" id="run-btn" onclick="runDiff()" disabled>Run Diff</button>
   </div>
 
   <div class="status-line" id="status"></div>
@@ -301,7 +462,6 @@ const REF = { lat: 37.5617, lon: -85.1450, id: '6I2' };
 const files = { prev: null, curr: null };
 let lastDiff = null;
 
-// ── SETTINGS PANEL ────────────────────────────────────────────────────────
 function toggleSettings() {
   const btn = document.getElementById('settings-toggle');
   const body = document.getElementById('settings-body');
@@ -310,15 +470,15 @@ function toggleSettings() {
 }
 
 function syncSwatch(n) {
-  const color = document.getElementById('t' + n + '-color').value;
-  document.getElementById('sw-' + n).style.background = color;
+  document.getElementById('sw-' + n).style.background =
+    document.getElementById('t' + n + '-color').value;
 }
 
 function getThresholds() {
   return {
-    t1: { agl: parseInt(document.getElementById('t1-agl').value) || 800,  color: document.getElementById('t1-color').value },
-    t2: { agl: parseInt(document.getElementById('t2-agl').value) || 600,  color: document.getElementById('t2-color').value },
-    t3: {                                                                   color: document.getElementById('t3-color').value },
+    t1: { agl: parseInt(document.getElementById('t1-agl').value) || 800, color: document.getElementById('t1-color').value },
+    t2: { agl: parseInt(document.getElementById('t2-agl').value) || 600, color: document.getElementById('t2-color').value },
+    t3: { color: document.getElementById('t3-color').value },
     minAgl: parseInt(document.getElementById('min-agl').value) || 500,
     maxNm:  parseFloat(document.getElementById('max-nm').value) || 70
   };
@@ -330,14 +490,10 @@ function towerLevel(agl, thresh) {
   return 3;
 }
 
-function levelColor(level, thresh) {
-  return thresh['t' + level].color;
-}
+function levelColor(level, thresh) { return thresh['t' + level].color; }
 
-// Initialise swatches on load
 window.addEventListener('load', () => { syncSwatch(1); syncSwatch(2); syncSwatch(3); });
 
-// ── DROP ZONES ────────────────────────────────────────────────────────────
 ['prev','curr'].forEach(key => {
   const fi = document.getElementById('fi-' + key);
   const dz = document.getElementById('dz-' + key);
@@ -366,12 +522,11 @@ function clearDz(e, key) {
   document.getElementById('dz-' + key).classList.remove('loaded-' + key);
   document.getElementById('fn-' + key).textContent = '';
   document.getElementById('fi-' + key).value = '';
-  if (key === 'curr') { document.getElementById('run-btn').disabled = true; }
+  if (key === 'curr') document.getElementById('run-btn').disabled = true;
   setStatus('');
   document.getElementById('results').innerHTML = '';
 }
 
-// ── PDF TEXT EXTRACTION ───────────────────────────────────────────────────
 async function extractText(file) {
   const buf = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
@@ -384,7 +539,6 @@ async function extractText(file) {
   return text;
 }
 
-// ── PARSE ─────────────────────────────────────────────────────────────────
 function parseTowers(text, minAgl, maxNm) {
   const blocks = text.split(/(?=!)/).map(b => b.replace(/\s+/g, ' ').trim());
   const results = [];
@@ -412,15 +566,12 @@ function parseTowers(text, minAgl, maxNm) {
     if (nm > maxNm) continue;
 
     const locM = block.slice(block.indexOf(coordM[1]) + coordM[1].length).match(/\(([^)]+)\)/);
-    const loc = locM ? locM[1] : '';
-
-    results.push({ id: idM[1].trim(), msl, agl, loc, nm, brg, lat: coords.lat, lon: coords.lon });
+    results.push({ id: idM[1].trim(), msl, agl, loc: locM ? locM[1] : '', nm, brg, lat: coords.lat, lon: coords.lon });
   }
   results.sort((a, b) => a.nm - b.nm);
   return results;
 }
 
-// ── MATH ──────────────────────────────────────────────────────────────────
 function parseDMS(s) {
   const m = s.match(/^(\d{2})(\d{2})(\d{2}(?:\.\d+)?)N(\d{3})(\d{2})(\d{2}(?:\.\d+)?)W$/);
   if (!m) return null;
@@ -440,7 +591,6 @@ function cardinal(b) {
   return ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(b/22.5)%16];
 }
 
-// ── DIFF ──────────────────────────────────────────────────────────────────
 function towerKey(t) { return t.id.trim().toUpperCase(); }
 
 function computeDiff(prev, curr) {
@@ -453,7 +603,6 @@ function computeDiff(prev, curr) {
   };
 }
 
-// ── RUN ───────────────────────────────────────────────────────────────────
 async function runDiff() {
   const thresh = getThresholds();
   document.getElementById('run-btn').disabled = true;
@@ -475,11 +624,10 @@ async function runDiff() {
     const d = hasPrev ? computeDiff(prev, curr) : { remove: [], keep: [], add: curr };
     lastDiff = { d, hasPrev, curr, thresh };
 
-    const total = curr.length;
     setStatus(
       hasPrev
-        ? `${total} qualifying tower(s) · ${d.remove.length} remove, ${d.keep.length} keep, ${d.add.length} add`
-        : `${total} qualifying tower(s) ≥ ${thresh.minAgl} ft AGL (no previous report — all listed as Add)`,
+        ? `${curr.length} qualifying tower(s) · ${d.remove.length} remove, ${d.keep.length} keep, ${d.add.length} add`
+        : `${curr.length} qualifying tower(s) ≥ ${thresh.minAgl} ft AGL — all listed as Add (no previous report)`,
       'ok'
     );
     renderResults(d, hasPrev, curr, thresh);
@@ -491,22 +639,20 @@ async function runDiff() {
   }
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────
 function renderResults(d, hasPrev, curr, thresh) {
-  const total = curr.length;
   const ts = new Date().toLocaleString();
   let html = '';
 
   if (hasPrev) {
     html += `<div class="summary-bar" style="grid-template-columns:repeat(4,1fr)">
-      <div class="summary-cell"><div class="s-num total">${total}</div><div class="s-label">Total</div><div class="s-desc">U/S towers ≥ ${thresh.minAgl} ft AGL</div></div>
+      <div class="summary-cell"><div class="s-num total">${curr.length}</div><div class="s-label">Total</div><div class="s-desc">U/S towers ≥ ${thresh.minAgl} ft AGL</div></div>
       <div class="summary-cell"><div class="s-num remove">${d.remove.length}</div><div class="s-label">Remove</div><div class="s-desc">Pull from hazard map</div></div>
       <div class="summary-cell"><div class="s-num keep">${d.keep.length}</div><div class="s-label">Keep</div><div class="s-desc">No change needed</div></div>
       <div class="summary-cell"><div class="s-num add">${d.add.length}</div><div class="s-label">Add</div><div class="s-desc">Plot on hazard map</div></div>
     </div>`;
   } else {
     html += `<div class="summary-bar" style="grid-template-columns:1fr 1fr">
-      <div class="summary-cell"><div class="s-num total">${total}</div><div class="s-label">Total</div><div class="s-desc">U/S towers ≥ ${thresh.minAgl} ft AGL within ${thresh.maxNm} NM</div></div>
+      <div class="summary-cell"><div class="s-num total">${curr.length}</div><div class="s-label">Total</div><div class="s-desc">U/S towers ≥ ${thresh.minAgl} ft AGL within ${thresh.maxNm} NM</div></div>
       <div class="summary-cell"><div class="s-num add">${d.add.length}</div><div class="s-label">Add</div><div class="s-desc">Plot all on hazard map</div></div>
     </div>`;
   }
@@ -515,7 +661,6 @@ function renderResults(d, hasPrev, curr, thresh) {
   if (hasPrev) html += makeSection(d.keep,   'keep',   'Keep',   'dots remain unchanged', thresh);
   html += makeSection(d.add, 'add', hasPrev ? 'Add' : 'All Towers', hasPrev ? 'plot these on the map' : 'plot all on the map', thresh);
 
-  // Export row + KML legend
   const t1c = thresh.t1.color, t2c = thresh.t2.color, t3c = thresh.t3.color;
   html += `<div class="export-row">
     <button class="export-btn" onclick="exportCSV()">Export CSV</button>
@@ -527,7 +672,7 @@ function renderResults(d, hasPrev, curr, thresh) {
     <span><span class="kml-dot" style="background:${t1c}"></span>Level 1 ≥ ${thresh.t1.agl} ft AGL</span>
     <span><span class="kml-dot" style="background:${t2c}"></span>Level 2 ≥ ${thresh.t2.agl} ft AGL</span>
     <span><span class="kml-dot" style="background:${t3c}"></span>Level 3 ≥ ${thresh.minAgl} ft AGL</span>
-    <span style="color:var(--text3);font-style:italic">· KML contains all ${curr.length} current qualifying towers</span>
+    <span style="font-style:italic">· KML contains all ${curr.length} current qualifying towers</span>
   </div>`;
 
   document.getElementById('results').innerHTML = html;
@@ -542,30 +687,25 @@ function renderResults(d, hasPrev, curr, thresh) {
 }
 
 function makeSection(rows, cls, title, hint, thresh) {
-  let bodyHtml = '';
-  if (!rows.length) {
-    bodyHtml = `<div class="rs-empty">None</div>`;
-  } else {
-    const rowsHtml = rows.map(t => {
-      const lv = towerLevel(t.agl, thresh);
-      const col = levelColor(lv, thresh);
-      return `<tr class="${cls}-row">
-        <td><span class="swatch-cell" style="background:${col}"></span>${t.id}</td>
-        <td class="r">${t.nm}</td>
-        <td class="r">${t.brg}°&nbsp;${cardinal(t.brg)}</td>
-        <td class="r">${t.msl.toLocaleString()}</td>
-        <td class="r" style="color:${col};font-weight:500">${t.agl.toLocaleString()}</td>
-        <td class="loc">${t.loc}</td>
-      </tr>`;
-    }).join('');
-    bodyHtml = `<table class="tbl">
-      <thead><tr>
+  let bodyHtml = rows.length === 0
+    ? `<div class="rs-empty">None</div>`
+    : `<table class="tbl"><thead><tr>
         <th>NOTAM</th><th class="r">Range (NM)</th><th class="r">Bearing</th>
         <th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Location ref</th>
-      </tr></thead>
-      <tbody>${rowsHtml}</tbody>
-    </table>`;
-  }
+      </tr></thead><tbody>` +
+      rows.map(t => {
+        const lv = towerLevel(t.agl, thresh);
+        const col = levelColor(lv, thresh);
+        return `<tr class="${cls}-row">
+          <td class="notam-id"><span class="swatch-cell" style="background:${col}"></span>${t.id}</td>
+          <td class="r">${t.nm}</td>
+          <td class="r">${t.brg}°&nbsp;${cardinal(t.brg)}</td>
+          <td class="r">${t.msl.toLocaleString()}</td>
+          <td class="r" style="color:${col};font-weight:600">${t.agl.toLocaleString()}</td>
+          <td class="loc">${t.loc}</td>
+        </tr>`;
+      }).join('') + `</tbody></table>`;
+
   return `<div class="result-section">
     <div class="rs-head ${cls}">
       <span class="rs-title ${cls}">${title}</span>
@@ -577,19 +717,14 @@ function makeSection(rows, cls, title, hint, thresh) {
   </div>`;
 }
 
-// ── EXPORTS ───────────────────────────────────────────────────────────────
 function exportCSV() {
   if (!lastDiff) return;
   const { d, hasPrev, thresh } = lastDiff;
   const rows = ['Action,NOTAM,Level,Range (NM),Bearing (deg),Cardinal,MSL (ft),AGL (ft),Location'];
   const emit = (action, t) => {
-    const lv = towerLevel(t.agl, thresh);
-    rows.push(`${action},${t.id},${lv},${t.nm},${t.brg},${cardinal(t.brg)},${t.msl},${t.agl},"${t.loc}"`);
+    rows.push(`${action},${t.id},${towerLevel(t.agl,thresh)},${t.nm},${t.brg},${cardinal(t.brg)},${t.msl},${t.agl},"${t.loc}"`);
   };
-  if (hasPrev) {
-    d.remove.forEach(t => emit('REMOVE', t));
-    d.keep.forEach(t => emit('KEEP', t));
-  }
+  if (hasPrev) { d.remove.forEach(t => emit('REMOVE', t)); d.keep.forEach(t => emit('KEEP', t)); }
   d.add.forEach(t => emit('ADD', t));
   download(rows.join('\n'), `notam_6I2_${isoDate()}.csv`, 'text/csv');
 }
@@ -598,62 +733,51 @@ function exportKML() {
   if (!lastDiff) return;
   const { curr, thresh } = lastDiff;
 
-  // hex color → KML ABGR (alpha=ff, then BGR)
-  function hexToKmlColor(hex) {
+  function hexToKml(hex) {
     const r = hex.slice(1,3), g = hex.slice(3,5), b = hex.slice(5,7);
     return `ff${b}${g}${r}`;
   }
 
-  // One KML Style per level
-  const levelStyles = [1,2,3].map(lv => {
-    const col = hexToKmlColor(thresh['t' + lv].color);
-    return `  <Style id="level${lv}">
-    <IconStyle>
-      <color>${col}</color>
-      <scale>0.9</scale>
+  const styles = [1,2,3].map(lv => `  <Style id="level${lv}">
+    <IconStyle><color>${hexToKml(thresh['t'+lv].color)}</color><scale>0.9</scale>
       <Icon><href>http://maps.google.com/mapfiles/kml/shapes/caution.png</href></Icon>
     </IconStyle>
-    <LabelStyle><color>${col}</color><scale>0.75</scale></LabelStyle>
-  </Style>`;
-  }).join('\n');
+    <LabelStyle><color>${hexToKml(thresh['t'+lv].color)}</color><scale>0.75</scale></LabelStyle>
+  </Style>`).join('\n');
 
-  // KML note: coordinates are lon,lat,alt_in_meters (KML spec requirement).
-  // Alt = MSL ft × 0.3048 → meters. ForeFlight displays altitudes in feet.
-  const placemarks = curr.map(t => {
+  const marks = curr.map(t => {
     const lv = towerLevel(t.agl, thresh);
+    // KML spec requires coordinates as lon,lat,altitude_in_meters
     const altM = (t.msl * 0.3048).toFixed(1);
     return `  <Placemark>
     <name>${t.id}</name>
     <description><![CDATA[<b>${t.id}</b><br/>
 MSL: <b>${t.msl.toLocaleString()} ft</b><br/>
-AGL: <b>${t.agl.toLocaleString()} ft</b> · Alert Level ${lv}<br/>
+AGL: <b>${t.agl.toLocaleString()} ft</b> &nbsp;·&nbsp; Alert Level ${lv}<br/>
 Range from ${REF.id}: ${t.nm} NM<br/>
 Bearing from ${REF.id}: ${t.brg}° ${cardinal(t.brg)}<br/>
 Ref: ${t.loc}<br/>
 <i>Lighting: U/S (unlit)</i>]]></description>
     <styleUrl>#level${lv}</styleUrl>
-    <Point>
-      <altitudeMode>absolute</altitudeMode>
+    <Point><altitudeMode>absolute</altitudeMode>
       <coordinates>${t.lon},${t.lat},${altM}</coordinates>
     </Point>
   </Placemark>`;
   }).join('\n');
 
-  const date = isoDate();
   const kml = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
 <Document>
-  <name>Unlit Obstructions — ${REF.id} — ${date}</name>
-  <description>U/S towers ≥ ${thresh.minAgl} ft AGL within ${thresh.maxNm} NM of ${REF.id} (Lebanon Muni, KY). Generated ${new Date().toLocaleString()}. Altitude in KML is MSL in meters per KML spec; ForeFlight displays in feet.</description>
-${levelStyles}
-${placemarks}
+  <name>Unlit Obstructions — ${REF.id} — ${isoDate()}</name>
+  <description>U/S towers ≥ ${thresh.minAgl} ft AGL within ${thresh.maxNm} NM of ${REF.id} (Lebanon Muni, KY). Generated ${new Date().toLocaleString()}. KML altitudes are MSL in meters per KML spec; ForeFlight displays in feet.</description>
+${styles}
+${marks}
 </Document>
 </kml>`;
 
-  download(kml, `notam_6I2_${date}.kml`, 'application/vnd.google-earth.kml+xml');
+  download(kml, `notam_6I2_${isoDate()}.kml`, 'application/vnd.google-earth.kml+xml');
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────────
 function isoDate() { return new Date().toISOString().slice(0,10); }
 function download(content, filename, mime) {
   const a = document.createElement('a');
