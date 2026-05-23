@@ -57,3 +57,23 @@ The FAA's NOTAM Management Service (NMS) has a REST API (`nms.aim.faa.gov`). If 
 - PDF.js requires CDN access on first load
 - NOTAM ID is used as the diff key — if the FAA reissues a tower under a new NOTAM number, it will appear as Remove + Add rather than Keep (correct behavior, but worth being aware of)
 - Wind turbine farms are excluded; individual turbines within a farm are not plotted
+
+
+---
+
+## Web hosting considerations
+
+The app is currently designed to run as a local `file://` HTML file on macOS. If it is ever hosted on a web server (e.g., GitHub Pages, a base intranet, or a shared hosting service), the following will need to be revisited:
+
+### Font sizing
+Safari treats `file://` URLs differently from `http://` — the viewport meta tag is largely ignored for desktop layout, and Safari applies its own internal scaling heuristic. To compensate, font sizes in the current version are deliberately over-declared (scaled ~1.4× from design values) so they render correctly as a local file.
+
+When hosted over HTTP, those inflated sizes will render too large. The fix is to reset all font sizes to their intended design values (roughly divide current px values by 1.4) and rely on the standard viewport meta tag, which will be respected normally in a served context.
+
+**Impact:** CSS only — no logic changes required. Should be a single find-and-replace pass on the stylesheet.
+
+### PDF.js CDN dependency
+The app loads PDF.js from `cdnjs.cloudflare.com`. This works fine for both local and hosted use as long as internet access is available, but a hosted version intended for offline or intranet use should bundle PDF.js locally.
+
+### CORS / file access
+No server-side code is needed — the app is entirely client-side. Any static hosting (GitHub Pages, S3, Nginx) will work without modification beyond the font size adjustment above.
