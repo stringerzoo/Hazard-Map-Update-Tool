@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 <title>NOTAM Hazard Tracker — 6I2</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&family=Source+Code+Pro:wght@400;500&display=swap');
@@ -162,6 +162,18 @@ input[type=color] { width: 34px; height: 26px; padding: 1px 2px; border: 1px sol
 /* KML LEGEND */
 .kml-legend { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--text3); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
 .kml-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; border: 1px solid rgba(0,0,0,.15); }
+
+.header-link {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: .04em;
+  opacity: 0.75;
+  transition: opacity .15s;
+}
+.header-link:hover { opacity: 1; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -169,6 +181,7 @@ input[type=color] { width: 34px; height: 26px; padding: 1px 2px; border: 1px sol
 <div class="header">
   <div class="header-title">NOTAM // 6I2</div>
   <div class="header-sub">Obstruction Hazard Tracker · AEL Base 173</div>
+  <a class="header-link" href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener">FAA NOTAM Search ↗</a>
 </div>
 
 <div class="main">
