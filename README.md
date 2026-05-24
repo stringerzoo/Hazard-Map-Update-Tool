@@ -80,7 +80,7 @@ Before relying on any version of this tool for safety-of-flight purposes, run th
 
 ## Multi-base use
 
-This tool is ready for distribution to other AEL bases. Each user selects their own base from the pre-loaded list — no configuration files to edit, no code changes required. See `FUTURE.md` for the base lookup table update workflow and longer-term distribution plans.
+The tool is architecturally designed for multi-base use — 156 AEL bases are pre-loaded, and each user selects their own base from the dropdown with no code changes required. However, the tool has not yet completed full test validation beyond Base 173 and should not be distributed to other bases until the test protocol in `TESTING.md` has been completed and signed off. See `FUTURE.md` for the base lookup table update workflow and longer-term distribution plans.
 
 ## License
 
