@@ -109,3 +109,42 @@ Both are operationally equivalent from a hazard perspective and are treated iden
 | CRANE | ✗ | Temporary, typically in terminal areas, frequently updated |
 | POWER LINE | ✗ | Linear feature — single-point plotting is misleading |
 | WIND TURBINE FARM | ✗ | Farm-level entry covers a radius area; individual turbines not itemized |
+
+---
+
+## Buffer zone
+
+### Operational rationale
+
+FAR Part 135 and company GOM set minimum terrain/obstacle clearance at 300 ft AGL day and 500 ft AGL night. The hazard map threshold is set at 500 ft to focus on unlit obstacles relevant to night operations.
+
+However, the 500 ft floor is a regulatory minimum, not a guaranteed separation. In practice, pilots maintaining "not lower than 500 ft" in rolling terrain may momentarily dip below that value. Departure and approach phases — where obstacle proximity is most critical — are also high-workload environments where precise altitude control is harder to maintain. A tower at 490 ft AGL is operationally indistinguishable from one at 510 ft.
+
+For these reasons, the tool supports a configurable **buffer zone** below the minimum AGL threshold. Towers within this buffer are parsed and included in the ForeFlight KML overlay for in-cockpit situational awareness, but are **not** included in the hazard map diff (Remove / Keep / Add) and should not be plotted on the wall map. The distinction preserves the clarity of the office hazard map while ensuring the cockpit overlay is more conservative.
+
+### Default values
+
+| Setting | Default | Rationale |
+|---|---|---|
+| Min AGL | 500 ft | Night obstacle clearance standard (FAR 135 / company GOM) |
+| Buffer | 50 ft | Fixed margin accounting for terrain-induced altitude variation; captures towers down to 450 ft AGL |
+| Effective KML floor | 450 ft | Min AGL minus buffer |
+
+The buffer is intentionally a fixed value rather than a percentage. The terrain-variation risk that motivates the buffer does not scale with the threshold — a 50 ft margin is appropriate whether the threshold is 500 ft or 800 ft. A percentage-based buffer would over-extend at high thresholds and under-protect at low ones.
+
+### What appears where
+
+| Tower AGL | Wall hazard map | ForeFlight KML |
+|---|---|---|
+| ≥ Min AGL (500 ft) | ✓ plotted (levels 1–3) | ✓ included (levels 1–3) |
+| Buffer zone (450–499 ft) | ✗ not plotted | ✓ included (buffer color) |
+| < Buffer floor (< 450 ft) | ✗ ignored | ✗ ignored |
+| > Max range | ✗ ignored | ✗ ignored |
+
+### Adjusting the buffer
+
+If operational requirements change — for example, if day operations in low-visibility conditions become a concern — both the Min AGL and the buffer can be adjusted in the Filter & Alert Settings panel. Common configurations:
+
+- **Night standard, conservative buffer:** Min AGL 500 ft, buffer 50 ft → KML floor 450 ft
+- **Night standard, tighter buffer:** Min AGL 500 ft, buffer 25 ft → KML floor 475 ft
+- **Day standard with buffer:** Min AGL 300 ft, buffer 50 ft → KML floor 250 ft
