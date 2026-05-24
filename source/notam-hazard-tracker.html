@@ -3,388 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-<title>NOTAM Hazard Tracker — 6I2</title>
+<title>NOTAM Hazard Tracker</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&display=swap');
 
 :root {
-  --bg:      #f5f5f5;
-  --bg2:     #ffffff;
-  --bg3:     #eeeeee;
-  --border:  #cccccc;
-  --border2: #aaaaaa;
-  --text:    #111111;
-  --text2:   #444444;
-  --text3:   #777777;
-  --accent:  #1a4f8a;
-  --acc-l:   #dde8f5;
-  --acc-b:   #aac4e0;
-  --green:   #145a2e;
-  --grn-l:   #ddf0e6;
-  --grn-b:   #8ecba8;
-  --red:     #7a1010;
-  --red-l:   #fde8e8;
-  --red-b:   #e0a0a0;
-  --amber:   #6b3d00;
-  --amb-l:   #fef0d8;
-  --amb-b:   #e0b870;
-  --mono:    'Source Code Pro', 'Menlo', monospace;
-  --r:       5px;
+  --bg:#f5f5f5;--bg2:#ffffff;--bg3:#eeeeee;
+  --border:#cccccc;--border2:#aaaaaa;
+  --text:#111111;--text2:#444444;--text3:#777777;
+  --accent:#1a4f8a;--acc-l:#dde8f5;--acc-b:#aac4e0;
+  --green:#145a2e;--grn-l:#ddf0e6;--grn-b:#8ecba8;
+  --red:#7a1010;--red-l:#fde8e8;--red-b:#e0a0a0;
+  --amber:#6b3d00;--amb-l:#fef0d8;--amb-b:#e0b870;
+  --mono:'Source Code Pro','Menlo',monospace;--r:5px;
 }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-size:20px;font-weight:400;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:18px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.header-title{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:.08em;color:var(--accent);}
+.header-sep{color:var(--border2);}
+.header-sub{font-size:19px;color:var(--text2);}
+.header-link{margin-left:auto;font-family:var(--mono);font-size:16px;font-weight:500;color:var(--accent);text-decoration:none;padding:6px 14px;border:1px solid var(--acc-b);border-radius:var(--r);background:var(--acc-l);transition:background .15s;}
+.header-link:hover{background:#c8dcf0;}
+.help-btn{font-family:var(--mono);font-size:16px;font-weight:600;background:none;border:1px solid var(--border2);border-radius:var(--r);color:var(--text3);padding:6px 14px;cursor:pointer;transition:all .15s;}
+.help-btn:hover{border-color:var(--accent);color:var(--accent);}
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.5;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
+.main{max-width:1020px;margin:0 auto;padding:28px 32px 80px;}
+.slabel{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
 
-/* HEADER */
-.header {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 18px 32px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-.header-title { font-family: var(--mono); font-size: 21px; font-weight: 600; letter-spacing: .08em; color: var(--accent); }
-.header-sep { color: var(--border2); }
-.header-sub { font-size: 19px; color: var(--text2); }
-.header-link {
-  margin-left: auto;
-  font-family: var(--mono); font-size: 16px; font-weight: 500;
-  color: var(--accent); text-decoration: none;
-  padding: 6px 14px; border: 1px solid var(--acc-b);
-  border-radius: var(--r); background: var(--acc-l);
-  transition: background .15s;
-}
-.header-link:hover { background: #c8dcf0; }
-.help-btn {
-  font-family: var(--mono); font-size: 16px; font-weight: 600;
-  background: none; border: 1px solid var(--border2);
-  border-radius: var(--r); color: var(--text3);
-  padding: 6px 14px; cursor: pointer; transition: all .15s;
-}
-.help-btn:hover { border-color: var(--accent); color: var(--accent); }
+.mismatch-banner{display:none;background:var(--amb-l);border:1px solid var(--amb-b);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;}
+.mismatch-banner.visible{display:block;}
+.mismatch-title{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-bottom:8px;}
+.mismatch-items{font-size:16px;color:var(--amber);line-height:1.8;}
+.mismatch-items code{font-family:var(--mono);font-size:14px;background:rgba(0,0,0,0.07);padding:1px 5px;border-radius:3px;}
 
-/* MAIN */
-.main { max-width: 1020px; margin: 0 auto; padding: 28px 32px 80px; }
+.drop-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
+.drop-zone{background:var(--bg2);border:2px dashed var(--border);border-radius:var(--r);padding:28px 18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative;}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--acc-l);}
+.drop-zone.loaded-prev{border-style:solid;border-color:var(--amb-b);background:var(--amb-l);}
+.drop-zone.loaded-curr{border-style:solid;border-color:var(--grn-b);background:var(--grn-l);}
+.dz-role{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.dz-role.prev{color:var(--amber);}.dz-role.curr{color:var(--green);}
+.dz-icon{font-size:28px;margin-bottom:6px;line-height:1;}
+.dz-label{font-size:18px;color:var(--text2);}
+.dz-hint{font-size:15px;color:var(--text3);margin-top:4px;}
+.dz-filename{font-family:var(--mono);font-size:14px;color:var(--text2);margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;}
+.dz-clear{position:absolute;top:10px;right:10px;font-size:13px;font-family:var(--mono);font-weight:500;background:var(--bg2);border:1px solid var(--border2);border-radius:3px;color:var(--text3);padding:3px 9px;cursor:pointer;display:none;}
+.dz-clear:hover{border-color:var(--red);color:var(--red);background:var(--red-l);}
+.drop-zone.loaded-prev .dz-clear,.drop-zone.loaded-curr .dz-clear{display:block;}
 
-/* SECTION LABEL */
-.slabel {
-  font-family: var(--mono); font-size: 14px; font-weight: 600;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--text3);
-  margin-bottom: 10px;
-}
+.settings-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:22px;overflow:hidden;}
+.settings-toggle{width:100%;background:var(--bg3);border:none;border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);text-align:left;}
+.settings-toggle:hover{background:#e4e4e4;}
+.settings-toggle .arrow{transition:transform .2s;font-size:11px;}
+.settings-toggle.open .arrow{transform:rotate(90deg);}
+.settings-body{display:none;padding:20px 22px;}
+.settings-body.open{display:block;}
+.settings-sub{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.settings-sub:first-child{margin-top:0;}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 36px;}
+.field-group{display:flex;flex-direction:column;gap:7px;}
+.field-group label{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);}
+.field-group input[type=number],.field-group input[type=text]{font-family:var(--mono);font-size:18px;padding:8px 11px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;}
+.field-group input[type=number]{width:140px;}
+.field-group input[type=text]{width:100%;}
+.field-group input:focus{border-color:var(--accent);background:var(--bg2);}
+.field-hint{font-size:14px;color:var(--text3);font-style:italic;}
 
-/* MISMATCH BANNER */
-.mismatch-banner {
-  display: none; background: var(--amb-l); border: 1px solid var(--amb-b);
-  border-radius: var(--r); padding: 14px 18px; margin-bottom: 20px;
-}
-.mismatch-banner.visible { display: block; }
-.mismatch-title {
-  font-family: var(--mono); font-size: 14px; font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase;
-  color: var(--amber); margin-bottom: 8px;
-}
-.mismatch-items { font-size: 16px; color: var(--amber); line-height: 1.8; }
-.mismatch-items code {
-  font-family: var(--mono); font-size: 14px;
-  background: rgba(0,0,0,0.07); padding: 1px 5px; border-radius: 3px;
-}
+.base-select-wrap{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+.base-select-wrap label{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);}
+.base-dropdown{position:relative;}
+.base-search{font-family:var(--mono);font-size:16px;padding:8px 11px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;width:100%;}
+.base-search:focus{border-color:var(--accent);background:var(--bg2);}
+.base-list{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);max-height:240px;overflow-y:auto;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.base-list.open{display:block;}
+.base-option{padding:8px 12px;cursor:pointer;font-family:var(--mono);font-size:14px;border-bottom:1px solid var(--border);line-height:1.4;}
+.base-option:last-child{border-bottom:none;}
+.base-option:hover{background:var(--acc-l);color:var(--accent);}
+.base-option .opt-id{font-weight:600;margin-right:8px;}
+.base-option .opt-loc{color:var(--text3);font-size:12px;}
+.base-option.no-coords{color:var(--text3);}
 
-/* DROP ZONES */
-.drop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
-.drop-zone {
-  background: var(--bg2); border: 2px dashed var(--border);
-  border-radius: var(--r); padding: 28px 18px;
-  text-align: center; cursor: pointer;
-  transition: border-color .15s, background .15s; position: relative;
-}
-.drop-zone:hover, .drop-zone.drag { border-color: var(--accent); background: var(--acc-l); }
-.drop-zone.loaded-prev { border-style: solid; border-color: var(--amb-b); background: var(--amb-l); }
-.drop-zone.loaded-curr { border-style: solid; border-color: var(--grn-b); background: var(--grn-l); }
-.dz-role { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
-.dz-role.prev { color: var(--amber); }
-.dz-role.curr { color: var(--green); }
-.dz-icon { font-size: 28px; margin-bottom: 6px; line-height: 1; }
-.dz-label { font-size: 18px; color: var(--text2); }
-.dz-hint  { font-size: 15px; color: var(--text3); margin-top: 4px; }
-.dz-filename { font-family: var(--mono); font-size: 14px; color: var(--text2); margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
-.dz-clear {
-  position: absolute; top: 10px; right: 10px;
-  font-size: 13px; font-family: var(--mono); font-weight: 500;
-  background: var(--bg2); border: 1px solid var(--border2);
-  border-radius: 3px; color: var(--text3); padding: 3px 9px; cursor: pointer; display: none;
-}
-.dz-clear:hover { border-color: var(--red); color: var(--red); background: var(--red-l); }
-.drop-zone.loaded-prev .dz-clear,
-.drop-zone.loaded-curr .dz-clear { display: block; }
+.coords-display{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-family:var(--mono);font-size:14px;color:var(--text2);line-height:1.9;margin-bottom:14px;}
+.coords-display .coord-row{display:flex;gap:8px;align-items:center;}
+.coords-display .clabel{color:var(--text3);width:80px;flex-shrink:0;}
+.coords-display .cval{font-weight:600;color:var(--text);}
+.coords-display .airport-tag{font-weight:600;color:var(--accent);}
 
-/* SETTINGS PANEL */
-.settings-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 22px; overflow: hidden; }
-.settings-toggle {
-  width: 100%; background: var(--bg3); border: none; border-bottom: 1px solid var(--border);
-  padding: 13px 18px; display: flex; align-items: center; gap: 10px;
-  cursor: pointer; font-family: var(--mono); font-size: 14px; font-weight: 600;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--text2); text-align: left;
-}
-.settings-toggle:hover { background: #e4e4e4; }
-.settings-toggle .arrow { transition: transform .2s; font-size: 11px; }
-.settings-toggle.open .arrow { transform: rotate(90deg); }
-.settings-body { display: none; padding: 20px 22px; }
-.settings-body.open { display: block; }
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 36px; }
-.field-group { display: flex; flex-direction: column; gap: 7px; }
-.field-group label { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text2); }
-.field-group input[type=number] {
-  font-family: var(--mono); font-size: 18px; padding: 8px 11px;
-  background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: var(--r); color: var(--text); outline: none; width: 140px;
-}
-.field-group input[type=number]:focus { border-color: var(--accent); background: var(--bg2); }
-.field-hint { font-size: 15px; color: var(--text3); font-style: italic; }
+.coord-override{margin-top:4px;}
+.coord-override summary{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);cursor:pointer;user-select:none;}
+.coord-override summary:hover{color:var(--accent);}
+.coord-override-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-top:12px;}
+.ddmm-wrap{display:flex;gap:6px;align-items:center;}
+.ddmm-wrap input[type=number]{font-family:var(--mono);font-size:16px;padding:6px 8px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;}
+.ddmm-wrap input[type=number]:focus{border-color:var(--accent);background:var(--bg2);}
+.ddmm-deg{width:70px;}.ddmm-min{width:100px;}
+.ddmm-sep,.ddmm-unit{font-family:var(--mono);font-size:15px;color:var(--text3);}
 
-/* THRESHOLD ROWS */
-.thresh-section { margin-top: 20px; }
-.thresh-divider { border: none; border-top: 1px solid var(--border); margin: 12px 0 16px; }
-.thresh-row { display: flex; align-items: center; gap: 18px; padding: 11px 0; border-bottom: 1px solid var(--border); }
-.thresh-row:last-child { border-bottom: none; }
-.thresh-swatch { width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,.2); flex-shrink: 0; }
-.thresh-name { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--text); width: 80px; flex-shrink: 0; }
-.thresh-agl-wrap { display: flex; align-items: center; gap: 9px; }
-.thresh-agl-wrap label { font-family: var(--mono); font-size: 15px; font-weight: 500; color: var(--text2); }
-.thresh-agl-wrap input[type=number] {
-  width: 90px; font-family: var(--mono); font-size: 17px; padding: 6px 9px;
-  background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: var(--r); color: var(--text); outline: none;
-}
-.thresh-agl-wrap input[type=number]:focus { border-color: var(--accent); background: var(--bg2); }
-.thresh-agl-unit { font-family: var(--mono); font-size: 15px; color: var(--text3); }
-.thresh-color-wrap { display: flex; align-items: center; gap: 9px; }
-.thresh-color-wrap label { font-family: var(--mono); font-size: 15px; font-weight: 500; color: var(--text2); }
-input[type=color] { width: 40px; height: 32px; padding: 2px 3px; border: 1px solid var(--border2); border-radius: 4px; background: var(--bg2); cursor: pointer; }
-.thresh-desc { font-size: 15px; color: var(--text3); font-style: italic; }
-.thresh-range-desc { font-family: var(--mono); font-size: 15px; color: var(--text3); width: 220px; flex-shrink: 0; line-height: 1.4; }
+.thresh-divider{border:none;border-top:1px solid var(--border);margin:10px 0 14px;}
+.thresh-row{display:flex;align-items:center;gap:18px;padding:11px 0;border-bottom:1px solid var(--border);}
+.thresh-row:last-child{border-bottom:none;}
+.thresh-row.buf-row{background:color-mix(in srgb,var(--bg3) 60%,white);padding-left:8px;padding-right:8px;border-radius:3px;}
+.thresh-swatch{width:24px;height:24px;border-radius:4px;border:1px solid rgba(0,0,0,.2);flex-shrink:0;}
+.thresh-name{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--text);width:80px;flex-shrink:0;}
+.thresh-name.buf{color:var(--text3);}
+.thresh-agl-wrap{display:flex;align-items:center;gap:9px;}
+.thresh-agl-wrap label{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text2);}
+.thresh-agl-wrap input[type=number]{width:90px;font-family:var(--mono);font-size:17px;padding:6px 9px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;}
+.thresh-agl-wrap input[type=number]:focus{border-color:var(--accent);background:var(--bg2);}
+.thresh-agl-unit{font-family:var(--mono);font-size:15px;color:var(--text3);}
+.thresh-color-wrap{display:flex;align-items:center;gap:9px;}
+.thresh-color-wrap label{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text2);}
+input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);cursor:pointer;}
+.thresh-desc{font-size:15px;color:var(--text3);font-style:italic;}
+.thresh-range-desc{font-family:var(--mono);font-size:14px;color:var(--text3);width:220px;flex-shrink:0;line-height:1.4;}
 
-/* RUN BUTTON */
-.controls-row { margin-bottom: 20px; }
-.run-btn {
-  font-family: var(--mono); font-size: 15px; font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase;
-  background: var(--accent); color: #fff; border: none;
-  border-radius: var(--r); padding: 13px 32px; cursor: pointer; transition: background .15s;
-}
-.run-btn:hover { background: #14397a; }
-.run-btn:disabled { background: var(--border2); cursor: not-allowed; }
+.save-row{margin-top:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.save-btn{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text2);padding:8px 18px;cursor:pointer;transition:all .15s;}
+.save-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--acc-l);}
+.reset-btn{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--border2);border-radius:var(--r);color:var(--text3);padding:8px 18px;cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--red);color:var(--red);}
+.save-confirm{font-family:var(--mono);font-size:13px;color:var(--green);display:none;}
+.save-confirm.visible{display:inline;}
+.reset-confirm{font-family:var(--mono);font-size:13px;color:var(--red);display:none;align-items:center;gap:8px;}
+.reset-confirm.visible{display:flex;}
+.reset-confirm button{font-family:var(--mono);font-size:12px;font-weight:600;border-radius:3px;padding:3px 10px;cursor:pointer;}
+.reset-yes{background:var(--red-l);border:1px solid var(--red-b);color:var(--red);}
+.reset-no{background:var(--bg3);border:1px solid var(--border2);color:var(--text3);}
 
-/* STATUS */
-.status-line { font-size: 16px; color: var(--text3); margin-bottom: 18px; min-height: 22px; font-style: italic; }
-.status-line.err { color: var(--red); font-style: normal; font-weight: 500; }
-.status-line.ok  { color: var(--green); font-style: normal; font-weight: 500; }
+.controls-row{margin-bottom:20px;}
+.run-btn{font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:13px 32px;cursor:pointer;transition:background .15s;}
+.run-btn:hover{background:#14397a;}
+.run-btn:disabled{background:var(--border2);cursor:not-allowed;}
 
-/* SUMMARY BAR */
-.summary-bar { display: grid; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 18px; background: var(--bg2); }
-.summary-cell { padding: 18px 22px; border-right: 1px solid var(--border); }
-.summary-cell:last-child { border-right: none; }
-.s-num { font-family: var(--mono); font-size: 40px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
-.s-num.total  { color: var(--accent); }
-.s-num.remove { color: var(--red); }
-.s-num.keep   { color: var(--text3); }
-.s-num.add    { color: var(--green); }
-.s-label { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text2); }
-.s-desc { font-size: 15px; color: var(--text3); margin-top: 3px; }
+.status-line{font-size:16px;color:var(--text3);margin-bottom:18px;min-height:22px;font-style:italic;}
+.status-line.err{color:var(--red);font-style:normal;font-weight:500;}
+.status-line.ok{color:var(--green);font-style:normal;font-weight:500;}
 
-/* RESULT SECTIONS */
-.result-section { margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
-.rs-head { display: flex; align-items: center; gap: 11px; padding: 11px 16px; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); }
-.rs-head.remove { background: var(--red-l);  border-bottom-color: var(--red-b); }
-.rs-head.keep   { background: var(--bg3); }
-.rs-head.add    { background: var(--grn-l); border-bottom-color: var(--grn-b); }
-.rs-head.oor    { background: var(--bg3); border-bottom-color: var(--border); }
-.rs-title { font-family: var(--mono); font-size: 14px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.rs-title.remove { color: var(--red); }
-.rs-title.keep   { color: var(--text2); }
-.rs-title.add    { color: var(--green); }
-.rs-title.oor    { color: var(--text3); }
-.rs-count { font-family: var(--mono); font-size: 14px; font-weight: 600; padding: 2px 10px; border-radius: 3px; }
-.rs-count.remove { background: var(--red-l);  color: var(--red);   border: 1px solid var(--red-b); }
-.rs-count.keep   { background: var(--bg3);     color: var(--text2); border: 1px solid var(--border); }
-.rs-count.add    { background: var(--grn-l);   color: var(--green); border: 1px solid var(--grn-b); }
-.rs-count.oor    { background: var(--bg3);     color: var(--text3); border: 1px solid var(--border); }
-.rs-hint { font-size: 15px; color: var(--text3); font-style: italic; margin-left: 2px; }
-.rs-toggle { margin-left: auto; font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text3); }
-.rs-body { background: var(--bg2); }
-.rs-body.collapsed { display: none; }
-.rs-empty { padding: 15px 16px; font-size: 16px; color: var(--text3); font-style: italic; }
+.summary-bar{display:grid;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px;background:var(--bg2);}
+.summary-cell{padding:18px 22px;border-right:1px solid var(--border);}
+.summary-cell:last-child{border-right:none;}
+.s-num{font-family:var(--mono);font-size:40px;font-weight:600;line-height:1;margin-bottom:4px;}
+.s-num.total{color:var(--accent);}.s-num.remove{color:var(--red);}.s-num.keep{color:var(--text3);}.s-num.add{color:var(--green);}.s-num.buf{color:var(--text3);}
+.s-label{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);}
+.s-desc{font-size:15px;color:var(--text3);margin-top:3px;}
 
-/* TABLE */
-.tbl { width: 100%; border-collapse: collapse; }
-.tbl th {
-  font-family: var(--mono); font-size: 13px; font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase; color: var(--text2);
-  padding: 9px 16px; text-align: left; border-bottom: 1px solid var(--border);
-  background: var(--bg3); white-space: nowrap;
-}
-.tbl th.r { text-align: right; }
-.tbl td {
-  font-family: var(--mono); font-size: 15px; padding: 8px 16px;
-  border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap;
-}
-.tbl tr:last-child td { border-bottom: none; }
-.tbl tr.remove-row td { background: #fdf2f2; }
-.tbl tr.add-row    td { background: #f0faf4; }
-.tbl tr.keep-row:nth-child(even) td { background: var(--bg3); }
-.tbl tr.oor-row:nth-child(even) td  { background: var(--bg3); }
-.tbl td.r { text-align: right; }
-.tbl td.dim { color: var(--text3); font-size: 14px; }
-.swatch-cell { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; vertical-align: middle; border: 1px solid rgba(0,0,0,.15); }
+.result-section{margin-bottom:12px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.rs-head{display:flex;align-items:center;gap:11px;padding:11px 16px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
+.rs-head.remove{background:var(--red-l);border-bottom-color:var(--red-b);}
+.rs-head.keep{background:var(--bg3);}
+.rs-head.add{background:var(--grn-l);border-bottom-color:var(--grn-b);}
+.rs-head.buf{background:var(--bg3);border-bottom-color:var(--border2);}
+.rs-head.oor{background:var(--bg3);}
+.rs-title{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.rs-title.remove{color:var(--red);}.rs-title.keep{color:var(--text2);}.rs-title.add{color:var(--green);}.rs-title.buf{color:var(--text3);}.rs-title.oor{color:var(--text3);}
+.rs-count{font-family:var(--mono);font-size:14px;font-weight:600;padding:2px 10px;border-radius:3px;}
+.rs-count.remove{background:var(--red-l);color:var(--red);border:1px solid var(--red-b);}
+.rs-count.keep{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+.rs-count.add{background:var(--grn-l);color:var(--green);border:1px solid var(--grn-b);}
+.rs-count.buf{background:var(--bg3);color:var(--text3);border:1px solid var(--border2);}
+.rs-count.oor{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+.rs-hint{font-size:15px;color:var(--text3);font-style:italic;margin-left:2px;}
+.rs-toggle{margin-left:auto;font-size:12px;color:var(--text3);transition:transform .2s;display:inline-block;}
 
-/* BUFFER SECTION */
-.rs-head.buf    { background: var(--bg3); border-bottom-color: var(--border2); }
-.rs-title.buf   { color: var(--text3); }
-.rs-count.buf   { background: var(--bg3); color: var(--text3); border: 1px solid var(--border2); }
-.tbl tr.buf-row td { background: #f8f8f8; }
-.s-num.buf      { color: var(--text3); }
+.rs-body{background:var(--bg2);}
+.rs-body.collapsed{display:none;}
+.rs-empty{padding:15px 16px;font-size:16px;color:var(--text3);font-style:italic;}
 
-/* EXPORT ROW */
-.export-row { display: flex; gap: 12px; align-items: center; margin-top: 18px; flex-wrap: wrap; }
-.export-btn {
-  font-family: var(--mono); font-size: 14px; font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase;
-  background: var(--bg2); border: 1px solid var(--border2);
-  border-radius: var(--r); color: var(--text2); padding: 9px 20px; cursor: pointer; transition: all .15s;
-}
-.export-btn:hover     { border-color: var(--accent); color: var(--accent); background: var(--acc-l); }
-.export-btn.kml:hover { border-color: var(--green);  color: var(--green);  background: var(--grn-l); }
-.export-ts { font-family: var(--mono); font-size: 13px; color: var(--text3); margin-left: auto; }
-.kml-legend { margin-top: 9px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; font-size: 15px; color: var(--text3); }
-.kml-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; border: 1px solid rgba(0,0,0,.15); }
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);padding:9px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap;}
+.tbl th.r{text-align:right;}
+.tbl td{font-family:var(--mono);font-size:15px;padding:8px 16px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr.remove-row td{background:#fdf2f2;}
+.tbl tr.add-row td{background:#f0faf4;}
+.tbl tr.keep-row:nth-child(even) td,.tbl tr.buf-row:nth-child(even) td,.tbl tr.oor-row:nth-child(even) td{background:var(--bg3);}
+.tbl td.r{text-align:right;}
+.tbl td.dim{color:var(--text3);font-size:14px;}
+.swatch-cell{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:middle;border:1px solid rgba(0,0,0,.15);}
 
-/* HELP MODAL */
-.modal-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.45); z-index: 1000;
-  align-items: center; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 8px; max-width: 700px; width: 92%;
-  max-height: 88vh; display: flex; flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-}
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-}
-.modal-title { font-family: var(--mono); font-size: 17px; font-weight: 600; letter-spacing: .06em; color: var(--accent); }
-.modal-close { font-size: 22px; background: none; border: none; cursor: pointer; color: var(--text3); line-height: 1; padding: 2px 7px; }
-.modal-close:hover { color: var(--text); }
-.modal-body { padding: 24px 28px; overflow-y: auto; flex: 1; font-size: 16px; line-height: 1.7; color: var(--text2); }
-.modal-body h3 {
-  font-family: var(--mono); font-size: 13px; font-weight: 600;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--text3);
-  margin: 24px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
-}
-.modal-body h3:first-child { margin-top: 0; }
-.modal-body p { margin-bottom: 10px; }
-.modal-body ol, .modal-body ul { padding-left: 24px; margin-bottom: 10px; }
-.modal-body li { margin-bottom: 7px; }
-.modal-body code { font-family: var(--mono); font-size: 14px; background: var(--bg3); padding: 1px 6px; border-radius: 3px; color: var(--text); }
-.modal-body .warn-inline { background: var(--amb-l); border: 1px solid var(--amb-b); border-radius: 4px; padding: 10px 14px; margin: 12px 0; font-size: 15px; color: var(--amber); }
+.export-row{display:flex;gap:12px;align-items:center;margin-top:18px;flex-wrap:wrap;}
+.export-btn{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text2);padding:9px 20px;cursor:pointer;transition:all .15s;}
+.export-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--acc-l);}
+.export-btn.kml:hover{border-color:var(--green);color:var(--green);background:var(--grn-l);}
+.export-ts{font-family:var(--mono);font-size:13px;color:var(--text3);margin-left:auto;}
+.kml-legend{margin-top:9px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:15px;color:var(--text3);}
+.kml-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle;border:1px solid rgba(0,0,0,.15);}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;max-width:700px;width:92%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-title{font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:.06em;color:var(--accent);}
+.modal-close{font-size:22px;background:none;border:none;cursor:pointer;color:var(--text3);line-height:1;padding:2px 7px;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:24px 28px;overflow-y:auto;flex:1;font-size:16px;line-height:1.7;color:var(--text2);}
+.modal-body h3{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.modal-body h3:first-child{margin-top:0;}
+.modal-body p{margin-bottom:10px;}
+.modal-body ol,.modal-body ul{padding-left:24px;margin-bottom:10px;}
+.modal-body li{margin-bottom:7px;}
+.modal-body code{font-family:var(--mono);font-size:14px;background:var(--bg3);padding:1px 6px;border-radius:3px;color:var(--text);}
+.modal-body .warn-inline{background:var(--amb-l);border:1px solid var(--amb-b);border-radius:4px;padding:10px 14px;margin:12px 0;font-size:15px;color:var(--amber);}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <div class="header-title">NOTAM // 6I2</div>
-  <span class="header-sep">·</span>
-  <div class="header-sub">Obstruction Hazard Tracker · AEL Base 173</div>
+  <div class="header-title" id="header-title">NOTAM // 6KY1</div>
+  <span class="header-sep">&#xB7;</span>
+  <div class="header-sub" id="header-sub">Obstruction Hazard Tracker &#xB7; AEL Base 173</div>
   <button class="help-btn" onclick="openHelp()">? How to use</button>
-  <a class="header-link" href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener">FAA NOTAM Search ↗</a>
+  <a class="header-link" href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener">FAA NOTAM Search &#x2197;</a>
 </div>
 
-<!-- HELP MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeHelpOutside(event)">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">How to Use — Monthly Workflow</div>
+      <div class="modal-title">How to Use &#x2014; Monthly Workflow</div>
       <button class="modal-close" onclick="closeHelp()">&#x2715;</button>
     </div>
     <div class="modal-body">
       <h3>Overview</h3>
-      <p>This tool parses FAA obstruction NOTAM PDF exports, identifies unlit towers and stacks meeting your height and range criteria, and produces a hazard map diff and a ForeFlight KML overlay. Run it once a month after pulling a fresh NOTAM report.</p>
-
-      <h3>Step 1 — Get the NOTAM report</h3>
+      <p>This tool parses FAA obstruction NOTAM PDF exports, identifies unlit towers and stacks meeting your height and range criteria, and produces a hazard map diff and a ForeFlight KML overlay. Run once a month.</p>
+      <h3>Step 1 &#x2014; Get the NOTAM report</h3>
       <ol>
-        <li>Click <strong>FAA NOTAM Search ↗</strong> in the top-right corner.</li>
+        <li>Click <strong>FAA NOTAM Search &#x2197;</strong> in the top-right corner.</li>
         <li>Acknowledge the disclaimer.</li>
         <li>Select <strong>Geography</strong> search type.</li>
-        <li>Enter your base airport identifier: <code>6I2</code></li>
-        <li>Set radius to <strong>70 NM</strong>.</li>
-        <li>Under Filter, select <strong>Obstruction</strong>.</li>
-        <li>Select all results and export as <strong>PDF</strong>.</li>
+        <li>Enter your base airport identifier and set radius to <strong>70 NM</strong>.</li>
+        <li>Under Filter, select <strong>Obstruction</strong>. Select all and export as <strong>PDF</strong>.</li>
       </ol>
-      <div class="warn-inline">&#9888; The tool&#x2019;s Max Range setting must match the radius used in the FAA query. The mismatch detector will flag a difference of more than 1 NM. Some entries slightly outside the stated radius may appear in FAA results &#x2014; the range filter here will exclude them and list them in the <em>Out of Range</em> section.</div>
-
-      <h3>Step 2 — Load the reports</h3>
-      <p>Drop the <strong>current month</strong> PDF into the right drop zone. Drop last month's PDF into the left zone to enable the Remove / Keep / Add diff. On first run, leave the previous zone empty — all results will appear as Add.</p>
-      <div class="warn-inline">&#9888; Both PDFs should be queried from the same reference point and radius. If they differ, the tool displays an amber warning banner after parsing.</div>
-
-      <h3>Step 3 — Check settings</h3>
-      <p>Open <strong>Filter &amp; Alert Settings</strong> and verify:</p>
+      <div class="warn-inline">&#9888; The tool&#x2019;s Max Range must match the FAA query radius. The mismatch detector flags differences over 1 NM.</div>
+      <h3>Step 2 &#x2014; Load reports</h3>
+      <p>Drop the <strong>current month</strong> PDF into the right zone. Optionally drop last month&#x2019;s into the left zone for the Remove/Keep/Add diff.</p>
+      <h3>Step 3 &#x2014; Check settings</h3>
       <ul>
-        <li><strong>Min AGL</strong> — your operational threshold. Towers at or above this appear in the full diff and are candidates for the hazard map. Default: 500 ft.</li>
-        <li><strong>Buffer below min AGL</strong> — towers within this band below the min AGL threshold are parsed and included in the KML overlay for in-cockpit awareness, but are <em>not</em> included in the hazard map diff. Default: 50 ft (captures towers down to 450 ft AGL at default settings). See CONFIGURATION.md for operational rationale.</li>
-        <li><strong>Max range (NM)</strong> — towers beyond this from <code>6I2</code> are excluded from the map and KML but listed in <em>Out of Range</em>. Default: 70 NM.</li>
-        <li><strong>Alert levels</strong> — three severity tiers for qualifying towers, plus a separate Buffer color, all controlling KML icon colors in ForeFlight.</li>
+        <li><strong>Base</strong> &#x2014; select from the dropdown. Coordinates fill automatically. Use manual override for unlisted bases.</li>
+        <li><strong>Min AGL</strong> &#x2014; hazard map threshold. Default: 500 ft.</li>
+        <li><strong>Buffer</strong> &#x2014; KML-only band below min AGL. Default: 50 ft.</li>
+        <li><strong>Max range</strong> &#x2014; towers beyond this excluded. Default: 70 NM.</li>
       </ul>
-
-      <h3>Step 4 — Run the diff</h3>
-      <p>Click <strong>Run Diff</strong>. Results appear in four sections:</p>
+      <h3>Step 4 &#x2014; Run the diff</h3>
       <ul>
-        <li><strong>Remove</strong> — in last month, not this month. Pull these dots from the hazard map.</li>
-        <li><strong>Keep</strong> — in both reports. No map change needed.</li>
-        <li><strong>Add</strong> — new this month. Plot these on the hazard map.</li>
-        <li><strong>Out of Range</strong> — meet height filter but exceed max range. Do not plot; listed for audit purposes only.</li>
+        <li><strong>Remove</strong> &#x2014; pull dots from hazard map.</li>
+        <li><strong>Keep</strong> &#x2014; no change needed.</li>
+        <li><strong>Add</strong> &#x2014; plot on hazard map.</li>
+        <li><strong>Buffer Zone</strong> &#x2014; KML only, do not plot on map.</li>
+        <li><strong>Out of Range</strong> &#x2014; entries that meet the height filter but fall outside your max range setting. The FAA&#x2019;s geography search uses a bounding box rather than a precise circle, so it sometimes returns towers beyond the stated radius &#x2014; occasionally by a significant distance. These are listed here for transparency so you can confirm they were seen and correctly excluded, not silently dropped.</li>
       </ul>
-
-      <h3>Step 5 — Update the hazard map</h3>
-      <p>Work through the Remove and Add sections to update the physical wall map at your base.</p>
-
-      <h3>Step 6 — Export KML for ForeFlight</h3>
-      <p>Click <strong>Export KML for ForeFlight</strong>. The KML contains all current qualifying towers and stacks within your max range, color-coded by alert level.</p>
-      <p>To import: save the <code>.kml</code> file, then in ForeFlight go to <strong>Maps &#x2192; Layers &#x2192; Import File</strong>. Replace the previous month's layer each time.</p>
-
-      <h3>Configuration notes</h3>
+      <h3>Step 5 &#x2014; Update hazard map &amp; export KML</h3>
+      <p>Work through Remove and Add to update the wall map. Then click <strong>Export KML for ForeFlight</strong> and import in ForeFlight: <strong>Maps &#x2192; Layers &#x2192; Import File</strong>.</p>
+      <h3>Notes</h3>
       <ul>
-        <li>Reference point is hardcoded to <code>6I2</code> (Lebanon Muni, 37.5617&#xB0;N 85.1450&#xB0;W). To use at a different base, edit the <code>REF</code> constant in the script.</li>
-        <li>Alert level settings reset to defaults on each page load. Persistent settings are planned for a future version.</li>
+        <li>All settings are saved to your browser automatically.</li>
+        <li>156 AEL bases are pre-loaded. Use manual override for unlisted bases.</li>
+        <li>Coordinates shown and entered in DD MM.mmmm format.</li>
         <li>This tool runs entirely in your browser. No data is sent anywhere.</li>
       </ul>
     </div>
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-
-  <div class="mismatch-banner" id="mismatch-banner">
-    <div class="mismatch-title">&#9888; Report configuration mismatch</div>
-    <div class="mismatch-items" id="mismatch-items"></div>
-  </div>
-
   <div class="slabel">Reports</div>
   <div class="drop-grid">
     <div class="drop-zone" id="dz-prev" onclick="dzClick('prev')">
@@ -405,656 +287,566 @@ input[type=color] { width: 40px; height: 32px; padding: 2px 3px; border: 1px sol
     </div>
   </div>
 
-  <!-- SETTINGS -->
   <div class="settings-panel">
     <button class="settings-toggle" id="settings-toggle" onclick="toggleSettings()">
-      <span class="arrow">&#x25B6;</span> Filter &amp; Alert Settings
+      <span class="arrow">&#x25B6;</span> Settings
     </button>
     <div class="settings-body" id="settings-body">
+
+      <div class="settings-sub">Base Reference Point</div>
+      <div class="base-select-wrap">
+        <label>Select base</label>
+        <div class="base-dropdown">
+          <input type="text" class="base-search" id="base-search"
+            placeholder="Type base number, name, city, or airport code..."
+            autocomplete="off" spellcheck="false">
+          <div class="base-list" id="base-list"></div>
+        </div>
+      </div>
+      <div class="coords-display" id="coords-display">
+        <div style="color:var(--text3);font-style:italic">No base selected</div>
+      </div>
+
+      <details class="coord-override" id="coord-override">
+        <summary>&#x25B6; Manual coordinate override</summary>
+        <div class="coord-override-grid">
+          <div class="field-group">
+            <label>Airport / Base ID</label>
+            <input type="text" id="cfg-airport" placeholder="e.g. 6KY1" maxlength="10" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label>Base name</label>
+            <input type="text" id="cfg-name" placeholder="e.g. Lebanon" spellcheck="false">
+          </div>
+          <div class="field-group">
+            <label>Latitude N (DD MM.mmmm)</label>
+            <div class="ddmm-wrap">
+              <input type="number" class="ddmm-deg" id="lat-deg" min="0" max="90" step="1" placeholder="37">
+              <span class="ddmm-sep">&#xB0;</span>
+              <input type="number" class="ddmm-min" id="lat-min" min="0" max="59.9999" step="0.0001" placeholder="34.1400">
+              <span class="ddmm-unit">&#x2032; N</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Longitude W (DD MM.mmmm)</label>
+            <div class="ddmm-wrap">
+              <input type="number" class="ddmm-deg" id="lon-deg" min="0" max="180" step="1" placeholder="85">
+              <span class="ddmm-sep">&#xB0;</span>
+              <input type="number" class="ddmm-min" id="lon-min" min="0" max="59.9999" step="0.0001" placeholder="15.7400">
+              <span class="ddmm-unit">&#x2032; W</span>
+            </div>
+          </div>
+        </div>
+        <button class="save-btn" style="margin-top:12px" onclick="applyManualCoords()">Apply override</button>
+      </details>
+
+      <div class="settings-sub" style="margin-top:20px">Filters</div>
       <div class="settings-grid">
         <div class="field-group">
-          <label>Min AGL (ft) &#x2014; qualifier</label>
+          <label>Min AGL (ft)</label>
           <input type="number" id="min-agl" value="500" min="0" max="2000" step="50">
-          <div class="field-hint">Operational threshold — towers at or above this appear in full results and on hazard map</div>
+          <div class="field-hint">Hazard map threshold</div>
         </div>
         <div class="field-group">
           <label>Buffer below min AGL (ft)</label>
           <input type="number" id="buf-agl" value="50" min="0" max="500" step="10">
-          <div class="field-hint">Towers within this band below min AGL appear in KML only — not on hazard map</div>
+          <div class="field-hint">KML only</div>
         </div>
         <div class="field-group">
           <label>Max range (NM)</label>
           <input type="number" id="max-nm" value="70" min="1" max="200" step="5">
-          <div class="field-hint">Towers beyond this are excluded from map and KML</div>
+          <div class="field-hint">Towers beyond this excluded</div>
         </div>
       </div>
 
-      <div class="thresh-section">
-        <div class="slabel" style="margin-top:20px;margin-bottom:8px">KML Alert Levels</div>
-        <div class="field-hint" style="margin-bottom:14px">Level 1 is highest severity. Level 3 covers everything above min AGL below Level 2. Colors apply to the ForeFlight KML overlay.</div>
-        <hr class="thresh-divider">
+      <div class="settings-sub">KML Alert Levels</div>
+      <hr class="thresh-divider">
+      <div class="thresh-row">
+        <div class="thresh-swatch" id="sw-1"></div>
+        <div class="thresh-name">Level 1</div>
+        <div class="thresh-agl-wrap"><label>AGL &#x2265;</label><input type="number" id="t1-agl" value="800" min="0" max="5000" step="50"><span class="thresh-agl-unit">ft</span></div>
+        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t1-color" value="#cc0000" oninput="syncSwatch(1)"></div>
+        <div class="thresh-desc">Critical</div>
+      </div>
+      <div class="thresh-row">
+        <div class="thresh-swatch" id="sw-2"></div>
+        <div class="thresh-name">Level 2</div>
+        <div class="thresh-agl-wrap"><label>AGL &#x2265;</label><input type="number" id="t2-agl" value="600" min="0" max="5000" step="50"><span class="thresh-agl-unit">ft</span></div>
+        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t2-color" value="#e07000" oninput="syncSwatch(2)"></div>
+        <div class="thresh-desc">Caution</div>
+      </div>
+      <div class="thresh-row">
+        <div class="thresh-swatch" id="sw-3"></div>
+        <div class="thresh-name">Level 3</div>
+        <div class="thresh-range-desc">&lt; Level 2, &#x2265; min AGL</div>
+        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t3-color" value="#1a4f8a" oninput="syncSwatch(3)"></div>
+        <div class="thresh-desc">Advisory</div>
+      </div>
+      <div class="thresh-row buf-row">
+        <div class="thresh-swatch" id="sw-4"></div>
+        <div class="thresh-name buf">Buffer</div>
+        <div class="thresh-range-desc">&lt; min AGL, &#x2265; (min &#x2212; buffer)</div>
+        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t4-color" value="#888888" oninput="syncSwatch(4)"></div>
+        <div class="thresh-desc">KML only</div>
+      </div>
 
-        <div class="thresh-row">
-          <div class="thresh-swatch" id="sw-1"></div>
-          <div class="thresh-name">Level 1</div>
-          <div class="thresh-agl-wrap">
-            <label>AGL &#x2265;</label>
-            <input type="number" id="t1-agl" value="800" min="0" max="5000" step="50">
-            <span class="thresh-agl-unit">ft</span>
-          </div>
-          <div class="thresh-color-wrap">
-            <label>Color</label>
-            <input type="color" id="t1-color" value="#cc0000" oninput="syncSwatch(1)">
-          </div>
-          <div class="thresh-desc">Critical &#x2014; highest unlit towers</div>
-        </div>
-
-        <div class="thresh-row">
-          <div class="thresh-swatch" id="sw-2"></div>
-          <div class="thresh-name">Level 2</div>
-          <div class="thresh-agl-wrap">
-            <label>AGL &#x2265;</label>
-            <input type="number" id="t2-agl" value="600" min="0" max="5000" step="50">
-            <span class="thresh-agl-unit">ft</span>
-          </div>
-          <div class="thresh-color-wrap">
-            <label>Color</label>
-            <input type="color" id="t2-color" value="#e07000" oninput="syncSwatch(2)">
-          </div>
-          <div class="thresh-desc">Caution</div>
-        </div>
-
-        <div class="thresh-row">
-          <div class="thresh-swatch" id="sw-3"></div>
-          <div class="thresh-name">Level 3</div>
-          <div class="thresh-range-desc">&lt; Level 2 threshold, &#x2265; min AGL</div>
-          <div class="thresh-color-wrap">
-            <label>Color</label>
-            <input type="color" id="t3-color" value="#1a4f8a" oninput="syncSwatch(3)">
-          </div>
-          <div class="thresh-desc">Advisory</div>
-        </div>
-
-        <div class="thresh-row" style="background:color-mix(in srgb, var(--bg3) 60%, white)">
-          <div class="thresh-swatch" id="sw-4"></div>
-          <div class="thresh-name" style="color:var(--text3)">Buffer</div>
-          <div class="thresh-range-desc">&lt; min AGL, &#x2265; (min AGL &#x2212; buffer)</div>
-          <div class="thresh-color-wrap">
-            <label>Color</label>
-            <input type="color" id="t4-color" value="#888888" oninput="syncSwatch(4)">
-          </div>
-          <div class="thresh-desc">KML only &#x2014; not plotted on hazard map</div>
-        </div>
+      <div class="save-row">
+        <button class="save-btn" onclick="saveSettings()">Save settings</button>
+        <button class="reset-btn" id="reset-btn" onclick="showResetConfirm()">Reset to defaults</button>
+        <span class="save-confirm" id="save-confirm">&#x2713; Saved</span>
+        <span class="reset-confirm" id="reset-confirm">
+          Reset all settings?
+          <button class="reset-yes" onclick="doReset()">Yes, reset</button>
+          <button class="reset-no" onclick="cancelReset()">Cancel</button>
+        </span>
       </div>
     </div>
   </div>
 
   <div class="controls-row">
-    <button class="run-btn" id="run-btn" onclick="runDiff()" disabled>Run Diff</button>
+    <button class="run-btn" id="run-btn" onclick="runDiff()" disabled>Parse &amp; Report</button>
   </div>
-
+  <div class="mismatch-banner" id="mismatch-banner">
+    <div class="mismatch-title">&#9888; Report configuration mismatch</div>
+    <div class="mismatch-items" id="mismatch-items"></div>
+  </div>
   <div class="status-line" id="status"></div>
   <div id="results"></div>
-
 </div>
 
 <input type="file" id="fi-prev" accept=".pdf" style="display:none">
 <input type="file" id="fi-curr" accept=".pdf" style="display:none">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// ── CONSTANTS ───────────────────────────────────────────────────────────────
-const REF = { lat: 37.5617, lon: -85.1450, id: '6I2' };
-const files = { prev: null, curr: null };
-let lastDiff = null;
+// Prevent Safari from navigating when a file is dropped anywhere on the page
+document.addEventListener('dragover',function(e){e.preventDefault();});
+document.addEventListener('drop',function(e){e.preventDefault();});
 
-// ── SETTINGS ────────────────────────────────────────────────────────────────
-function toggleSettings() {
+var BASE_LIST=[{"id":"AE 001","name":"West Plains","city":"West Plains","state":"MO","airport":"","lat":36.723115,"lon":91.880866},{"id":"AE 003","name":"Sikeston","city":"Sikeston","state":"MO","airport":"","lat":36.942151,"lon":89.535292},{"id":"AE 004","name":"Springdale","city":"Springdale","state":"AR","airport":"","lat":36.181518,"lon":94.137263},{"id":"AE 005","name":"Quincy","city":"Quincy","state":"IL","airport":"","lat":39.936021,"lon":91.398634},{"id":"AE 006","name":"Altus","city":"Altus","state":"OK","airport":"","lat":34.703938,"lon":99.335145},{"id":"AE 007","name":"Jackson","city":"Jackson","state":"TN","airport":"","lat":35.637544,"lon":88.828855},{"id":"AE 008","name":"Farmington","city":"Farmington","state":"MO","airport":"","lat":37.717327,"lon":90.411881},{"id":"AE 009","name":"Lewisburg","city":"Rayville","state":"TN","airport":"","lat":35.499947,"lon":86.807896},{"id":"AE 010","name":"Hopkinsville","city":"Hopkinsville","state":"KY","airport":"","lat":36.860835,"lon":87.497584},{"id":"AE 011","name":"Mount Vernon","city":"Mount Vernon","state":"IL","airport":"","lat":38.319428,"lon":88.852309},{"id":"AE 012","name":"Mountain Home","city":"Mountain Home","state":"AR","airport":"","lat":36.343512,"lon":92.392646},{"id":"AE 014","name":"Albany","city":"Albany","state":"KY","airport":"","lat":36.709167,"lon":85.135278},{"id":"AE 015","name":"Cullman County","city":"Vinemont","state":"AL","airport":"","lat":34.263451,"lon":86.861522},{"id":"AE 016","name":"The Shoals","city":"Tuscumbia","state":"AL","airport":"","lat":34.671703,"lon":87.632729},{"id":"AE 017","name":"Paoli","city":"Paoli","state":"IN","airport":"","lat":38.567898,"lon":86.476134},{"id":"AE 018","name":"Salem","city":"Salem","state":"MO","airport":"","lat":37.660251,"lon":91.570975},{"id":"AE 019","name":"Lafayette","city":"Lafayette","state":"TN","airport":"","lat":36.518397,"lon":86.033013},{"id":"AE 021","name":"Elk City","city":"Elk City","state":"OK","airport":"","lat":35.423773,"lon":99.396556},{"id":"AE 022","name":"Johnson County, AR","city":"Clarksville","state":"AR","airport":"","lat":35.297816,"lon":93.684696},{"id":"AE 024","name":"Poplar Bluff","city":"Poplar Bluff","state":"MO","airport":"","lat":36.787752,"lon":90.445982},{"id":"AE 025","name":"Duncan","city":"Duncan","state":"OK","airport":"","lat":34.474492,"lon":97.964445},{"id":"AE 026","name":"Ada","city":"Ada","state":"OK","airport":"","lat":34.803574,"lon":96.675351},{"id":"AE 027","name":"Jacksonville","city":"Jacksonville","state":"IL","airport":"","lat":39.747728,"lon":90.260389},{"id":"AE 028","name":"Effingham County","city":"Watson","state":"IL","airport":"","lat":39.016944,"lon":88.542222},{"id":"AE 029","name":"Claremore","city":"Claremore","state":"OK","airport":"","lat":36.292451,"lon":95.47695},{"id":"AE 031","name":"Martin","city":"Martin","state":"TN","airport":"","lat":36.325278,"lon":88.868611},{"id":"AE 032","name":"Scottsboro","city":"Scottsboro","state":"AL","airport":"","lat":34.660359,"lon":86.049281},{"id":"AE 033","name":"Middlesboro","city":"Middlesboro","state":"KY","airport":"","lat":36.606389,"lon":83.739444},{"id":"AE 034","name":"Wichita Falls","city":"Wichita Falls","state":"TX","airport":"","lat":33.90367,"lon":98.501999},{"id":"AE 035","name":"Marion","city":"Marion","state":"IL","airport":"","lat":37.738417,"lon":88.99244},{"id":"AE 037","name":"Waverly","city":"Waverly","state":"TN","airport":"","lat":36.075655,"lon":87.794056},{"id":"AE 038","name":"Kirksville","city":"Kirksville","state":"MO","airport":"","lat":40.21233,"lon":92.588742},{"id":"AE 039","name":"Brazil","city":"Brazil","state":"IN","airport":"","lat":39.475338,"lon":87.099583},{"id":"AE 040","name":"Boone County","city":"Harrison","state":"AR","airport":"","lat":36.23819,"lon":93.107594},{"id":"AE 042","name":"Forrest City","city":"Forrest City","state":"AR","airport":"","lat":35.039067,"lon":90.777153},{"id":"AE 043","name":"Campbellsville","city":"Campbellsville","state":"KY","airport":"","lat":37.367745,"lon":85.336427},{"id":"AE 044","name":"Coffee County","city":"Manchester","state":"TN","airport":"","lat":35.427833,"lon":86.025833},{"id":"AE 045","name":"Fayette","city":"Fayette","state":"AL","airport":"","lat":33.713925,"lon":87.816679},{"id":"AE 046","name":"Evansville","city":"Evansville","state":"IN","airport":"","lat":37.984127,"lon":87.57196},{"id":"AE 048","name":"Kerrville","city":"Kerrville","state":"TX","airport":"","lat":29.979582,"lon":99.085789},{"id":"AE 049","name":"Marble Falls","city":"Marble Falls","state":"TX","airport":"","lat":30.578938,"lon":98.280948},{"id":"AE 051","name":"Hillsboro","city":"Hillsboro","state":"TX","airport":"","lat":32.024327,"lon":97.094596},{"id":"AE 052","name":"Brownwood","city":"Brownwood","state":"TX","airport":"","lat":31.679077,"lon":98.993608},{"id":"AE 053","name":"Fairfield","city":"Fairfield","state":"TX","airport":"","lat":31.691762,"lon":96.168921},{"id":"AE 054","name":"Big Spring","city":"Big Spring","state":"TX","airport":"","lat":32.21433,"lon":101.526426},{"id":"AE 055","name":"Mineral Wells","city":"Mineral Wells","state":"TX","airport":"","lat":32.798807,"lon":98.146204},{"id":"AE 056","name":"Danville","city":"Danville","state":"KY","airport":"","lat":37.579844,"lon":84.770202},{"id":"AE 057","name":"Eagle Pass","city":"Eagle Pass","state":"TX","airport":"","lat":28.713311,"lon":100.454017},{"id":"AE 058","name":"Corinth","city":"Corinth","state":"MS","airport":"","lat":34.935128,"lon":88.562603},{"id":"AE 059","name":"Keokuk","city":"Keokuk","state":"IA","airport":"","lat":40.626684,"lon":91.384732},{"id":"AE 060","name":"Sedalia","city":"Sedalia","state":"MO","airport":"","lat":38.727298,"lon":93.228678},{"id":"AE 061","name":"Batesville","city":"Batesville","state":"MS","airport":"","lat":34.30524,"lon":89.916456},{"id":"AE 062","name":"Bowling Green","city":"Bowling Green","state":"KY","airport":"","lat":37.000577,"lon":86.434394},{"id":"AE 063","name":"Abilene","city":"Abilene","state":"TX","airport":"","lat":32.470614,"lon":99.734308},{"id":"AE 065","name":"Texoma","city":"Denison","state":"TX","airport":"","lat":33.709429,"lon":96.583843},{"id":"AE 066","name":"Killeen","city":"Killeen","state":"TX","airport":"","lat":31.113381,"lon":97.802637},{"id":"AE 067","name":"Greenville","city":"Greenville","state":"TX","airport":"","lat":33.062941,"lon":96.071156},{"id":"AE 068","name":"Decatur","city":"Decatur","state":"TX","airport":"","lat":33.216639,"lon":97.593721},{"id":"AE 069","name":"Granbury","city":"Granbury","state":"TX","airport":"","lat":32.433308,"lon":97.803706},{"id":"AE 070","name":"Woodward","city":"Woodward","state":"OK","airport":"","lat":36.438027,"lon":99.399667},{"id":"AE 071","name":"Carrizo Springs","city":"Carrizo Springs","state":"TX","airport":"","lat":28.52321,"lon":99.828941},{"id":"AE 072","name":"Waynesboro","city":"Waynesboro","state":"TN","airport":"","lat":35.326069,"lon":87.77855},{"id":"AE 073","name":"DeQueen","city":"DeQueen","state":"AR","airport":"","lat":34.047876,"lon":94.353617},{"id":"AE 075","name":"Dyersburg","city":"Dyersburg","state":"TN","airport":"","lat":36.049234,"lon":89.38011},{"id":"AE 077","name":"Troup County","city":"LaGrange","state":"GA","airport":"","lat":33.015909,"lon":85.073412},{"id":"AE 079","name":"Corbin","city":"Corbin","state":"KY","airport":"","lat":36.924429,"lon":84.121841},{"id":"AE 080","name":"Perryville","city":"Perryville","state":"MO","airport":"","lat":37.78569,"lon":89.85291},{"id":"AE 083","name":"Muskogee","city":"Muskogee","state":"OK","airport":"","lat":35.749783,"lon":95.406512},{"id":"AE 085","name":"Logan","city":"Logan","state":"WV","airport":"","lat":37.85706,"lon":81.908186},{"id":"AE 086","name":"Americus","city":"Americus","state":"GA","airport":"","lat":32.066834,"lon":84.252844},{"id":"AE 087","name":"Washington County","city":"Greenville","state":"MS","airport":"","lat":33.411557,"lon":91.034065},{"id":"AE 088","name":"Harlan","city":"Harlan","state":"KY","airport":"","lat":36.808735,"lon":83.315069},{"id":"AE 089","name":"Brown County","city":"Georgetown","state":"OH","airport":"","lat":38.859077,"lon":83.895841},{"id":"AE 090","name":"Douglas","city":"Douglas","state":"GA","airport":"","lat":31.476688,"lon":82.854333},{"id":"AE 091","name":"Vidalia","city":"Vidalia","state":"GA","airport":"","lat":32.207831,"lon":82.370415},{"id":"AE 092","name":"Breckinridge County","city":"Hardinsburg","state":"KY","airport":"","lat":37.762185,"lon":86.452858},{"id":"AE 093","name":"Laredo","city":"Laredo","state":"TX","airport":"","lat":27.544244,"lon":99.468252},{"id":"AE 094","name":"Savannah","city":"Savannah","state":"TN","airport":"","lat":35.224326,"lon":88.235017},{"id":"AE 095","name":"Statesboro","city":"Statesboro","state":"GA","airport":"","lat":32.392082,"lon":81.75183},{"id":"AE 096","name":"Jesup","city":"Jesup","state":"GA","airport":"","lat":31.601365,"lon":81.898507},{"id":"AE 097","name":"Portsmouth","city":"Portsmouth","state":"OH","airport":"","lat":38.739541,"lon":82.987987},{"id":"AE 099","name":"Natchez","city":"Natchez","state":"MS","airport":"","lat":31.492883,"lon":91.366149},{"id":"AE 100","name":"Rayville","city":"Rayville","state":"LA","airport":"","lat":32.463514,"lon":91.749967},{"id":"AE 101","name":"Lancaster","city":"Lancaster","state":"OH","airport":"","lat":39.765333,"lon":82.545667},{"id":"AE 102","name":"Dublin","city":"Dublin","state":"GA","airport":"","lat":32.495911,"lon":82.92629},{"id":"AE 103","name":"Summersville","city":"Mount Nebo","state":"WV","airport":"","lat":38.318506,"lon":80.806389},{"id":"AE 107","name":"Licking County","city":"St. Louisville","state":"OH","airport":"","lat":40.165932,"lon":82.420283},{"id":"AE 108","name":"Mayfield","city":"Mayfield","state":"KY","airport":"","lat":36.760278,"lon":88.650556},{"id":"AE 109","name":"Manchester","city":"Manchester","state":"KY","airport":"","lat":37.133799,"lon":83.758475},{"id":"AE 110","name":"Lawrenceburg","city":"Lawrenceburg","state":"TN","airport":"","lat":35.221105,"lon":87.339605},{"id":"AE 112","name":"Carrollton","city":"Carrollton","state":"GA","airport":"","lat":33.617878,"lon":85.09814},{"id":"AE 113","name":"Blytheville","city":"Blytheville","state":"AR","airport":"","lat":35.943421,"lon":89.917731},{"id":"AE 115","name":"Eastland","city":"Eastland","state":"TX","airport":"","lat":32.407604,"lon":98.777458},{"id":"AE 116","name":"Prestonsburg","city":"Prestonsburg","state":"KY","airport":"","lat":37.700659,"lon":82.75031},{"id":"AE 117","name":"Snellville","city":"Snellville","state":"GA","airport":"","lat":33.879047,"lon":84.019099},{"id":"AE 118","name":"Morgan County","city":"West Liberty","state":"KY","airport":"","lat":37.92057,"lon":83.264935},{"id":"AE 119","name":"Moberly","city":"Moberly","state":"MO","airport":"","lat":39.447417,"lon":92.414},{"id":"AE 120","name":"Crittenden County","city":"Marion","state":"KY","airport":"","lat":37.328467,"lon":88.09275},{"id":"AE 121","name":"Beckley County","city":"Mt. Hope","state":"WV","airport":"","lat":37.834395,"lon":81.19721},{"id":"AE 122","name":"Weatherford","city":"Weatherford","state":"OK","airport":"","lat":35.540314,"lon":98.662419},{"id":"AE 123","name":"Henry County","city":"Paris","state":"TN","airport":"","lat":36.340828,"lon":88.376649},{"id":"AE 124","name":"Opelousas","city":"Opelousas","state":"LA","airport":"","lat":30.553667,"lon":92.096477},{"id":"AE 125","name":"Kinder","city":"Kinder","state":"LA","airport":"","lat":30.473989,"lon":92.857745},{"id":"AE 126","name":"Beaumont","city":"Beaumont","state":"TX","airport":"","lat":30.087919,"lon":94.132076},{"id":"AE 127","name":"Houston County","city":"Crockett","state":"TX","airport":"","lat":31.325223,"lon":95.43899},{"id":"AE 128","name":"Ponca City","city":"Ponca City","state":"OK","airport":"","lat":36.725273,"lon":97.102076},{"id":"AE 129","name":"Idabel","city":"Idabel","state":"OK","airport":"","lat":33.883998,"lon":94.810836},{"id":"AE 130","name":"Ardmore","city":"Ardmore","state":"OK","airport":"","lat":34.152571,"lon":97.121694},{"id":"AE 131","name":"Kingfisher","city":"Kingfisher","state":"OK","airport":"","lat":35.809747,"lon":97.945498},{"id":"AE 133","name":"Grant County","city":"Williamstown","state":"KY","airport":"","lat":38.646073,"lon":84.583372},{"id":"AE 134","name":"Del Rio","city":"Del Rio","state":"TX","airport":"","lat":29.374627,"lon":100.891038},{"id":"AE 135","name":"Henryetta","city":"Henryetta","state":"OK","airport":"","lat":35.438702,"lon":96.015831},{"id":"AE 137","name":"Greenville","city":"Greenville","state":"IL","airport":"","lat":38.835012,"lon":89.37436},{"id":"AE 138","name":"Harrisburg","city":"Harrisburg","state":"IL","airport":"","lat":37.732059,"lon":88.523091},{"id":"AE 139","name":"Lamar County","city":"Paris","state":"TX","airport":"","lat":33.689314,"lon":95.548384},{"id":"AE 140","name":"Milledgeville","city":"Milledgeville","state":"GA","airport":"","lat":33.153348,"lon":83.246138},{"id":"AE 141","name":"Decatur County","city":"Parsons","state":"TN","airport":"","lat":35.639154,"lon":88.126571},{"id":"AE 142","name":"Tift County","city":"Tifton","state":"GA","airport":"","lat":31.429476,"lon":83.494881},{"id":"AE 143","name":"Obion County","city":"Troy","state":"TN","airport":"","lat":36.333138,"lon":89.161412},{"id":"AE 144","name":"Macomb","city":"Macomb","state":"IL","airport":"","lat":40.443556,"lon":90.663833},{"id":"AE 145","name":"Mattoon","city":"Mattoon","state":"IL","airport":"","lat":39.489344,"lon":88.274161},{"id":"AE 146","name":"Pike County","city":"Louisiana","state":"Mo","airport":"","lat":39.440735,"lon":91.065603},{"id":"AE 147","name":"Pearsall","city":"Pearsall","state":"TX","airport":"","lat":28.897164,"lon":99.117349},{"id":"AE 148","name":"San Antonio","city":"San Antonio","state":"TX","airport":"","lat":29.507638,"lon":98.571441},{"id":"AE 149","name":"Fort Smith","city":"Fort Smtih","state":"AR","airport":"","lat":35.372881,"lon":94.419393},{"id":"AE 150","name":"Olney","city":"Olney","state":"IL","airport":"","lat":38.703983,"lon":88.083958},{"id":"AE 151","name":"Clarksville","city":"Clarksville","state":"TN","airport":"","lat":36.582868,"lon":87.271039},{"id":"AE 152","name":"Jasper","city":"Jasper","state":"TX","airport":"","lat":30.907552,"lon":94.008891},{"id":"AE 153","name":"Fayette County","city":"Fayetteville","state":"GA","airport":"","lat":33.482266,"lon":84.433196},{"id":"AE 154","name":"Perry","city":"Perry","state":"GA","airport":"","lat":32.458268,"lon":83.710429},{"id":"AE 156","name":"Madison County","city":"Maryville","state":"IL","airport":"","lat":38.735783,"lon":89.94815},{"id":"AE 157","name":"Paducah","city":"Paducah","state":"KY","airport":"","lat":37.088866,"lon":88.677835},{"id":"AE 158","name":"Seminole","city":"Seminole","state":"OK","airport":"","lat":35.27293,"lon":96.672099},{"id":"AE 159","name":"Western County","city":"Paris","state":"TN","airport":"","lat":36.335214,"lon":88.381977},{"id":"AE 160","name":"Natchitoches","city":"Natchitoches","state":"LA","airport":"","lat":31.739324,"lon":93.094666},{"id":"AE 161","name":"Knox","city":"Knox","state":"IN","airport":"","lat":41.328964,"lon":86.660263},{"id":"AE 162","name":"Portland","city":"Portland","state":"IN","airport":"","lat":40.453028,"lon":84.990913},{"id":"AE 163","name":"Wabash","city":"Wabash","state":"IN","airport":"","lat":40.763981,"lon":85.797273},{"id":"AE 165","name":"Grove","city":"Grove","state":"OK","airport":"","lat":36.603979,"lon":94.737418},{"id":"AE 169","name":"Escanaba","city":"Escanaba","state":"MI","airport":"","lat":45.744353,"lon":87.101017},{"id":"AE 170","name":"Osage Beach","city":"Osage Beach","state":"MO","airport":"","lat":38.120702,"lon":92.681723},{"id":"AE 172","name":"Jefferson County (IFR)","city":"Mount Vernon","state":"IL","airport":"KMVN","lat":38.319428,"lon":88.852309},{"id":"AE 173","name":"Lebanon","city":"Lebanon","state":"KY","airport":"6KY1","lat":37.569,"lon":85.262333},{"id":"AE 174","name":"Durant","city":"Durant","state":"OK","airport":"KDUA","lat":33.939667,"lon":96.395},{"id":"AE 175","name":"Murfreesboro","city":"Smyrna","state":"TN","airport":"","lat":36.013468,"lon":86.511043},{"id":"AE 176","name":"Laurens County","city":"Dublin","state":"GA","airport":"","lat":32.563234,"lon":82.980729},{"id":"AE 177","name":"Athens","city":"Tanner","state":"AL","airport":"","lat":34.648793,"lon":86.947368},{"id":"AE 178","name":"Hazard","city":"Chavies","state":"KY","airport":"","lat":37.382295,"lon":83.259756},{"id":"AE 179","name":"London","city":"London","state":"KY","airport":"","lat":37.090439,"lon":84.073976},{"id":"AE 180","name":"Pauls Valley","city":"Pauls Valley","state":"OK","airport":"","lat":34.707128,"lon":97.222058},{"id":"AE 181","name":"Uvalde","city":"Uvalde","state":"TX","airport":"","lat":29.21697,"lon":99.741638},{"id":"AE 182","name":"Macon County","city":"Decatur","state":"IL","airport":"","lat":39.828398,"lon":88.877906},{"id":"AE 183","name":"Waycross","city":"Waycross","state":"GA","airport":"","lat":31.254756,"lon":82.406705},{"id":"AE 184","name":"McCurtain County","city":"Idabel","state":"OK","airport":"","lat":33.908629,"lon":94.857004},{"id":"AE 185","name":"Upson County","city":"Thomaston","state":"GA","airport":"","lat":32.953642,"lon":84.265384},{"id":"AE 188","name":"Madison County, TN","city":"Jackson","state":"TN","airport":"","lat":35.603904,"lon":88.921339},{"id":"AE 189","name":"Anadarko","city":"Anadarko","state":"TBD","airport":"","lat":null,"lon":null}];
+
+var DEFAULTS={baseId:'AE 173',airport:'6KY1',baseName:'Lebanon',latDeg:37,latMin:34.1400,lonDeg:85,lonMin:15.7400,minAgl:500,bufAgl:50,maxNm:70,t1Agl:800,t1Color:'#cc0000',t2Agl:600,t2Color:'#e07000',t3Color:'#1a4f8a',t4Color:'#888888'};
+var LS_KEY='notam_tracker_v3';
+var REF={lat:37.569000,lon:-85.262333,id:'6KY1',name:'Lebanon'};
+var files={prev:null,curr:null};
+var lastDiff=null;
+var selectedBase=null;
+var manualMode=false;
+
+function ddmmToDD(d,m){return d+m/60;}
+function ddToDeg(v){return Math.floor(Math.abs(v));}
+function ddToMin(v){return(Math.abs(v)-Math.floor(Math.abs(v)))*60;}
+function fmtCoord(v){var d=Math.floor(Math.abs(v));var m=(Math.abs(v)-d)*60;return d+'\u00B0 '+m.toFixed(4)+'\u2032';}
+
+// ── BASE SELECTOR ──────────────────────────────────────────────────────────
+function buildList(q){
+  q=(q||'').toLowerCase().trim();
+  var ul=document.getElementById('base-list');
+  var shown=BASE_LIST.filter(function(b){
+    if(!q)return true;
+    return b.id.toLowerCase().indexOf(q)!==-1||b.name.toLowerCase().indexOf(q)!==-1||b.city.toLowerCase().indexOf(q)!==-1||b.state.toLowerCase().indexOf(q)!==-1||(b.airport&&b.airport.toLowerCase().indexOf(q)!==-1);
+  }).slice(0,80);
+  ul.innerHTML=shown.map(function(b){
+    var ap=b.airport?' ('+b.airport+')':'';
+    var nc=!b.lat?' no-coords':'';
+    var note=!b.lat?' \u2014 no coords':'';
+    return '<div class="base-option'+nc+'" data-id="'+b.id+'">'+'<span class="opt-id">'+b.id+'</span>'+b.name+ap+'<br><span class="opt-loc">'+b.city+', '+b.state+note+'</span></div>';
+  }).join('');
+  ul.querySelectorAll('.base-option').forEach(function(el){
+    el.addEventListener('mousedown',function(e){e.preventDefault();selectBase(el.getAttribute('data-id'));});
+  });
+}
+
+function selectBase(id){
+  var base=BASE_LIST.find(function(b){return b.id===id;});
+  if(!base)return;
+  selectedBase=base;
+  manualMode=false;
+  document.getElementById('base-search').value=base.id+' \u2014 '+base.name+', '+base.state;
+  document.getElementById('base-list').classList.remove('open');
+  if(base.lat){
+    REF={lat:base.lat,lon:-base.lon,id:base.airport||base.id,name:base.name,baseNum:base.id};
+    document.getElementById('cfg-airport').value=base.airport||'';
+    document.getElementById('cfg-name').value=base.name;
+    document.getElementById('lat-deg').value=ddToDeg(base.lat);
+    document.getElementById('lat-min').value=ddToMin(base.lat).toFixed(4);
+    document.getElementById('lon-deg').value=ddToDeg(base.lon);
+    document.getElementById('lon-min').value=ddToMin(base.lon).toFixed(4);
+    showCoords(base.airport,base.lat,base.lon);
+  }else{
+    document.getElementById('coords-display').innerHTML='<div style="color:var(--red)">No coordinates on file \u2014 enter manually below.</div>';
+  }
+  updateHeader();
+}
+
+function showCoords(airport,lat,lon){
+  var ap=airport?'<span class="airport-tag">'+airport+'</span> &nbsp;&middot;&nbsp; ':'';
+  document.getElementById('coords-display').innerHTML=
+    ap+'<div class="coord-row"><span class="clabel">Lat</span><span class="cval">'+fmtCoord(lat)+' N</span></div>'+
+    '<div class="coord-row"><span class="clabel">Lon</span><span class="cval">'+fmtCoord(lon)+' W</span></div>';
+}
+
+function applyManualCoords(){
+  var airport=document.getElementById('cfg-airport').value.trim().toUpperCase();
+  var name=document.getElementById('cfg-name').value.trim();
+  var latDeg=parseFloat(document.getElementById('lat-deg').value)||0;
+  var latMin=parseFloat(document.getElementById('lat-min').value)||0;
+  var lonDeg=parseFloat(document.getElementById('lon-deg').value)||0;
+  var lonMin=parseFloat(document.getElementById('lon-min').value)||0;
+  var lat=ddmmToDD(latDeg,latMin);
+  var lon=ddmmToDD(lonDeg,lonMin);
+  if(!lat||!lon){setStatus('Enter valid coordinates before applying.','err');return;}
+  REF={lat:lat,lon:-lon,id:airport||name,name:name};
+  manualMode=true;
+  selectedBase=null;
+  showCoords(airport,lat,lon);
+  document.getElementById('base-search').value=airport||name;
+  updateHeader();
+  setStatus('');
+}
+
+function updateHeader(){
+  var title;
+  if(manualMode){
+    // DD MM N DDD MM W format
+    var latD=Math.floor(Math.abs(REF.lat));
+    var latM=Math.floor((Math.abs(REF.lat)-latD)*60);
+    var lonD=Math.floor(Math.abs(REF.lon));
+    var lonM=Math.floor((Math.abs(REF.lon)-lonD)*60);
+    title=latD+' '+String(latM).padStart(2,'0')+' N  '+String(lonD).padStart(3,'0')+' '+String(lonM).padStart(2,'0')+' W';
+  }else{
+    title=REF.baseNum||REF.id||REF.name;
+  }
+  document.getElementById('header-title').textContent='NOTAM // '+title;
+  document.getElementById('header-sub').textContent='Obstruction Hazard Tracker \u00B7 '+(REF.name||'');
+}
+
+var baseSearchEl=document.getElementById('base-search');
+baseSearchEl.addEventListener('input',function(){buildList(this.value);document.getElementById('base-list').classList.add('open');});
+baseSearchEl.addEventListener('focus',function(){buildList(this.value);document.getElementById('base-list').classList.add('open');});
+baseSearchEl.addEventListener('blur',function(){setTimeout(function(){document.getElementById('base-list').classList.remove('open');},200);});
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────
+function toggleSettings(){
   document.getElementById('settings-toggle').classList.toggle('open');
   document.getElementById('settings-body').classList.toggle('open');
 }
+function syncSwatch(n){var el=document.getElementById('sw-'+n);var c=document.getElementById('t'+n+'-color');if(el&&c)el.style.background=c.value;}
 
-function syncSwatch(n) {
-  document.getElementById('sw-' + n).style.background =
-    document.getElementById('t' + n + '-color').value;
-}
-
-function getThresholds() {
-  var minAgl = parseInt(document.getElementById('min-agl').value) || 500;
-  var bufAgl = parseInt(document.getElementById('buf-agl').value);
-  if (isNaN(bufAgl) || bufAgl < 0) bufAgl = 50;
-  return {
-    t1:     { agl: parseInt(document.getElementById('t1-agl').value)   || 800, color: document.getElementById('t1-color').value },
-    t2:     { agl: parseInt(document.getElementById('t2-agl').value)   || 600, color: document.getElementById('t2-color').value },
-    t3:     {                                                                    color: document.getElementById('t3-color').value },
-    t4:     {                                                                    color: document.getElementById('t4-color').value },
-    minAgl: minAgl,
-    bufAgl: bufAgl,
-    bufFloor: minAgl - bufAgl,
-    maxNm:  parseFloat(document.getElementById('max-nm').value)        || 70
+function getThresholds(){
+  var minAgl=parseInt(document.getElementById('min-agl').value)||DEFAULTS.minAgl;
+  var bufAgl=parseInt(document.getElementById('buf-agl').value);
+  if(isNaN(bufAgl)||bufAgl<0)bufAgl=DEFAULTS.bufAgl;
+  return{
+    t1:{agl:parseInt(document.getElementById('t1-agl').value)||DEFAULTS.t1Agl,color:document.getElementById('t1-color').value},
+    t2:{agl:parseInt(document.getElementById('t2-agl').value)||DEFAULTS.t2Agl,color:document.getElementById('t2-color').value},
+    t3:{color:document.getElementById('t3-color').value},
+    t4:{color:document.getElementById('t4-color').value},
+    minAgl:minAgl,bufAgl:bufAgl,bufFloor:minAgl-bufAgl,
+    maxNm:parseFloat(document.getElementById('max-nm').value)||DEFAULTS.maxNm
   };
 }
+function towerLevel(agl,t){if(agl>=t.t1.agl)return 1;if(agl>=t.t2.agl)return 2;if(agl>=t.minAgl)return 3;return 4;}
+function levelColor(lv,t){return t['t'+lv].color;}
 
-function towerLevel(agl, thresh) {
-  if (agl >= thresh.t1.agl)   return 1;
-  if (agl >= thresh.t2.agl)   return 2;
-  if (agl >= thresh.minAgl)   return 3;
-  return 4; // buffer zone — below minAgl but above bufFloor
+function saveSettings(){
+  var s={
+    baseId:selectedBase?selectedBase.id:DEFAULTS.baseId,
+    manualMode:manualMode,
+    airport:document.getElementById('cfg-airport').value.trim().toUpperCase(),
+    baseName:document.getElementById('cfg-name').value.trim(),
+    latDeg:parseFloat(document.getElementById('lat-deg').value)||0,
+    latMin:parseFloat(document.getElementById('lat-min').value)||0,
+    lonDeg:parseFloat(document.getElementById('lon-deg').value)||0,
+    lonMin:parseFloat(document.getElementById('lon-min').value)||0,
+    minAgl:parseInt(document.getElementById('min-agl').value)||DEFAULTS.minAgl,
+    bufAgl:parseInt(document.getElementById('buf-agl').value),
+    maxNm:parseFloat(document.getElementById('max-nm').value)||DEFAULTS.maxNm,
+    t1Agl:parseInt(document.getElementById('t1-agl').value)||DEFAULTS.t1Agl,
+    t1Color:document.getElementById('t1-color').value,
+    t2Agl:parseInt(document.getElementById('t2-agl').value)||DEFAULTS.t2Agl,
+    t2Color:document.getElementById('t2-color').value,
+    t3Color:document.getElementById('t3-color').value,
+    t4Color:document.getElementById('t4-color').value
+  };
+  if(isNaN(s.bufAgl)||s.bufAgl<0)s.bufAgl=DEFAULTS.bufAgl;
+  try{localStorage.setItem(LS_KEY,JSON.stringify(s));}catch(e){}
+  var c=document.getElementById('save-confirm');
+  c.classList.add('visible');
+  setTimeout(function(){c.classList.remove('visible');},2000);
 }
 
-function isBufferEntry(agl, thresh) {
-  return agl < thresh.minAgl && agl >= thresh.bufFloor;
+function loadSettings(){
+  var s=null;
+  try{s=JSON.parse(localStorage.getItem(LS_KEY));}catch(e){}
+  s=s||DEFAULTS;
+  document.getElementById('min-agl').value=s.minAgl!==undefined?s.minAgl:DEFAULTS.minAgl;
+  document.getElementById('buf-agl').value=s.bufAgl!==undefined?s.bufAgl:DEFAULTS.bufAgl;
+  document.getElementById('max-nm').value=s.maxNm!==undefined?s.maxNm:DEFAULTS.maxNm;
+  document.getElementById('t1-agl').value=s.t1Agl!==undefined?s.t1Agl:DEFAULTS.t1Agl;
+  document.getElementById('t1-color').value=s.t1Color||DEFAULTS.t1Color;
+  document.getElementById('t2-agl').value=s.t2Agl!==undefined?s.t2Agl:DEFAULTS.t2Agl;
+  document.getElementById('t2-color').value=s.t2Color||DEFAULTS.t2Color;
+  document.getElementById('t3-color').value=s.t3Color||DEFAULTS.t3Color;
+  document.getElementById('t4-color').value=s.t4Color||DEFAULTS.t4Color;
+  syncSwatch(1);syncSwatch(2);syncSwatch(3);syncSwatch(4);
+
+  if(s.manualMode){
+    document.getElementById('cfg-airport').value=s.airport||'';
+    document.getElementById('cfg-name').value=s.baseName||'';
+    document.getElementById('lat-deg').value=s.latDeg||0;
+    document.getElementById('lat-min').value=s.latMin||0;
+    document.getElementById('lon-deg').value=s.lonDeg||0;
+    document.getElementById('lon-min').value=s.lonMin||0;
+    document.getElementById('coord-override').open=true;
+    applyManualCoords();
+  }else{
+    selectBase(s.baseId||DEFAULTS.baseId);
+  }
 }
 
-function levelColor(lv, thresh) { return thresh['t' + lv].color; }
+function showResetConfirm(){document.getElementById('reset-confirm').classList.add('visible');document.getElementById('reset-btn').style.display='none';}
+function cancelReset(){document.getElementById('reset-confirm').classList.remove('visible');document.getElementById('reset-btn').style.display='';}
+function doReset(){try{localStorage.removeItem(LS_KEY);}catch(e){}cancelReset();loadSettings();}
 
-window.addEventListener('load', function() { syncSwatch(1); syncSwatch(2); syncSwatch(3); syncSwatch(4); });
+// ── MODAL ──────────────────────────────────────────────────────────────────
+function openHelp(){document.getElementById('modal-overlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeHelp(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';}
+function closeHelpOutside(e){if(e.target===document.getElementById('modal-overlay'))closeHelp();}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeHelp();});
 
-// ── MODAL ───────────────────────────────────────────────────────────────────
-function openHelp() {
-  document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeHelp() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function closeHelpOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeHelp();
-}
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeHelp(); });
-
-// ── DROP ZONES ──────────────────────────────────────────────────────────────
-['prev', 'curr'].forEach(function(key) {
-  var fi = document.getElementById('fi-' + key);
-  var dz = document.getElementById('dz-' + key);
-  fi.addEventListener('change', function(e) { loadFile(key, e.target.files[0]); });
-  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('drag'); });
-  dz.addEventListener('dragleave', function() { dz.classList.remove('drag'); });
-  dz.addEventListener('drop', function(e) {
-    e.preventDefault(); dz.classList.remove('drag');
-    loadFile(key, e.dataTransfer.files[0]);
-  });
+// ── DROP ZONES ─────────────────────────────────────────────────────────────
+['prev','curr'].forEach(function(key){
+  var fi=document.getElementById('fi-'+key);
+  var dz=document.getElementById('dz-'+key);
+  fi.addEventListener('change',function(e){loadFile(key,e.target.files[0]);});
+  dz.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',function(){dz.classList.remove('drag');});
+  dz.addEventListener('drop',function(e){e.preventDefault();e.stopPropagation();dz.classList.remove('drag');loadFile(key,e.dataTransfer.files[0]);});
 });
-
-function dzClick(key) { document.getElementById('fi-' + key).click(); }
-
-function loadFile(key, file) {
-  if (!file) return;
-  if (!file.name.toLowerCase().endsWith('.pdf')) { setStatus('Please select a PDF file.', 'err'); return; }
-  files[key] = file;
-  document.getElementById('dz-' + key).classList.remove('drag');
-  document.getElementById('dz-' + key).classList.add('loaded-' + key);
-  document.getElementById('fn-' + key).textContent = file.name;
-  if (key === 'curr') document.getElementById('run-btn').disabled = false;
+function dzClick(key){document.getElementById('fi-'+key).click();}
+function loadFile(key,file){
+  if(!file)return;
+  if(!file.name.toLowerCase().endsWith('.pdf')){setStatus('Please select a PDF file.','err');return;}
+  files[key]=file;
+  document.getElementById('dz-'+key).classList.remove('drag');
+  document.getElementById('dz-'+key).classList.add('loaded-'+key);
+  document.getElementById('fn-'+key).textContent=file.name;
+  if(key==='curr')document.getElementById('run-btn').disabled=false;
   setStatus('');
 }
-
-function clearDz(e, key) {
+function clearDz(e,key){
   e.stopPropagation();
-  files[key] = null;
-  document.getElementById('dz-' + key).classList.remove('loaded-' + key);
-  document.getElementById('fn-' + key).textContent = '';
-  document.getElementById('fi-' + key).value = '';
-  if (key === 'curr') document.getElementById('run-btn').disabled = true;
+  files[key]=null;
+  document.getElementById('dz-'+key).classList.remove('loaded-'+key);
+  document.getElementById('fn-'+key).textContent='';
+  document.getElementById('fi-'+key).value='';
+  if(key==='curr')document.getElementById('run-btn').disabled=true;
   setStatus('');
-  document.getElementById('results').innerHTML = '';
+  document.getElementById('results').innerHTML='';
   document.getElementById('mismatch-banner').classList.remove('visible');
 }
 
-// ── PDF EXTRACTION ──────────────────────────────────────────────────────────
-async function extractText(file) {
-  var buf = await file.arrayBuffer();
-  var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-  var text = '';
-  for (var i = 1; i <= pdf.numPages; i++) {
-    var page = await pdf.getPage(i);
-    var content = await page.getTextContent();
-    text += content.items.map(function(item) { return item.str; }).join(' ') + '\n';
+// ── PDF ────────────────────────────────────────────────────────────────────
+async function extractText(file){
+  var buf=await file.arrayBuffer();
+  var pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  var text='';
+  for(var i=1;i<=pdf.numPages;i++){
+    var page=await pdf.getPage(i);
+    var content=await page.getTextContent();
+    text+=content.items.map(function(item){return item.str;}).join(' ')+'\n';
   }
   return text;
 }
-
-function extractHeader(text) {
-  var radiusM = text.match(/NOTAMs within ([\d.]+) NM around (\w+)/);
-  var dateM   = text.match(/Query ran at UTC:\s*([^\n]+UTC)/);
-  return {
-    radius:  radiusM ? parseFloat(radiusM[1]) : null,
-    airport: radiusM ? radiusM[2].trim()      : null,
-    date:    dateM   ? dateM[1].trim()         : null
-  };
+function extractHeader(text){
+  var rm=text.match(/NOTAMs within ([\d.]+) NM around (\w+)/);
+  var dm=text.match(/Query ran at UTC:\s*([^\n]+UTC)/);
+  return{radius:rm?parseFloat(rm[1]):null,airport:rm?rm[2].trim():null,date:dm?dm[1].trim():null};
 }
 
-// ── PARSE ───────────────────────────────────────────────────────────────────
-function parseTowers(text, thresh) {
-  var minAgl = thresh.bufFloor;
-  var maxNm  = thresh.maxNm;
-  var blocks = text.split('!').map(function(b) { return b.replace(/\s+/g, ' ').trim(); });
-  var results = [];
-  var outOfRange = [];
-
-  for (var i = 0; i < blocks.length; i++) {
-    var block = blocks[i];
-    if (!block) continue;
-
-    // Unlit: U/S (light unserviceable) or NOT LGTD (never/no longer lit)
-    var isUnlit = block.indexOf('U/S') !== -1 || block.indexOf('NOT LGTD') !== -1;
-    if (!isUnlit) continue;
-
-    // Structure: TOWER or STACK included; CRANE, WIND TURBINE, POWER LINE excluded
-    var hasTower = block.indexOf('TOWER') !== -1 || block.indexOf('TWR') !== -1;
-    var hasStack = block.indexOf('STACK') !== -1;
-    var isExcluded = block.indexOf('CRANE') !== -1 ||
-                     block.indexOf('WIND TURBINE') !== -1 ||
-                     block.indexOf('POWER LINE') !== -1;
-    if ((!hasTower && !hasStack) || isExcluded) continue;
-
-    // NOTAM ID — first token group like "LOU 05/313"
-    var idM = block.match(/^(\w+\s+\d+\/\d+)/);
-    if (!idM) continue;
-
-    // Coordinate — 6-digit lat, 7-digit lon with optional decimals
-    var coordM = block.match(/(\d{6}(?:\.\d+)?N\d{7}(?:\.\d+)?W)/);
-    if (!coordM) continue;
-    var coords = parseDMS(coordM[1]);
-    if (!coords) continue;
-
-    // Altitudes — standard format: "1009FT (600FT AGL)"
-    // Fallback format: "UNKNOWN (650FT AGL)" when MSL is not reported
-    var altM = block.match(/(\d+(?:\.\d+)?)FT\s+\((\d+(?:\.\d+)?)FT\s+AGL\)/);
-    var msl, agl;
-    if (altM) {
-      msl = Math.round(parseFloat(altM[1]));
-      agl = Math.round(parseFloat(altM[2]));
-    } else {
-      var aglOnly = block.match(/\((\d+(?:\.\d+)?)FT\s+AGL\)/);
-      if (!aglOnly) continue;
-      agl = Math.round(parseFloat(aglOnly[1]));
-      msl = 0; // MSL not reported
-    }
-    if (agl < thresh.bufFloor) continue; // below buffer floor — ignore entirely
-
-    // Location reference (text in parens after coordinate)
-    var afterCoord = block.slice(block.indexOf(coordM[1]) + coordM[1].length);
-    var locM = afterCoord.match(/\(([^)]+)\)/);
-    var loc = locM ? locM[1] : '';
-
-    var unlitReason = block.indexOf('U/S') !== -1 ? 'U/S' : 'NOT LGTD';
-    var structType  = hasStack ? 'STACK' : 'TOWER';
-
-    var br = bearingRange(REF.lat, REF.lon, coords.lat, coords.lon);
-
-    var entry = {
-      id: idM[1].trim(), msl: msl, agl: agl, loc: loc,
-      nm: br.nm, brg: br.brg,
-      lat: coords.lat, lon: coords.lon,
-      unlitReason: unlitReason, structType: structType
-    };
-
-    if (br.nm > maxNm) {
-      outOfRange.push(entry);
-    } else {
-      results.push(entry);
-    }
+// ── PARSE ──────────────────────────────────────────────────────────────────
+function parseTowers(text,thresh){
+  var floor=thresh.bufFloor,maxNm=thresh.maxNm;
+  var blocks=text.split('!').map(function(b){return b.replace(/\s+/g,' ').trim();});
+  var results=[],oor=[];
+  for(var i=0;i<blocks.length;i++){
+    var b=blocks[i];
+    if(!b)continue;
+    if(b.indexOf('U/S')===-1&&b.indexOf('NOT LGTD')===-1)continue;
+    var hasTower=b.indexOf('TOWER')!==-1||b.indexOf('TWR')!==-1;
+    var hasStack=b.indexOf('STACK')!==-1;
+    if((!hasTower&&!hasStack)||b.indexOf('CRANE')!==-1||b.indexOf('WIND TURBINE')!==-1||b.indexOf('POWER LINE')!==-1)continue;
+    var idM=b.match(/^(\w+\s+\d+\/\d+)/);if(!idM)continue;
+    var coordM=b.match(/(\d{6}(?:\.\d+)?N\d{7}(?:\.\d+)?W)/);if(!coordM)continue;
+    var coords=parseDMS(coordM[1]);if(!coords)continue;
+    var altM=b.match(/(\d+(?:\.\d+)?)FT\s+\((\d+(?:\.\d+)?)FT\s+AGL\)/);
+    var msl,agl;
+    if(altM){msl=Math.round(parseFloat(altM[1]));agl=Math.round(parseFloat(altM[2]));}
+    else{var ag=b.match(/\((\d+(?:\.\d+)?)FT\s+AGL\)/);if(!ag)continue;agl=Math.round(parseFloat(ag[1]));msl=0;}
+    if(agl<floor)continue;
+    var ac=b.slice(b.indexOf(coordM[1])+coordM[1].length);
+    var locM=ac.match(/\(([^)]+)\)/);
+    var entry={id:idM[1].trim(),msl:msl,agl:agl,loc:locM?locM[1]:'',
+      nm:0,brg:0,lat:coords.lat,lon:coords.lon,
+      unlitReason:b.indexOf('U/S')!==-1?'U/S':'NOT LGTD',
+      structType:hasStack?'STACK':'TOWER'};
+    var br=bearingRange(REF.lat,REF.lon,coords.lat,coords.lon);
+    entry.nm=br.nm;entry.brg=br.brg;
+    if(br.nm>maxNm){oor.push(entry);}else{results.push(entry);}
   }
-
-  results.sort(function(a, b) { return a.nm - b.nm; });
-  outOfRange.sort(function(a, b) { return a.nm - b.nm; });
-  return { results: results, outOfRange: outOfRange };
+  results.sort(function(a,b){return a.nm-b.nm;});
+  oor.sort(function(a,b){return a.nm-b.nm;});
+  return{results:results,outOfRange:oor};
 }
 
-// ── MATH ────────────────────────────────────────────────────────────────────
-function parseDMS(s) {
-  var m = s.match(/^(\d{2})(\d{2})(\d{2}(?:\.\d+)?)N(\d{3})(\d{2})(\d{2}(?:\.\d+)?)W$/);
-  if (!m) return null;
-  return {
-    lat:  parseInt(m[1]) + parseInt(m[2])/60 + parseFloat(m[3])/3600,
-    lon: -(parseInt(m[4]) + parseInt(m[5])/60 + parseFloat(m[6])/3600)
-  };
+function parseDMS(s){
+  var m=s.match(/^(\d{2})(\d{2})(\d{2}(?:\.\d+)?)N(\d{3})(\d{2})(\d{2}(?:\.\d+)?)W$/);
+  if(!m)return null;
+  return{lat:parseInt(m[1])+parseInt(m[2])/60+parseFloat(m[3])/3600,lon:-(parseInt(m[4])+parseInt(m[5])/60+parseFloat(m[6])/3600)};
+}
+function bearingRange(lat1,lon1,lat2,lon2){
+  var R=3440.065,toR=function(d){return d*Math.PI/180;};
+  var p1=toR(lat1),p2=toR(lat2),dp=toR(lat2-lat1),dl=toR(lon2-lon1);
+  var a=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
+  var dist=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  var y=Math.sin(dl)*Math.cos(p2),x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl);
+  return{nm:parseFloat(dist.toFixed(1)),brg:Math.round((180/Math.PI*Math.atan2(y,x)+360)%360)};
+}
+function cardinal(b){return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(b/22.5)%16];}
+
+// ── DIFF ───────────────────────────────────────────────────────────────────
+function towerKey(t){return t.id.trim().toUpperCase();}
+function computeDiff(prev,curr){
+  var pm={},cm={};
+  prev.forEach(function(t){pm[towerKey(t)]=t;});
+  curr.forEach(function(t){cm[towerKey(t)]=t;});
+  return{remove:prev.filter(function(t){return!cm[towerKey(t)];}),keep:curr.filter(function(t){return pm[towerKey(t)];}),add:curr.filter(function(t){return!pm[towerKey(t)];})};
 }
 
-function bearingRange(lat1, lon1, lat2, lon2) {
-  var R = 3440.065;
-  var toR = function(d) { return d * Math.PI / 180; };
-  var p1 = toR(lat1), p2 = toR(lat2), dp = toR(lat2 - lat1), dl = toR(lon2 - lon1);
-  var a = Math.sin(dp/2) * Math.sin(dp/2) +
-          Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
-  var dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  var y = Math.sin(dl) * Math.cos(p2);
-  var x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
-  var brg = (180 / Math.PI * Math.atan2(y, x) + 360) % 360;
-  return { nm: parseFloat(dist.toFixed(1)), brg: Math.round(brg) };
-}
-
-function cardinal(b) {
-  var dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-  return dirs[Math.round(b / 22.5) % 16];
-}
-
-// ── DIFF ────────────────────────────────────────────────────────────────────
-function towerKey(t) { return t.id.trim().toUpperCase(); }
-
-function computeDiff(prev, curr) {
-  var pm = {}, cm = {};
-  prev.forEach(function(t) { pm[towerKey(t)] = t; });
-  curr.forEach(function(t) { cm[towerKey(t)] = t; });
-  return {
-    remove: prev.filter(function(t) { return !cm[towerKey(t)]; }),
-    keep:   curr.filter(function(t) { return  pm[towerKey(t)]; }),
-    add:    curr.filter(function(t) { return !pm[towerKey(t)]; })
-  };
-}
-
-// ── MISMATCH CHECK ──────────────────────────────────────────────────────────
-function checkMismatches(currHdr, prevHdr, thresh) {
-  var banner = document.getElementById('mismatch-banner');
-  var items  = document.getElementById('mismatch-items');
-  var issues = [];
-
-  if (currHdr.airport && currHdr.airport !== REF.id)
-    issues.push('Current report queried around <code>' + currHdr.airport + '</code> but tool is configured for <code>' + REF.id + '</code>.');
-
-  if (currHdr.radius && Math.abs(currHdr.radius - thresh.maxNm) > 1)
-    issues.push('Current report radius is <code>' + currHdr.radius + ' NM</code> but tool max range is <code>' + thresh.maxNm + ' NM</code>.');
-
-  if (prevHdr) {
-    if (prevHdr.airport && currHdr.airport && prevHdr.airport !== currHdr.airport)
-      issues.push('Previous report queried around <code>' + prevHdr.airport + '</code> but current report around <code>' + currHdr.airport + '</code>.');
-
-    if (prevHdr.radius && currHdr.radius && Math.abs(prevHdr.radius - currHdr.radius) > 1)
-      issues.push('Previous report radius (<code>' + prevHdr.radius + ' NM</code>) differs from current (<code>' + currHdr.radius + ' NM</code>).');
-
-    if (prevHdr.date && currHdr.date && prevHdr.date === currHdr.date)
-      issues.push('Previous and current reports have the same query date (<code>' + currHdr.date + '</code>) &#x2014; are these the same file?');
+function checkMismatches(ch,ph,thresh){
+  var banner=document.getElementById('mismatch-banner');
+  var items=document.getElementById('mismatch-items');
+  var issues=[];
+  var rid=REF.id||'';
+  if(ch.airport&&rid&&ch.airport.toUpperCase()!==rid.toUpperCase())issues.push('Current report queried around <code>'+ch.airport+'</code> but tool is configured for <code>'+rid+'</code>.');
+  if(ch.radius&&Math.abs(ch.radius-thresh.maxNm)>1)issues.push('Current report radius is <code>'+ch.radius+' NM</code> but tool max range is <code>'+thresh.maxNm+' NM</code>.');
+  if(ph){
+    if(ph.airport&&ch.airport&&ph.airport!==ch.airport)issues.push('Previous report queried around <code>'+ph.airport+'</code> but current around <code>'+ch.airport+'</code>.');
+    if(ph.radius&&ch.radius&&Math.abs(ph.radius-ch.radius)>1)issues.push('Previous radius (<code>'+ph.radius+' NM</code>) differs from current (<code>'+ch.radius+' NM</code>).');
+    if(ph.date&&ch.date&&ph.date===ch.date)issues.push('Both reports have the same query date (<code>'+ch.date+'</code>) \u2014 are these the same file?');
   }
-
-  if (issues.length > 0) {
-    items.innerHTML = issues.join('<br>');
-    banner.classList.add('visible');
-  } else {
-    banner.classList.remove('visible');
-    items.innerHTML = '';
-  }
+  if(issues.length){items.innerHTML=issues.join('<br>');banner.classList.add('visible');}
+  else{banner.classList.remove('visible');items.innerHTML='';}
 }
 
-// ── RUN ─────────────────────────────────────────────────────────────────────
-async function runDiff() {
-  var thresh = getThresholds();
-  document.getElementById('run-btn').disabled = true;
-  document.getElementById('results').innerHTML = '';
+// ── RUN ────────────────────────────────────────────────────────────────────
+async function runDiff(){
+  var thresh=getThresholds();
+  document.getElementById('run-btn').disabled=true;
+  document.getElementById('results').innerHTML='';
   setStatus('Parsing current report\u2026');
-
-  try {
-    var currText = await extractText(files.curr);
-    var currParsed = parseTowers(currText, thresh);
-    var curr = currParsed.results;
-    var currOOR = currParsed.outOfRange;
-    var currHdr = extractHeader(currText);
-
-    var prev = [], prevHdr = null;
-    if (files.prev) {
+  try{
+    var ct=await extractText(files.curr);
+    var cp=parseTowers(ct,thresh);
+    var currAll=cp.results,currOOR=cp.outOfRange,currHdr=extractHeader(ct);
+    var prev=[],prevHdr=null;
+    if(files.prev){
       setStatus('Parsing previous report\u2026');
-      var prevText = await extractText(files.prev);
-      prev = parseTowers(prevText, thresh).results;
-      prevHdr = extractHeader(prevText);
+      var pt=await extractText(files.prev);
+      prev=parseTowers(pt,thresh).results;
+      prevHdr=extractHeader(pt);
     }
-
-    checkMismatches(currHdr, prevHdr, thresh);
-
-    // Split current results into qualifying (>= minAgl) and buffer (< minAgl, >= bufFloor)
-    var currQual = curr.filter(function(t) { return t.agl >= thresh.minAgl; });
-    var currBuf  = curr.filter(function(t) { return t.agl <  thresh.minAgl; });
-
-    var hasPrev = !!files.prev;
-    // Diff operates on qualifying towers only — buffer entries are not diffed
-    var prevQual = prev.filter(function(t) { return t.agl >= thresh.minAgl; });
-    var d = hasPrev ? computeDiff(prevQual, currQual) : { remove: [], keep: [], add: currQual };
-    lastDiff = { d: d, hasPrev: hasPrev, curr: currQual, bufEntries: currBuf, outOfRange: currOOR, thresh: thresh };
-
-    var bufNote = currBuf.length > 0 ? ' \u00B7 ' + currBuf.length + ' buffer entr' + (currBuf.length === 1 ? 'y' : 'ies') + ' (KML only)' : '';
-    setStatus(
-      hasPrev
-        ? currQual.length + ' qualifying tower(s) \u00B7 ' + d.remove.length + ' remove, ' + d.keep.length + ' keep, ' + d.add.length + ' add' + bufNote
-        : currQual.length + ' qualifying tower(s) \u2265 ' + thresh.minAgl + ' ft AGL \u2014 all listed as Add (no previous report)' + bufNote,
-      'ok'
-    );
-    renderResults(d, hasPrev, currQual, currBuf, currOOR, thresh);
-
-  } catch(e) {
-    setStatus('Error: ' + e.message, 'err');
-    console.error(e);
-  } finally {
-    document.getElementById('run-btn').disabled = false;
-  }
+    checkMismatches(currHdr,prevHdr,thresh);
+    var cq=currAll.filter(function(t){return t.agl>=thresh.minAgl;});
+    var cb=currAll.filter(function(t){return t.agl<thresh.minAgl;});
+    var pq=prev.filter(function(t){return t.agl>=thresh.minAgl;});
+    var hasPrev=!!files.prev;
+    var d=hasPrev?computeDiff(pq,cq):{remove:[],keep:[],add:cq};
+    lastDiff={d:d,hasPrev:hasPrev,curr:cq,bufEntries:cb,outOfRange:currOOR,thresh:thresh};
+    var bn=cb.length>0?' \u00B7 '+cb.length+' buffer entr'+(cb.length===1?'y':'ies')+' (KML only)':'';
+    setStatus(hasPrev?cq.length+' qualifying tower(s) \u00B7 '+d.remove.length+' remove, '+d.keep.length+' keep, '+d.add.length+' add'+bn:cq.length+' qualifying tower(s) \u2265 '+thresh.minAgl+' ft AGL \u2014 all listed as Add'+bn,'ok');
+    renderResults(d,hasPrev,cq,cb,currOOR,thresh);
+  }catch(e){setStatus('Error: '+e.message,'err');console.error(e);}
+  finally{document.getElementById('run-btn').disabled=false;}
 }
 
-// ── RENDER ───────────────────────────────────────────────────────────────────
-function renderResults(d, hasPrev, curr, bufEntries, outOfRange, thresh) {
-  var ts = new Date().toLocaleString();
-  var html = '';
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function sCell(n,cls,label,desc){return '<div class="summary-cell"><div class="s-num '+cls+'">'+n+'</div><div class="s-label">'+label+'</div><div class="s-desc">'+desc+'</div></div>';}
 
-  // Summary bar
-  var bufCols = bufEntries.length > 0 ? ' 1fr' : '';
-  if (hasPrev) {
-    html += '<div class="summary-bar" style="grid-template-columns:repeat(4,1fr)' + bufCols + '">' +
-      summaryCell(curr.length, 'total', 'Total', 'U/S towers \u2265 ' + thresh.minAgl + ' ft AGL') +
-      summaryCell(d.remove.length, 'remove', 'Remove', 'Pull from hazard map') +
-      summaryCell(d.keep.length,   'keep',   'Keep',   'No change needed') +
-      summaryCell(d.add.length,    'add',    'Add',    'Plot on hazard map') +
-      (bufEntries.length > 0 ? summaryCell(bufEntries.length, 'buf', 'Buffer', 'KML only') : '') +
-      '</div>';
-  } else {
-    html += '<div class="summary-bar" style="grid-template-columns:1fr 1fr' + bufCols + '">' +
-      summaryCell(curr.length,  'total', 'Total', 'U/S towers \u2265 ' + thresh.minAgl + ' ft AGL within ' + thresh.maxNm + ' NM') +
-      summaryCell(d.add.length, 'add',   'Add',   'Plot all on hazard map') +
-      (bufEntries.length > 0 ? summaryCell(bufEntries.length, 'buf', 'Buffer', 'KML only') : '') +
-      '</div>';
-  }
-
-  if (hasPrev) html += makeSection(d.remove, 'remove', 'Remove', 'pull these dots from the map', thresh);
-  if (hasPrev) html += makeSection(d.keep,   'keep',   'Keep',   'dots remain unchanged', thresh);
-  html += makeSection(d.add, 'add', hasPrev ? 'Add' : 'All Towers', hasPrev ? 'plot these on the map' : 'plot all on the map', thresh);
-
-  // Buffer section — KML only, not for hazard map
-  if (bufEntries.length > 0) {
-    html += makeSection(bufEntries, 'buf', 'Buffer Zone', thresh.minAgl + ' ft AGL \u2212 ' + thresh.bufAgl + ' ft buffer \u2014 KML only, do not plot on hazard map', thresh);
-  }
-
-  // Out of range section
-  if (outOfRange.length > 0) {
-    var oorRows = outOfRange.map(function(t) {
-      return '<tr class="oor-row">' +
-        '<td class="dim">' + t.structType + '</td>' +
-        '<td class="dim">' + t.id + '</td>' +
-        '<td class="r">' + t.nm + '</td>' +
-        '<td class="r">' + t.brg + '\u00B0\u00A0' + cardinal(t.brg) + '</td>' +
-        '<td class="r">' + (t.msl > 0 ? t.msl.toLocaleString() : '\u2014') + '</td>' +
-        '<td class="r">' + t.agl.toLocaleString() + '</td>' +
-        '<td class="dim">' + t.unlitReason + '</td>' +
-        '<td class="dim">' + t.loc + '</td>' +
-        '</tr>';
+function makeSection(rows,cls,title,hint,thresh,collapsed){
+  var body;
+  if(!rows.length){body='<div class="rs-empty">None</div>';}
+  else{
+    var rh=rows.map(function(t){
+      var lv=towerLevel(t.agl,thresh),col=levelColor(lv,thresh);
+      return '<tr class="'+cls+'-row"><td><span class="swatch-cell" style="background:'+col+'"></span>'+t.id+'</td><td class="dim">'+t.structType+'</td><td class="r">'+t.nm+'</td><td class="r">'+t.brg+'\u00B0\u00A0'+cardinal(t.brg)+'</td><td class="r">'+(t.msl>0?t.msl.toLocaleString():'\u2014')+'</td><td class="r" style="color:'+col+';font-weight:600">'+t.agl.toLocaleString()+'</td><td class="dim">'+t.unlitReason+'</td><td class="dim">'+t.loc+'</td></tr>';
     }).join('');
-    html += '<div class="result-section" style="margin-top:20px">' +
-      '<div class="rs-head oor">' +
-        '<span class="rs-title oor">Out of Range</span>' +
-        '<span class="rs-count oor">' + outOfRange.length + '</span>' +
-        '<span class="rs-hint">meet height filter \u00B7 outside ' + thresh.maxNm + ' NM \u00B7 excluded from map and KML</span>' +
-        '<span class="rs-toggle">[expand]</span>' +
-      '</div>' +
-      '<div class="rs-body collapsed">' +
-        '<table class="tbl"><thead><tr>' +
-          '<th>Type</th><th>NOTAM</th><th class="r">Range (NM)</th><th class="r">Bearing</th>' +
-          '<th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit reason</th><th>Location ref</th>' +
-        '</tr></thead><tbody>' + oorRows + '</tbody></table>' +
-      '</div></div>';
+    body='<table class="tbl"><thead><tr><th>NOTAM</th><th>Type</th><th class="r">Range (NM)</th><th class="r">Bearing</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th>Location ref</th></tr></thead><tbody>'+rh+'</tbody></table>';
   }
+  return '<div class="result-section"><div class="rs-head '+cls+'"><span class="rs-title '+cls+'">'+title+'</span><span class="rs-count '+cls+'">'+rows.length+'</span><span class="rs-hint">'+hint+'</span><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:'+(collapsed?'rotate(0deg)':'rotate(90deg)')+'">&#x25B6;</span></div><div class="rs-body'+(collapsed?' collapsed':'')+'">'+body+'</div></div>';
+}
 
-  // Export row
-  html += '<div class="export-row">' +
-    '<button class="export-btn" onclick="exportCSV()">Export CSV</button>' +
-    '<button class="export-btn kml" onclick="exportKML()">Export KML for ForeFlight</button>' +
-    '<span class="export-ts">Generated ' + ts + '</span>' +
-    '</div>';
-
-  // KML legend
-  html += '<div class="kml-legend">' +
-    '<span>KML colors:</span>' +
-    '<span><span class="kml-dot" style="background:' + thresh.t1.color + '"></span>Level 1 \u2265 ' + thresh.t1.agl + ' ft AGL</span>' +
-    '<span><span class="kml-dot" style="background:' + thresh.t2.color + '"></span>Level 2 \u2265 ' + thresh.t2.agl + ' ft AGL</span>' +
-    '<span><span class="kml-dot" style="background:' + thresh.t3.color + '"></span>Level 3 \u2265 ' + thresh.minAgl + ' ft AGL</span>' +
-    (bufEntries.length > 0 ? '<span><span class="kml-dot" style="background:' + thresh.t4.color + '"></span>Buffer ' + thresh.bufFloor + '\u2013' + (thresh.minAgl-1) + ' ft AGL (KML only)</span>' : '') +
-    '<span style="font-style:italic">\u00B7 KML: ' + curr.length + ' qualifying + ' + bufEntries.length + ' buffer towers/stacks</span>' +
-    '</div>';
-
-  document.getElementById('results').innerHTML = html;
-
-  // Wire section toggles
-  document.querySelectorAll('.rs-head').forEach(function(head) {
-    head.addEventListener('click', function() {
-      var body = head.nextElementSibling;
-      var tog  = head.querySelector('.rs-toggle');
+function renderResults(d,hasPrev,curr,bufEntries,oor,thresh){
+  var ts=new Date().toLocaleString();
+  var bc=bufEntries.length>0?' 1fr':'';
+  var html='';
+  if(hasPrev){
+    html+='<div class="summary-bar" style="grid-template-columns:repeat(4,1fr)'+bc+'">'+sCell(curr.length,'total','Total','U/S towers \u2265 '+thresh.minAgl+' ft AGL')+sCell(d.remove.length,'remove','Remove','Pull from hazard map')+sCell(d.keep.length,'keep','Keep','No change needed')+sCell(d.add.length,'add','Add','Plot on hazard map')+(bufEntries.length>0?sCell(bufEntries.length,'buf','Buffer','KML only'):'')+' </div>';
+  }else{
+    html+='<div class="summary-bar" style="grid-template-columns:1fr 1fr'+bc+'">'+sCell(curr.length,'total','Total','U/S towers \u2265 '+thresh.minAgl+' ft AGL within '+thresh.maxNm+' NM')+sCell(d.add.length,'add','Add','Plot all on hazard map')+(bufEntries.length>0?sCell(bufEntries.length,'buf','Buffer','KML only'):'')+' </div>';
+  }
+  if(hasPrev){html+=makeSection(d.remove,'remove','Remove','pull these dots from the map',thresh,false);}
+  if(hasPrev){html+=makeSection(d.keep,'keep','Keep','dots remain unchanged',thresh,false);}
+  html+=makeSection(d.add,'add',hasPrev?'Add':'All Towers',hasPrev?'plot these on the map':'plot all on the map',thresh,false);
+  if(bufEntries.length>0)html+=makeSection(bufEntries,'buf','Buffer Zone',thresh.bufFloor+'\u2013'+(thresh.minAgl-1)+' ft AGL \u2014 KML only, do not plot on hazard map',thresh,true);
+  if(oor.length>0){
+    var or2=oor.map(function(t){return'<tr class="oor-row"><td class="dim">'+t.structType+'</td><td class="dim">'+t.id+'</td><td class="r">'+t.nm+'</td><td class="r">'+t.brg+'\u00B0\u00A0'+cardinal(t.brg)+'</td><td class="r">'+(t.msl>0?t.msl.toLocaleString():'\u2014')+'</td><td class="r">'+t.agl.toLocaleString()+'</td><td class="dim">'+t.unlitReason+'</td><td class="dim">'+t.loc+'</td></tr>';}).join('');
+    html+='<div class="result-section" style="margin-top:20px"><div class="rs-head oor"><span class="rs-title oor">Out of Range</span><span class="rs-count oor">'+oor.length+'</span><span class="rs-hint">meet height filter but outside '+thresh.maxNm+' NM \u2014 the FAA query sometimes returns entries beyond the stated radius; listed for audit, not silently dropped</span><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:rotate(0deg)">&#x25B6;</span></div><div class="rs-body collapsed"><table class="tbl"><thead><tr><th>Type</th><th>NOTAM</th><th class="r">Range (NM)</th><th class="r">Bearing</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th>Location ref</th></tr></thead><tbody>'+or2+'</tbody></table></div></div>';
+  }
+  html+='<div class="export-row"><button class="export-btn" onclick="exportCSV()">Export CSV</button><button class="export-btn kml" onclick="exportKML()">Export KML for ForeFlight</button><span class="export-ts">Generated '+ts+'</span></div>';
+  html+='<div class="kml-legend"><span>KML colors:</span><span><span class="kml-dot" style="background:'+thresh.t1.color+'"></span>Level 1 \u2265 '+thresh.t1.agl+' ft</span><span><span class="kml-dot" style="background:'+thresh.t2.color+'"></span>Level 2 \u2265 '+thresh.t2.agl+' ft</span><span><span class="kml-dot" style="background:'+thresh.t3.color+'"></span>Level 3 \u2265 '+thresh.minAgl+' ft</span>'+(bufEntries.length>0?'<span><span class="kml-dot" style="background:'+thresh.t4.color+'"></span>Buffer '+thresh.bufFloor+'\u2013'+(thresh.minAgl-1)+' ft</span>':'')+'<span style="font-style:italic">\u00B7 KML: '+curr.length+' qualifying + '+bufEntries.length+' buffer</span></div>';
+  document.getElementById('results').innerHTML=html;
+  document.querySelectorAll('.rs-head').forEach(function(head){
+    head.addEventListener('click',function(){
+      var body=head.nextElementSibling,tog=head.querySelector('.rs-toggle');
       body.classList.toggle('collapsed');
-      tog.textContent = body.classList.contains('collapsed') ? '[expand]' : '[collapse]';
+      tog.style.transform=body.classList.contains('collapsed')?'rotate(0deg)':'rotate(90deg)';
     });
   });
 }
 
-function summaryCell(num, cls, label, desc) {
-  return '<div class="summary-cell">' +
-    '<div class="s-num ' + cls + '">' + num + '</div>' +
-    '<div class="s-label">' + label + '</div>' +
-    '<div class="s-desc">' + desc + '</div>' +
-    '</div>';
+// ── EXPORTS ────────────────────────────────────────────────────────────────
+function exportCSV(){
+  if(!lastDiff)return;
+  var d=lastDiff.d,hasPrev=lastDiff.hasPrev,thresh=lastDiff.thresh;
+  var rows=['Action,NOTAM,Type,Unlit reason,Level,Range (NM),Bearing (deg),Cardinal,MSL (ft),AGL (ft),Location'];
+  function emit(action,t){var lv=towerLevel(t.agl,thresh);rows.push([action,t.id,t.structType,t.unlitReason,lv,t.nm,t.brg,cardinal(t.brg),t.msl>0?t.msl:'',t.agl,'"'+t.loc+'"'].join(','));}
+  if(hasPrev){d.remove.forEach(function(t){emit('REMOVE',t);});d.keep.forEach(function(t){emit('KEEP',t);});}
+  d.add.forEach(function(t){emit('ADD',t);});
+  if(lastDiff.bufEntries)lastDiff.bufEntries.forEach(function(t){emit('BUFFER',t);});
+  download(rows.join('\n'),'notam_'+(REF.id||'base')+'_'+isoDate()+'.csv','text/csv');
 }
-
-function makeSection(rows, cls, title, hint, thresh) {
-  var bodyHtml;
-  if (!rows.length) {
-    bodyHtml = '<div class="rs-empty">None</div>';
-  } else {
-    var rowsHtml = rows.map(function(t) {
-      var lv  = towerLevel(t.agl, thresh);
-      var col = levelColor(lv, thresh);
-      return '<tr class="' + cls + '-row">' +
-        '<td><span class="swatch-cell" style="background:' + col + '"></span>' + t.id + '</td>' +
-        '<td>' + t.structType + '</td>' +
-        '<td class="r">' + t.nm + '</td>' +
-        '<td class="r">' + t.brg + '\u00B0\u00A0' + cardinal(t.brg) + '</td>' +
-        '<td class="r">' + (t.msl > 0 ? t.msl.toLocaleString() : '\u2014') + '</td>' +
-        '<td class="r" style="color:' + col + ';font-weight:600">' + t.agl.toLocaleString() + '</td>' +
-        '<td class="dim">' + t.unlitReason + '</td>' +
-        '<td class="dim">' + t.loc + '</td>' +
-        '</tr>';
-    }).join('');
-    bodyHtml = '<table class="tbl"><thead><tr>' +
-      '<th>NOTAM</th><th>Type</th><th class="r">Range (NM)</th><th class="r">Bearing</th>' +
-      '<th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit reason</th><th>Location ref</th>' +
-      '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
-  }
-  return '<div class="result-section">' +
-    '<div class="rs-head ' + cls + '">' +
-      '<span class="rs-title ' + cls + '">' + title + '</span>' +
-      '<span class="rs-count ' + cls + '">' + rows.length + '</span>' +
-      '<span class="rs-hint">' + hint + '</span>' +
-      '<span class="rs-toggle">[collapse]</span>' +
-    '</div>' +
-    '<div class="rs-body">' + bodyHtml + '</div>' +
-    '</div>';
-}
-
-// ── EXPORTS ──────────────────────────────────────────────────────────────────
-function exportCSV() {
-  if (!lastDiff) return;
-  var d = lastDiff.d, hasPrev = lastDiff.hasPrev, thresh = lastDiff.thresh;
-  var rows = ['Action,NOTAM,Type,Unlit reason,Level,Range (NM),Bearing (deg),Cardinal,MSL (ft),AGL (ft),Location'];
-
-  function emitRow(action, t) {
-    rows.push([
-      action, t.id, t.structType, t.unlitReason,
-      towerLevel(t.agl, thresh), t.nm, t.brg, cardinal(t.brg),
-      t.msl, t.agl, '"' + t.loc + '"'
-    ].join(','));
-  }
-
-  if (hasPrev) {
-    d.remove.forEach(function(t) { emitRow('REMOVE', t); });
-    d.keep.forEach(function(t)   { emitRow('KEEP',   t); });
-  }
-  d.add.forEach(function(t) { emitRow('ADD', t); });
-  if (lastDiff.bufEntries) {
-    lastDiff.bufEntries.forEach(function(t) { emitRow('BUFFER', t); });
-  }
-
-  download(rows.join('\n'), 'notam_6I2_' + isoDate() + '.csv', 'text/csv');
-}
-
-function exportKML() {
-  if (!lastDiff) return;
-  var curr = lastDiff.curr.concat(lastDiff.bufEntries || []), thresh = lastDiff.thresh;
-
-  function hexToKml(hex) {
-    var r = hex.slice(1,3), g = hex.slice(3,5), b = hex.slice(5,7);
-    return 'ff' + b + g + r;
-  }
-
-  var styles = [1, 2, 3].map(function(lv) {
-    var col = hexToKml(thresh['t' + lv].color);
-    return '  <Style id="level' + lv + '">\n' +
-      '    <IconStyle><color>' + col + '</color><scale>0.9</scale>\n' +
-      '      <Icon><href>http://maps.google.com/mapfiles/kml/shapes/caution.png</href></Icon>\n' +
-      '    </IconStyle>\n' +
-      '    <LabelStyle><color>' + col + '</color><scale>0.75</scale></LabelStyle>\n' +
-      '  </Style>';
+function exportKML(){
+  if(!lastDiff)return;
+  var all=lastDiff.curr.concat(lastDiff.bufEntries||[]),thresh=lastDiff.thresh;
+  function h2k(hex){return'ff'+hex.slice(5,7)+hex.slice(3,5)+hex.slice(1,3);}
+  var styles=[1,2,3,4].map(function(lv){var c=h2k(thresh['t'+lv].color);return'<Style id="level'+lv+'"><IconStyle><color>'+c+'</color><scale>0.9</scale><Icon><href>http://maps.google.com/mapfiles/kml/shapes/caution.png</href></Icon></IconStyle><LabelStyle><color>'+c+'</color><scale>0.75</scale></LabelStyle></Style>';}).join('\n');
+  var marks=all.map(function(t){
+    var lv=towerLevel(t.agl,thresh),altM=(t.msl>0?t.msl*0.3048:0).toFixed(1);
+    var buf=lv===4?' &middot; <i>Buffer \u2014 advisory only</i>':'';
+    return '<Placemark><name>'+t.id+(lv===4?' [BUF]':'')+'</name><description><![CDATA[<b>'+t.id+'</b><br/>Type: '+t.structType+'<br/>MSL: <b>'+(t.msl>0?t.msl.toLocaleString()+' ft':'Unknown')+'</b><br/>AGL: <b>'+t.agl.toLocaleString()+' ft</b> &middot; Level '+lv+buf+'<br/>Range from '+(REF.id||'base')+': '+t.nm+' NM<br/>Bearing: '+t.brg+'&deg; '+cardinal(t.brg)+'<br/>Ref: '+t.loc+'<br/><i>Lighting: '+t.unlitReason+'</i>]]></description><styleUrl>#level'+lv+'</styleUrl><Point><altitudeMode>absolute</altitudeMode><coordinates>'+t.lon+','+t.lat+','+altM+'</coordinates></Point></Placemark>';
   }).join('\n');
-
-  var marks = curr.map(function(t) {
-    var lv   = towerLevel(t.agl, thresh);
-    var altM = (t.msl * 0.3048).toFixed(1);
-    return '  <Placemark>\n' +
-      '    <name>' + t.id + '</name>\n' +
-      '    <description><![CDATA[<b>' + t.id + '</b><br/>\n' +
-      'Type: ' + t.structType + '<br/>\n' +
-      'MSL: <b>' + t.msl.toLocaleString() + ' ft</b><br/>\n' +
-      'AGL: <b>' + t.agl.toLocaleString() + ' ft</b> &nbsp;&middot;&nbsp; Alert Level ' + lv + '<br/>\n' +
-      'Range from ' + REF.id + ': ' + t.nm + ' NM<br/>\n' +
-      'Bearing from ' + REF.id + ': ' + t.brg + '&deg; ' + cardinal(t.brg) + '<br/>\n' +
-      'Ref: ' + t.loc + '<br/>\n' +
-      '<i>Lighting: ' + t.unlitReason + '</i>]]></description>\n' +
-      '    <styleUrl>#level' + lv + '</styleUrl>\n' +
-      '    <Point><altitudeMode>absolute</altitudeMode>\n' +
-      '      <coordinates>' + t.lon + ',' + t.lat + ',' + altM + '</coordinates>\n' +
-      '    </Point>\n' +
-      '  </Placemark>';
-  }).join('\n');
-
-  var kml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n' +
-    '  <name>Unlit Obstructions \u2014 ' + REF.id + ' \u2014 ' + isoDate() + '</name>\n' +
-    '  <description>U/S and NOT LGTD towers/stacks \u2265 ' + thresh.minAgl + ' ft AGL within ' + thresh.maxNm + ' NM of ' + REF.id + ' (Lebanon Muni, KY). Generated ' + new Date().toLocaleString() + '. KML altitudes are MSL in meters per KML spec; ForeFlight displays in feet.</description>\n' +
-    styles + '\n' + marks + '\n</Document>\n</kml>';
-
-  download(kml, 'notam_6I2_' + isoDate() + '.kml', 'application/vnd.google-earth.kml+xml');
+  var kml='<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n<name>Unlit Obstructions \u2014 '+(REF.id||'base')+' \u2014 '+isoDate()+'</name>\n<description>Generated '+new Date().toLocaleString()+'. KML altitudes MSL in meters.</description>\n'+styles+'\n'+marks+'\n</Document>\n</kml>';
+  download(kml,'notam_'+(REF.id||'base')+'_'+isoDate()+'.kml','application/vnd.google-earth.kml+xml');
 }
 
-// ── UTILITIES ────────────────────────────────────────────────────────────────
-function isoDate() { return new Date().toISOString().slice(0, 10); }
+function isoDate(){return new Date().toISOString().slice(0,10);}
+function download(content,filename,mime){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=filename;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},5000);}
+function setStatus(msg,type){var el=document.getElementById('status');el.textContent=msg;el.className='status-line'+(type?' '+type:'');}
 
-function download(content, filename, mime) {
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
-  a.download = filename;
-  a.click();
-  setTimeout(function() { URL.revokeObjectURL(a.href); }, 5000);
-}
-
-function setStatus(msg, type) {
-  var el = document.getElementById('status');
-  el.textContent = msg;
-  el.className = 'status-line' + (type ? ' ' + type : '');
-}
+loadSettings();
 </script>
 </body>
 </html>
