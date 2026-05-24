@@ -355,3 +355,37 @@ The mismatch detection in TC-12 depends on the FAA PDF header format: "NOTAMs wi
 Load 5/21 as Previous, 5/24 as Current.  
 Confirm that buffer entries from the current report do not appear in Remove, Keep, or Add sections — only in Buffer Zone.  
 Confirm that a tower present in both reports at 480 ft AGL appears in Buffer Zone of the current report, not in Keep.
+
+
+---
+
+## TC-15 — Base selector
+
+**Setup:** Open the tool. Expand Filter & Alert Settings.
+
+**Pass criteria:**
+1. Default base loads as AE 173 with header showing `NOTAM // AE 173`
+2. Typing `Lebanon` in the search field shows AE 173 in the dropdown
+3. Typing `6KY1` finds AE 173
+4. Selecting AE 001 (West Plains) updates the header to `NOTAM // AE 001` and shows correct coordinates
+5. Coordinates display in DD MM.mmmm format
+6. Saving settings and reloading the page restores the selected base
+
+**TC-15b — Manual override**
+1. Expand Manual coordinate override
+2. Enter a known location (e.g. 37° 34.1400' N, 85° 15.7400' W)
+3. Click Apply override
+4. Header shows `NOTAM // 037 34 N 085 15 W`
+5. Save settings — reloading restores the manual override state
+
+---
+
+## TC-16 — UI / UX changes (v1.4.0)
+
+**Pass criteria:**
+1. Button reads **Parse & Report** (not Run Diff)
+2. Loading one PDF and clicking Parse & Report runs without error (no diff sections shown, only Add)
+3. Loading two PDFs from different reference airports triggers the amber mismatch banner **below** the Parse & Report button — not above the drop zones
+4. Mismatch banner is visible without scrolling after a parse attempt
+5. Dropping a PDF onto the drop zone in Safari loads it correctly — browser does not navigate away
+6. Dropping a PDF outside the drop zones (anywhere else on the page) does nothing
