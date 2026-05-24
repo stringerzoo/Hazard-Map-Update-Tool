@@ -77,3 +77,14 @@ The app loads PDF.js from `cdnjs.cloudflare.com`. This works fine for both local
 
 ### CORS / file access
 No server-side code is needed — the app is entirely client-side. Any static hosting (GitHub Pages, S3, Nginx) will work without modification beyond the font size adjustment above.
+
+
+---
+
+## Persistent settings
+
+Alert level thresholds and filter values reset to defaults on every page reload. This is the most frequently encountered friction point in the monthly workflow. Saving to `localStorage` is straightforward and would mean settings survive between sessions without any server-side infrastructure.
+
+Items to persist: min AGL, max range, Level 1/2/3 AGL thresholds, Level 1/2/3 colors.
+
+A "reset to defaults" button should accompany any persistent settings implementation.
