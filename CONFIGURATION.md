@@ -58,3 +58,54 @@ The parser silently excludes entries that are not obstruction towers with unserv
 These exclusions are intentional. Wind turbine farms in particular have complex shapes poorly suited to individual-tower plotting. Cranes are temporary and typically in terminal areas.
 
 If operational requirements change, these filters are a single regex in the `parseTowers()` function.
+
+---
+
+## Out of Range section
+
+Entries that meet the height filter (≥ min AGL) but fall outside the max range are listed in a collapsed **Out of Range** section below the diff results. These are excluded from the hazard map diff and from the KML export. The section exists for auditability — to confirm the parser saw an entry and made a deliberate range-based exclusion rather than silently dropping it.
+
+Only the **current month** report contributes to the Out of Range section. Previous month out-of-range entries are parsed and discarded — since tower coordinates don't change, anything out of range last month will also be out of range this month and will appear in the current report's section.
+
+---
+
+## Report consistency checks
+
+After parsing, the tool reads the FAA header from each PDF ("NOTAMs within N NM around XXX, Query ran at UTC...") and checks for the following mismatches, displaying an amber warning banner if any are found:
+
+| Check | What it catches |
+|---|---|
+| Current report airport vs `REF.id` | PDF queried around a different airport than the tool is configured for |
+| Current report radius vs max range setting | FAA report radius and tool max range setting differ by more than 1 NM |
+| Previous vs current airport | Two PDFs from different reference points being diffed against each other |
+| Previous vs current radius | Two PDFs with different query radii |
+| Previous vs current query date | Same file loaded into both drop zones |
+
+The tool still runs and produces results when mismatches are detected — the banner is a warning, not a hard stop. Reviewing the banner before acting on results is part of the monthly workflow.
+
+**Important:** keeping the FAA query radius, the tool's max range setting, and the reference airport consistent across both PDFs and the tool configuration is a **user responsibility**. The mismatch detection catches obvious errors but cannot account for all edge cases (e.g., a deliberate radius change mid-month).
+
+---
+
+## Unlit triggers
+
+The parser recognizes two conditions as "unlit":
+
+| Code | Meaning |
+|---|---|
+| `U/S` | Light exists but is unserviceable (broken) |
+| `NOT LGTD` | Structure is not lit — either never was, or lighting was removed |
+
+Both are operationally equivalent from a hazard perspective and are treated identically.
+
+---
+
+## Structure types
+
+| Type | Included | Rationale |
+|---|---|---|
+| TOWER / TWR | ✓ | Primary obstruction type |
+| STACK | ✓ | Tall industrial stacks present the same collision hazard as towers |
+| CRANE | ✗ | Temporary, typically in terminal areas, frequently updated |
+| POWER LINE | ✗ | Linear feature — single-point plotting is misleading |
+| WIND TURBINE FARM | ✗ | Farm-level entry covers a radius area; individual turbines not itemized |
