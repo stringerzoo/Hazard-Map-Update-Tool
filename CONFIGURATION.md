@@ -218,3 +218,31 @@ All coordinates are displayed and entered in **DD MM.mmmm** (degrees and decimal
 - AE 189 Anadarko: TBD — no address on file
 
 Airport codes are populated where known. Bases without airport codes still function normally — the airport code is used only for FAA report mismatch detection.
+
+---
+
+## Out of Range section — why it exists
+
+The Out of Range section lists entries that met the height and unlit filters but fell outside the tool's Max Range setting. It exists for two reasons:
+
+**1. The FAA query does not always respect the stated radius precisely.**
+The FAA NOTAM search uses a geographic bounding box rather than a true circle. This means entries from well beyond the stated radius can appear in the export — occasionally by a significant margin. The two most notable examples from Base 173 testing:
+
+- HUF 03/884 — a tower near Vincennes, Indiana, 133.6 NM from 6KY1, appeared in a 70 NM query
+- MKL 05/228 — a stack in Louisiana, 442 NM away, appeared in the same query
+
+Without range filtering, these would appear on the hazard map and in the KML overlay as if they were local obstructions.
+
+**2. Silent exclusion would undermine auditability.**
+For a safety-of-flight tool, it matters that the user can verify what the parser saw and why certain entries were excluded. Simply dropping out-of-range entries without acknowledgment would make it impossible to distinguish "the parser correctly excluded a distant tower" from "the parser failed to parse a nearby tower." The Out of Range section makes exclusions explicit and reviewable.
+
+### What to expect
+
+The Out of Range section will almost always have entries. This is normal — it reflects the FAA's bounding-box query behavior, not a misconfiguration. If the section is empty, that is the unusual case.
+
+Entries in Out of Range are excluded from:
+- The Remove / Keep / Add diff
+- The KML export
+- The CSV export (in the main result rows)
+
+They are not excluded from the section itself, which is collapsed by default and available for review.
