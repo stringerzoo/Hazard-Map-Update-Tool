@@ -83,23 +83,3 @@ Initial working version.
 
 ### Design rationale
 The buffer is a fixed value (not percentage-based) because terrain-induced altitude variation risk does not scale with the operational threshold. A fixed 50 ft margin is appropriate across all likely threshold configurations.
-
-### Changed
-- `parseTowers()` now returns `{ results, outOfRange }` object instead of a plain array
-- CSV export adds `Type` and `Unlit reason` columns
-
-### Fixed
-- Stacks with `NOT LGTD` status (e.g. MKL 05/228) were previously invisible to the parser on two counts: excluded structure type and unrecognized unlit trigger. Both corrected.
-
-### Known limitations
-- Mismatch detection depends on the FAA PDF header line "NOTAMs within N NM around XXX" — if the FAA changes their header format, detection will silently degrade rather than false-positive
-- Alert level settings and filter preferences still reset to defaults on page reload (persistent settings planned)
-
----
-
-## [1.1.1] — 2026-05-24
-
-### Fixed
-- Altitude parser now handles entries where MSL is reported as `UNKNOWN` (e.g. `UNKNOWN (650FT AGL)`). Previously the parser required a numeric MSL value before the AGL parenthetical and silently dropped these entries — they now parse correctly and appear in results or the Out of Range section as appropriate. MSL displays as `—` in the table when not reported.
-- Radius mismatch detection tolerance tightened from ±5 NM to ±1 NM. The ±5 window was based on a mistaken assumption that the FAA search radius uses statute miles requiring conversion. The FAA PDF header reports the radius in NM directly, so a tight tolerance is correct.
-- Help modal and CONFIGURATION.md corrected to remove inaccurate statute-miles note. The FAA search input uses miles but the PDF header states radius in NM.
