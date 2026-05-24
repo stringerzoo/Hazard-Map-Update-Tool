@@ -148,3 +148,73 @@ If operational requirements change — for example, if day operations in low-vis
 - **Night standard, conservative buffer:** Min AGL 500 ft, buffer 50 ft → KML floor 450 ft
 - **Night standard, tighter buffer:** Min AGL 500 ft, buffer 25 ft → KML floor 475 ft
 - **Day standard with buffer:** Min AGL 300 ft, buffer 50 ft → KML floor 250 ft
+
+---
+
+## Setting up at a new base
+
+As of v1.3.0, no HTML editing is required to configure the tool for a different base. All configuration is done through the settings panel in the browser.
+
+### First-time setup
+
+1. Open the HTML file in Chrome, Edge, or Safari.
+2. Click **Filter & Alert Settings** to expand the panel.
+3. Under **Base Reference Point**, enter:
+   - **Airport ID** — the FAA identifier for your base airport (e.g. `6I2`, `M54`, `I35`)
+   - **Latitude** — decimal degrees N (e.g. `37.5617`)
+   - **Longitude** — decimal degrees W, entered as a **positive** value (e.g. `85.1450`); the tool applies the westward sign automatically
+4. Adjust Filter and Alert Level settings as needed for your operational environment.
+5. Click **Save settings**. Settings persist across sessions in this browser.
+
+To find decimal coordinates for your base: search the airport identifier at [skyvector.com](https://skyvector.com) or [airnav.com](https://airnav.com).
+
+### Sharing with another BPS
+
+Send them the HTML file. They open it, configure their own base reference point and thresholds, and save. Each browser stores its own settings independently — one file serves multiple bases without any changes to the file itself.
+
+---
+
+## Base selector
+
+As of v1.4.0, the reference point is configured via a searchable dropdown in the Filter & Alert Settings panel rather than by editing the HTML directly.
+
+### Searching for a base
+
+Type any of the following into the search field and matching bases appear:
+- Base number (e.g. `173`, `AE 173`)
+- Base name (e.g. `Lebanon`)
+- City (e.g. `Smyrna`)
+- State (e.g. `KY`)
+- Airport code (e.g. `6KY1`, `KDUA`)
+
+Selecting a base auto-fills coordinates, updates the header, and populates the manual override fields. Coordinates are shown in DD MM.mmmm format.
+
+### Manual coordinate override
+
+For bases not in the lookup table (currently AE 189 Anadarko, and any future bases before the table is updated), expand the **Manual coordinate override** section and enter:
+- Airport / Base ID
+- Base name
+- Latitude in DD MM.mmmm format (degrees in left field, decimal minutes in right field)
+- Longitude in DD MM.mmmm format (W implied — enter as positive value)
+
+Click **Apply override** to commit. The header updates to show the coordinates in `DD MM N DDD MM W` format.
+
+### Coordinate format
+
+All coordinates are displayed and entered in **DD MM.mmmm** (degrees and decimal minutes), matching company standard. Internally, the tool converts to decimal degrees for calculations.
+
+### Header display
+
+| Mode | Header shows |
+|---|---|
+| Base selected from list | `NOTAM // AE 173` |
+| Manual override active | `NOTAM // 037 34 N 085 15 W` |
+
+### Lookup table coverage
+
+156 of 157 current bases have coordinates. Source:
+- 153 bases: Feb 2025 company KML file
+- AE 172, 173, 174: manually verified and corrected
+- AE 189 Anadarko: TBD — no address on file
+
+Airport codes are populated where known. Bases without airport codes still function normally — the airport code is used only for FAA report mismatch detection.
