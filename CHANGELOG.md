@@ -83,3 +83,53 @@ Initial working version.
 
 ### Design rationale
 The buffer is a fixed value (not percentage-based) because terrain-induced altitude variation risk does not scale with the operational threshold. A fixed 50 ft margin is appropriate across all likely threshold configurations.
+
+---
+
+## [1.3.0] — 2026-05-24
+
+### Added
+- **Persistent settings** — all filter, threshold, color, and base reference settings are saved to browser `localStorage` (key: `notam_tracker_v2`) and restored on page load. A "✓ Saved" confirmation appears briefly after saving. A "Reset to defaults" button with confirmation prompt restores factory values.
+- **Configurable reference airport** — new "Base Reference Point" section in settings with Airport ID, Latitude, and Longitude fields. Changing these updates the header title, KML filenames and descriptions, mismatch detection logic, and bearing/range calculations. No more manual HTML edits to change bases.
+- Save and Reset buttons added to settings panel footer.
+
+### Changed
+- Settings panel reorganized into labeled sub-sections: Base Reference Point, Filters, KML Alert Levels.
+- Buffer Zone section now starts collapsed by default (consistent with Out of Range).
+- CSV and KML export filenames now use the configured airport ID rather than hardcoded `6I2`.
+- KML placemark names for buffer entries include `[BUF]` suffix for quick identification in ForeFlight.
+- Longitude field accepts a positive value; westward sign is applied automatically.
+- `localStorage` key changed from any prior version to `notam_tracker_v2` to avoid conflicts with stale stored data.
+
+### Notes for other bases
+With configurable reference airport now implemented, the tool is ready for distribution to other BPS's. Each user sets their own airport ID and coordinates in settings and saves — no HTML editing required. See CONFIGURATION.md for setup instructions.
+
+---
+
+## [1.4.0] — 2026-05-24
+
+### Added
+- **Base selector dropdown** — 156 AEL bases pre-loaded with coordinates sourced from company KML file (Feb 2025). Search by base number, name, city, state, or airport code. Selecting a base auto-fills coordinates and updates the header.
+- **DD MM.mmmm coordinate format** — all coordinate display and manual entry uses degrees and decimal minutes, matching company standard.
+- **Manual coordinate override** — collapsible section for bases not in the lookup table (e.g. AE 189 Anadarko, future bases). Separate fields for degrees and decimal minutes. "Apply override" button commits the entry.
+- **Per-base airport codes** — stored in lookup table where known; used for FAA report mismatch detection.
+- Document-level drag prevention — Safari on macOS local files no longer navigates away when a PDF is dropped anywhere on the page.
+- Inline reset confirmation — replaces `confirm()` dialog (blocked in sandboxed iframes) with in-page Yes/Cancel buttons.
+
+### Changed
+- Button label: **Run Diff** → **Parse & Report** — more intuitive for single-file and two-file use cases alike.
+- Mismatch warning banner moved from above the drop zones to immediately below the Parse & Report button — visible in context after every parse attempt.
+- Header title now shows **base number** (e.g. `AE 173`) when a base is selected from the list, rather than airport code. Manual override mode shows coordinates in `DD MM N DDD MM W` format (whole degrees and minutes, no decimals).
+- `localStorage` key incremented to `notam_tracker_v3` — existing saved settings from prior versions will reset to defaults on first load.
+- File written entirely in Python to avoid shell heredoc size limits that were silently truncating the file and breaking all script execution.
+
+### Fixed
+- **Critical:** File was being truncated by shell heredoc at ~32KB, leaving the script block unclosed. Browser discarded all JavaScript, rendering buttons non-functional. Resolved by writing file exclusively from Python.
+- Safari local file drag-and-drop now correctly loads dropped PDFs into drop zones rather than navigating the browser to the file.
+
+### Base lookup table
+- 153 bases from Feb 2025 KML file
+- AE 172 (Jefferson County IFR): coordinates confirmed same location as AE 011 (KMVN)
+- AE 173 (Lebanon): coordinates updated to 6KY1 SpringView Hospital (37°34.14'N, 85°15.74'W) — permanent base location; aircraft previously hangared at 6I2 during hangar construction
+- AE 174 (Durant): coordinates confirmed at KDUA (33°56.38'N, 96°23.70'W)
+- AE 189 (Anadarko): no address on file — enter manually when known
