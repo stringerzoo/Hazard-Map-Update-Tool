@@ -88,3 +88,61 @@ Alert level thresholds and filter values reset to defaults on every page reload.
 Items to persist: min AGL, max range, Level 1/2/3 AGL thresholds, Level 1/2/3 colors.
 
 A "reset to defaults" button should accompany any persistent settings implementation.
+
+
+---
+
+## Base lookup table management
+
+The base lookup table is currently embedded directly in the HTML file as a JavaScript array (`BASE_LIST`). This means adding or updating a base requires editing the HTML — workable for occasional changes but not scalable as the fleet grows or bases move.
+
+### Near-term: lookup table editor
+
+A built-in editor panel would allow authorized users to:
+- Add a new base (ID, name, city, state, airport code, coordinates)
+- Edit an existing base's coordinates or airport code
+- Mark a base as inactive (hide from dropdown without deleting)
+- Export the current table as JSON for backup or sharing
+
+Changes would be saved to `localStorage` as an override layer on top of the embedded table, so the base HTML file doesn't need to be modified. A "restore embedded defaults" option would clear any local overrides.
+
+### Medium-term: external lookup file
+
+Move the base table to a separate `ael_bases.json` file loaded at runtime. This separates base data from application code — updating coordinates requires only replacing the JSON file, not touching the HTML. Requires either web hosting (so the JSON can be fetched via HTTP) or a packaging step that re-embeds the JSON into the HTML.
+
+### Longer-term: shared/synced table
+
+If the tool is deployed to multiple bases, each base independently maintaining its own lookup table creates drift. A shared source of truth — a hosted JSON file, a simple API, or a shared document — would ensure all bases see the same data. Access control and an audit trail would be needed given the safety-of-flight context.
+
+### Current state (v1.4.0)
+
+The base table is embedded directly in the HTML as the `BASE_LIST` JavaScript array. **The HTML file is the source of truth.** The `ael_bases_lookup.json` file was an intermediate artifact from the initial KML extraction workflow and is no longer needed — it can be deleted or archived.
+
+The `ael_bases_review.csv` is a human-readable reference only — useful for spot-checking coordinates or sharing with others, but it does not feed back into the tool.
+
+### Interim update workflow (current)
+
+Until a built-in editor is available, base table updates follow this process:
+
+1. Edit `ael_bases_review.csv` with corrected or new coordinates (add rows, fix existing entries, add airport codes)
+2. Send the updated CSV to Claude in a new conversation
+3. Claude re-generates the embedded `BASE_LIST` in the HTML and produces an updated `notam-hazard-tracker.html`
+4. Replace the HTML in the repo and commit
+
+The CSV is therefore the **human-editable source** for base data, and the HTML is the **deployed artifact**. Keep the CSV in the repo so it stays in sync with the embedded table.
+
+New base entries in the CSV should follow the existing column structure:
+
+| Column | Example | Notes |
+|---|---|---|
+| Base ID | `AE 189` | Normalized format — `AE NNN` |
+| Base Name | `Anadarko` | Short name as used operationally |
+| City | `Anadarko` | Physical city location |
+| State | `OK` | Two-letter abbreviation |
+| Airport | `KADHK` | FAA identifier; leave blank if unknown |
+| Lat (DD) | `35.052700` | Decimal degrees |
+| Lon (DD) | `98.094400` | Decimal degrees, positive (W implied) |
+| Lat (DD MM.mmmm) | `35 03.1620` | For reference; Claude recalculates from DD |
+| Lon (DD MM.mmmm) | `98 05.6640` | For reference; Claude recalculates from DD |
+| Source | `Verified (KADHK)` | How coordinates were obtained |
+| Notes | `` | Any flags or caveats |
