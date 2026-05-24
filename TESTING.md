@@ -216,3 +216,117 @@ On the very first test run, you cannot compare against expected outputs because 
 5. Repeat for TC-02, saving `test/expected/diff-normal.csv`
 6. These files now become the reference for all future runs
 7. Document the tower counts and spot-checked values in the test log
+
+
+---
+
+## TC-09 — Cross-browser compatibility
+
+Run this test case on each supported browser after any functional change, and whenever the tool is deployed to a new environment.
+
+### Browsers to test
+
+| Browser | Platform | Priority | Notes |
+|---|---|---|---|
+| Safari | macOS | Primary | Production environment for Base 173. Has `file://` font scaling quirk — sizes are deliberately over-declared to compensate. |
+| Chrome | macOS | Secondary | Standard rendering, no `file://` quirks. Over-declared font sizes may render slightly large — acceptable for now, documented in `FUTURE.md`. |
+| Chrome | Windows | Secondary | Current work machine environment. Same engine as macOS Chrome. |
+| Edge | Windows | Secondary | Default browser on GMR-issued Windows machines — relevant if tool is shared with other BPS's. Same Chromium engine as Chrome. |
+| Firefox | Any | Optional | Not common in operational environment. Test only if distribution broadens. |
+
+### What to check in each browser
+
+For each browser, run TC-01 (current month only) and TC-06 (KML validation) at minimum. Verify:
+
+1. **Layout** — drop zones, settings panel, results table, and export row all render without overlap or clipping
+2. **Font size** — text is comfortably readable without zooming; note any browser where sizes look significantly off
+3. **PDF parsing** — PDF.js loads from CDN and processes the fixture file without error
+4. **Drag and drop** — files can be dropped onto the drop zones (not just selected via click)
+5. **CSV export** — file downloads correctly and opens in Excel/Numbers
+6. **KML export** — file downloads correctly and is valid KML
+
+### Known rendering differences
+
+- **Safari (macOS, local file):** Font sizes appear smaller than declared due to `file://` scaling. Current stylesheet compensates with ~1.4× over-declaration. If upgrading to web hosting, see `FUTURE.md`.
+- **Chrome/Edge (any platform):** Standard rendering. Font sizes will appear proportionally larger than on Safari local file. This is expected and acceptable in the current version.
+- **All browsers:** PDF.js requires an internet connection on first load to fetch from CDN. Subsequent loads use the browser cache. Test in an offline environment only if offline use is a requirement.
+
+### Browser test log
+
+| Date | Version | Browser | Platform | TC-01 | TC-06 | Layout | Notes |
+|---|---|---|---|---|---|---|---|
+| 2026-05-23 | v1.0.0 | Safari | macOS | — | — | — | Establish baseline |
+| 2026-05-23 | v1.0.0 | Chrome | Windows | — | — | — | Work machine |
+| | | Edge | Windows | — | — | — | |
+| | | Chrome | macOS | — | — | — | |
+
+
+---
+
+## TC-10 — NOT LGTD and stack detection
+
+**Setup:** Requires a fixture PDF containing at least one stack with `NOT LGTD` status and at least one tower with `NOT LGTD` status (as opposed to `U/S`). Load as Current only.
+
+**Pass criteria:**
+1. Stacks with `NOT LGTD` and AGL ≥ min threshold appear in results
+2. Towers with `NOT LGTD` and AGL ≥ min threshold appear in results
+3. The **Unlit reason** column shows `NOT LGTD` (not `U/S`) for these entries
+4. The **Type** column shows `STACK` for stack entries and `TOWER` for tower entries
+5. Cranes and wind turbine farms with `NOT LGTD` do not appear in results
+
+---
+
+## TC-11 — Out of Range section
+
+**Setup:** Load `sample-current.pdf` as Current. Leave Previous empty.  
+**Settings:** Default (70 NM, 500 ft AGL).
+
+**Pass criteria:**
+1. Out of Range section appears if any entries met the height filter but exceeded 70 NM
+2. Section is collapsed by default and expands on click
+3. Entries in Out of Range do not appear in the Add section (no double-counting)
+4. Range values in Out of Range section are all > 70 NM
+5. AGL values in Out of Range section are all ≥ 500 ft
+6. Out of Range entries are absent from KML export
+7. Known out-of-range entries from the 5/24 fixture: HUF 03/884 (133.6 NM, 600 ft AGL) and MKL 05/228 (442 NM, 650 ft AGL, STACK, NOT LGTD)
+
+---
+
+## TC-12 — Mismatch detection
+
+Run each sub-case independently.
+
+**TC-12a — Same file in both zones**  
+Load the same PDF into both Previous and Current.  
+*Expected:* Amber banner appears with "same query date" warning.
+
+**TC-12b — Mismatched reference airport**  
+If a PDF queried around a different airport is available, load it as Current while configured for 6I2.  
+*Expected:* Amber banner shows airport mismatch.
+
+**TC-12c — Clean match**  
+Load 5/21 PDF as Previous and 5/24 PDF as Current, tool configured for 6I2, max range 70 NM.  
+*Expected:* No banner. Both PDFs are queried around 6I2 at 70 NM.
+
+**TC-12d — Radius mismatch**  
+Load any valid PDF as Current. Change Max range setting to 50 NM.  
+*Expected:* Amber banner notes radius difference between PDF header (70 NM) and tool setting (50 NM).
+
+---
+
+## TC-13 — Help modal
+
+**Pass criteria:**
+1. Clicking "? How to use" opens the modal
+2. Modal content is readable and complete (six workflow steps visible)
+3. Modal closes on ✕ button click
+4. Modal closes on click outside the modal panel
+5. Modal closes on Escape key
+6. Page content behind modal is not scrollable while modal is open
+7. FAA NOTAM Search link in Step 1 opens in a new tab
+
+---
+
+## Note on mismatch detection reliability
+
+The mismatch detection in TC-12 depends on the FAA PDF header format: "NOTAMs within N NM around XXX". If the FAA changes this format, detection will silently degrade. As part of TC-12c, verify the header was successfully parsed by confirming **no false-positive banner** appears on a known-good pair of PDFs. If the banner is absent on a clean pair, the parser is working. If it fires unexpectedly, inspect the raw PDF header text.
