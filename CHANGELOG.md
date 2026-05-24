@@ -63,3 +63,43 @@ Initial working version.
 - Altitude parser now handles entries where MSL is reported as `UNKNOWN` (e.g. `UNKNOWN (650FT AGL)`). Previously the parser required a numeric MSL value before the AGL parenthetical and silently dropped these entries — they now parse correctly and appear in results or the Out of Range section as appropriate. MSL displays as `—` in the table when not reported.
 - Radius mismatch detection tolerance tightened from ±5 NM to ±1 NM. The ±5 window was based on a mistaken assumption that the FAA search radius uses statute miles requiring conversion. The FAA PDF header reports the radius in NM directly, so a tight tolerance is correct.
 - Help modal and CONFIGURATION.md corrected to remove inaccurate statute-miles note. The FAA search input uses miles but the PDF header states radius in NM.
+
+---
+
+## [1.2.0] — 2026-05-24
+
+### Added
+- Buffer zone below min AGL threshold — configurable in Filter & Alert Settings, default 50 ft. Towers within the buffer (default: 450–499 ft AGL) are:
+  - Parsed and included in the ForeFlight KML overlay with a distinct color (default gray)
+  - Listed in a **Buffer Zone** section in the results (collapsed by default)
+  - Labeled `BUFFER` in CSV export
+  - Not included in the hazard map diff (Remove / Keep / Add) — for cockpit awareness only
+- Buffer color picker (Level 4) added to KML Alert Levels settings
+- Summary bar shows buffer entry count when buffer entries are present
+- KML legend updated to show buffer color and floor altitude
+
+### Documentation
+- CONFIGURATION.md: full operational rationale for the buffer zone, including FAR 135 / GOM minimums, terrain-variation reasoning, fixed-vs-percentage buffer analysis, and a table showing what appears where at each altitude band
+
+### Design rationale
+The buffer is a fixed value (not percentage-based) because terrain-induced altitude variation risk does not scale with the operational threshold. A fixed 50 ft margin is appropriate across all likely threshold configurations.
+
+### Changed
+- `parseTowers()` now returns `{ results, outOfRange }` object instead of a plain array
+- CSV export adds `Type` and `Unlit reason` columns
+
+### Fixed
+- Stacks with `NOT LGTD` status (e.g. MKL 05/228) were previously invisible to the parser on two counts: excluded structure type and unrecognized unlit trigger. Both corrected.
+
+### Known limitations
+- Mismatch detection depends on the FAA PDF header line "NOTAMs within N NM around XXX" — if the FAA changes their header format, detection will silently degrade rather than false-positive
+- Alert level settings and filter preferences still reset to defaults on page reload (persistent settings planned)
+
+---
+
+## [1.1.1] — 2026-05-24
+
+### Fixed
+- Altitude parser now handles entries where MSL is reported as `UNKNOWN` (e.g. `UNKNOWN (650FT AGL)`). Previously the parser required a numeric MSL value before the AGL parenthetical and silently dropped these entries — they now parse correctly and appear in results or the Out of Range section as appropriate. MSL displays as `—` in the table when not reported.
+- Radius mismatch detection tolerance tightened from ±5 NM to ±1 NM. The ±5 window was based on a mistaken assumption that the FAA search radius uses statute miles requiring conversion. The FAA PDF header reports the radius in NM directly, so a tight tolerance is correct.
+- Help modal and CONFIGURATION.md corrected to remove inaccurate statute-miles note. The FAA search input uses miles but the PDF header states radius in NM.
