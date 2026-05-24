@@ -249,6 +249,13 @@ input[type=color] { width: 40px; height: 32px; padding: 2px 3px; border: 1px sol
 .tbl td.dim { color: var(--text3); font-size: 14px; }
 .swatch-cell { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; vertical-align: middle; border: 1px solid rgba(0,0,0,.15); }
 
+/* BUFFER SECTION */
+.rs-head.buf    { background: var(--bg3); border-bottom-color: var(--border2); }
+.rs-title.buf   { color: var(--text3); }
+.rs-count.buf   { background: var(--bg3); color: var(--text3); border: 1px solid var(--border2); }
+.tbl tr.buf-row td { background: #f8f8f8; }
+.s-num.buf      { color: var(--text3); }
+
 /* EXPORT ROW */
 .export-row { display: flex; gap: 12px; align-items: center; margin-top: 18px; flex-wrap: wrap; }
 .export-btn {
@@ -338,9 +345,10 @@ input[type=color] { width: 40px; height: 32px; padding: 2px 3px; border: 1px sol
       <h3>Step 3 — Check settings</h3>
       <p>Open <strong>Filter &amp; Alert Settings</strong> and verify:</p>
       <ul>
-        <li><strong>Min AGL</strong> — towers below this are ignored entirely. Default: 500 ft.</li>
+        <li><strong>Min AGL</strong> — your operational threshold. Towers at or above this appear in the full diff and are candidates for the hazard map. Default: 500 ft.</li>
+        <li><strong>Buffer below min AGL</strong> — towers within this band below the min AGL threshold are parsed and included in the KML overlay for in-cockpit awareness, but are <em>not</em> included in the hazard map diff. Default: 50 ft (captures towers down to 450 ft AGL at default settings). See CONFIGURATION.md for operational rationale.</li>
         <li><strong>Max range (NM)</strong> — towers beyond this from <code>6I2</code> are excluded from the map and KML but listed in <em>Out of Range</em>. Default: 70 NM.</li>
-        <li><strong>Alert levels</strong> — three severity tiers controlling KML icon colors in ForeFlight.</li>
+        <li><strong>Alert levels</strong> — three severity tiers for qualifying towers, plus a separate Buffer color, all controlling KML icon colors in ForeFlight.</li>
       </ul>
 
       <h3>Step 4 — Run the diff</h3>
@@ -407,7 +415,12 @@ input[type=color] { width: 40px; height: 32px; padding: 2px 3px; border: 1px sol
         <div class="field-group">
           <label>Min AGL (ft) &#x2014; qualifier</label>
           <input type="number" id="min-agl" value="500" min="0" max="2000" step="50">
-          <div class="field-hint">Towers below this are ignored entirely</div>
+          <div class="field-hint">Operational threshold — towers at or above this appear in full results and on hazard map</div>
+        </div>
+        <div class="field-group">
+          <label>Buffer below min AGL (ft)</label>
+          <input type="number" id="buf-agl" value="50" min="0" max="500" step="10">
+          <div class="field-hint">Towers within this band below min AGL appear in KML only — not on hazard map</div>
         </div>
         <div class="field-group">
           <label>Max range (NM)</label>
@@ -461,6 +474,17 @@ input[type=color] { width: 40px; height: 32px; padding: 2px 3px; border: 1px sol
           </div>
           <div class="thresh-desc">Advisory</div>
         </div>
+
+        <div class="thresh-row" style="background:color-mix(in srgb, var(--bg3) 60%, white)">
+          <div class="thresh-swatch" id="sw-4"></div>
+          <div class="thresh-name" style="color:var(--text3)">Buffer</div>
+          <div class="thresh-range-desc">&lt; min AGL, &#x2265; (min AGL &#x2212; buffer)</div>
+          <div class="thresh-color-wrap">
+            <label>Color</label>
+            <input type="color" id="t4-color" value="#888888" oninput="syncSwatch(4)">
+          </div>
+          <div class="thresh-desc">KML only &#x2014; not plotted on hazard map</div>
+        </div>
       </div>
     </div>
   </div>
@@ -499,24 +523,35 @@ function syncSwatch(n) {
 }
 
 function getThresholds() {
+  var minAgl = parseInt(document.getElementById('min-agl').value) || 500;
+  var bufAgl = parseInt(document.getElementById('buf-agl').value);
+  if (isNaN(bufAgl) || bufAgl < 0) bufAgl = 50;
   return {
     t1:     { agl: parseInt(document.getElementById('t1-agl').value)   || 800, color: document.getElementById('t1-color').value },
     t2:     { agl: parseInt(document.getElementById('t2-agl').value)   || 600, color: document.getElementById('t2-color').value },
     t3:     {                                                                    color: document.getElementById('t3-color').value },
-    minAgl: parseInt(document.getElementById('min-agl').value)         || 500,
+    t4:     {                                                                    color: document.getElementById('t4-color').value },
+    minAgl: minAgl,
+    bufAgl: bufAgl,
+    bufFloor: minAgl - bufAgl,
     maxNm:  parseFloat(document.getElementById('max-nm').value)        || 70
   };
 }
 
 function towerLevel(agl, thresh) {
-  if (agl >= thresh.t1.agl) return 1;
-  if (agl >= thresh.t2.agl) return 2;
-  return 3;
+  if (agl >= thresh.t1.agl)   return 1;
+  if (agl >= thresh.t2.agl)   return 2;
+  if (agl >= thresh.minAgl)   return 3;
+  return 4; // buffer zone — below minAgl but above bufFloor
+}
+
+function isBufferEntry(agl, thresh) {
+  return agl < thresh.minAgl && agl >= thresh.bufFloor;
 }
 
 function levelColor(lv, thresh) { return thresh['t' + lv].color; }
 
-window.addEventListener('load', function() { syncSwatch(1); syncSwatch(2); syncSwatch(3); });
+window.addEventListener('load', function() { syncSwatch(1); syncSwatch(2); syncSwatch(3); syncSwatch(4); });
 
 // ── MODAL ───────────────────────────────────────────────────────────────────
 function openHelp() {
@@ -594,7 +629,9 @@ function extractHeader(text) {
 }
 
 // ── PARSE ───────────────────────────────────────────────────────────────────
-function parseTowers(text, minAgl, maxNm) {
+function parseTowers(text, thresh) {
+  var minAgl = thresh.bufFloor;
+  var maxNm  = thresh.maxNm;
   var blocks = text.split('!').map(function(b) { return b.replace(/\s+/g, ' ').trim(); });
   var results = [];
   var outOfRange = [];
@@ -638,7 +675,7 @@ function parseTowers(text, minAgl, maxNm) {
       agl = Math.round(parseFloat(aglOnly[1]));
       msl = 0; // MSL not reported
     }
-    if (agl < minAgl) continue;
+    if (agl < thresh.bufFloor) continue; // below buffer floor — ignore entirely
 
     // Location reference (text in parens after coordinate)
     var afterCoord = block.slice(block.indexOf(coordM[1]) + coordM[1].length);
@@ -752,7 +789,7 @@ async function runDiff() {
 
   try {
     var currText = await extractText(files.curr);
-    var currParsed = parseTowers(currText, thresh.minAgl, thresh.maxNm);
+    var currParsed = parseTowers(currText, thresh);
     var curr = currParsed.results;
     var currOOR = currParsed.outOfRange;
     var currHdr = extractHeader(currText);
@@ -761,23 +798,30 @@ async function runDiff() {
     if (files.prev) {
       setStatus('Parsing previous report\u2026');
       var prevText = await extractText(files.prev);
-      prev = parseTowers(prevText, thresh.minAgl, thresh.maxNm).results;
+      prev = parseTowers(prevText, thresh).results;
       prevHdr = extractHeader(prevText);
     }
 
     checkMismatches(currHdr, prevHdr, thresh);
 
-    var hasPrev = !!files.prev;
-    var d = hasPrev ? computeDiff(prev, curr) : { remove: [], keep: [], add: curr };
-    lastDiff = { d: d, hasPrev: hasPrev, curr: curr, outOfRange: currOOR, thresh: thresh };
+    // Split current results into qualifying (>= minAgl) and buffer (< minAgl, >= bufFloor)
+    var currQual = curr.filter(function(t) { return t.agl >= thresh.minAgl; });
+    var currBuf  = curr.filter(function(t) { return t.agl <  thresh.minAgl; });
 
+    var hasPrev = !!files.prev;
+    // Diff operates on qualifying towers only — buffer entries are not diffed
+    var prevQual = prev.filter(function(t) { return t.agl >= thresh.minAgl; });
+    var d = hasPrev ? computeDiff(prevQual, currQual) : { remove: [], keep: [], add: currQual };
+    lastDiff = { d: d, hasPrev: hasPrev, curr: currQual, bufEntries: currBuf, outOfRange: currOOR, thresh: thresh };
+
+    var bufNote = currBuf.length > 0 ? ' \u00B7 ' + currBuf.length + ' buffer entr' + (currBuf.length === 1 ? 'y' : 'ies') + ' (KML only)' : '';
     setStatus(
       hasPrev
-        ? curr.length + ' qualifying tower(s) \u00B7 ' + d.remove.length + ' remove, ' + d.keep.length + ' keep, ' + d.add.length + ' add'
-        : curr.length + ' qualifying tower(s) \u2265 ' + thresh.minAgl + ' ft AGL \u2014 all listed as Add (no previous report)',
+        ? currQual.length + ' qualifying tower(s) \u00B7 ' + d.remove.length + ' remove, ' + d.keep.length + ' keep, ' + d.add.length + ' add' + bufNote
+        : currQual.length + ' qualifying tower(s) \u2265 ' + thresh.minAgl + ' ft AGL \u2014 all listed as Add (no previous report)' + bufNote,
       'ok'
     );
-    renderResults(d, hasPrev, curr, currOOR, thresh);
+    renderResults(d, hasPrev, currQual, currBuf, currOOR, thresh);
 
   } catch(e) {
     setStatus('Error: ' + e.message, 'err');
@@ -788,28 +832,36 @@ async function runDiff() {
 }
 
 // ── RENDER ───────────────────────────────────────────────────────────────────
-function renderResults(d, hasPrev, curr, outOfRange, thresh) {
+function renderResults(d, hasPrev, curr, bufEntries, outOfRange, thresh) {
   var ts = new Date().toLocaleString();
   var html = '';
 
   // Summary bar
+  var bufCols = bufEntries.length > 0 ? ' 1fr' : '';
   if (hasPrev) {
-    html += '<div class="summary-bar" style="grid-template-columns:repeat(4,1fr)">' +
+    html += '<div class="summary-bar" style="grid-template-columns:repeat(4,1fr)' + bufCols + '">' +
       summaryCell(curr.length, 'total', 'Total', 'U/S towers \u2265 ' + thresh.minAgl + ' ft AGL') +
       summaryCell(d.remove.length, 'remove', 'Remove', 'Pull from hazard map') +
       summaryCell(d.keep.length,   'keep',   'Keep',   'No change needed') +
       summaryCell(d.add.length,    'add',    'Add',    'Plot on hazard map') +
+      (bufEntries.length > 0 ? summaryCell(bufEntries.length, 'buf', 'Buffer', 'KML only') : '') +
       '</div>';
   } else {
-    html += '<div class="summary-bar" style="grid-template-columns:1fr 1fr">' +
+    html += '<div class="summary-bar" style="grid-template-columns:1fr 1fr' + bufCols + '">' +
       summaryCell(curr.length,  'total', 'Total', 'U/S towers \u2265 ' + thresh.minAgl + ' ft AGL within ' + thresh.maxNm + ' NM') +
       summaryCell(d.add.length, 'add',   'Add',   'Plot all on hazard map') +
+      (bufEntries.length > 0 ? summaryCell(bufEntries.length, 'buf', 'Buffer', 'KML only') : '') +
       '</div>';
   }
 
   if (hasPrev) html += makeSection(d.remove, 'remove', 'Remove', 'pull these dots from the map', thresh);
   if (hasPrev) html += makeSection(d.keep,   'keep',   'Keep',   'dots remain unchanged', thresh);
   html += makeSection(d.add, 'add', hasPrev ? 'Add' : 'All Towers', hasPrev ? 'plot these on the map' : 'plot all on the map', thresh);
+
+  // Buffer section — KML only, not for hazard map
+  if (bufEntries.length > 0) {
+    html += makeSection(bufEntries, 'buf', 'Buffer Zone', thresh.minAgl + ' ft AGL \u2212 ' + thresh.bufAgl + ' ft buffer \u2014 KML only, do not plot on hazard map', thresh);
+  }
 
   // Out of range section
   if (outOfRange.length > 0) {
@@ -853,7 +905,8 @@ function renderResults(d, hasPrev, curr, outOfRange, thresh) {
     '<span><span class="kml-dot" style="background:' + thresh.t1.color + '"></span>Level 1 \u2265 ' + thresh.t1.agl + ' ft AGL</span>' +
     '<span><span class="kml-dot" style="background:' + thresh.t2.color + '"></span>Level 2 \u2265 ' + thresh.t2.agl + ' ft AGL</span>' +
     '<span><span class="kml-dot" style="background:' + thresh.t3.color + '"></span>Level 3 \u2265 ' + thresh.minAgl + ' ft AGL</span>' +
-    '<span style="font-style:italic">\u00B7 KML contains all ' + curr.length + ' qualifying towers/stacks within ' + thresh.maxNm + ' NM</span>' +
+    (bufEntries.length > 0 ? '<span><span class="kml-dot" style="background:' + thresh.t4.color + '"></span>Buffer ' + thresh.bufFloor + '\u2013' + (thresh.minAgl-1) + ' ft AGL (KML only)</span>' : '') +
+    '<span style="font-style:italic">\u00B7 KML: ' + curr.length + ' qualifying + ' + bufEntries.length + ' buffer towers/stacks</span>' +
     '</div>';
 
   document.getElementById('results').innerHTML = html;
@@ -931,13 +984,16 @@ function exportCSV() {
     d.keep.forEach(function(t)   { emitRow('KEEP',   t); });
   }
   d.add.forEach(function(t) { emitRow('ADD', t); });
+  if (lastDiff.bufEntries) {
+    lastDiff.bufEntries.forEach(function(t) { emitRow('BUFFER', t); });
+  }
 
   download(rows.join('\n'), 'notam_6I2_' + isoDate() + '.csv', 'text/csv');
 }
 
 function exportKML() {
   if (!lastDiff) return;
-  var curr = lastDiff.curr, thresh = lastDiff.thresh;
+  var curr = lastDiff.curr.concat(lastDiff.bufEntries || []), thresh = lastDiff.thresh;
 
   function hexToKml(hex) {
     var r = hex.slice(1,3), g = hex.slice(3,5), b = hex.slice(5,7);
