@@ -330,3 +330,28 @@ Load any valid PDF as Current. Change Max range setting to 50 NM.
 ## Note on mismatch detection reliability
 
 The mismatch detection in TC-12 depends on the FAA PDF header format: "NOTAMs within N NM around XXX". If the FAA changes this format, detection will silently degrade. As part of TC-12c, verify the header was successfully parsed by confirming **no false-positive banner** appears on a known-good pair of PDFs. If the banner is absent on a clean pair, the parser is working. If it fires unexpectedly, inspect the raw PDF header text.
+
+
+---
+
+## TC-14 — Buffer zone
+
+**Setup:** Load `sample-current.pdf` as Current. Leave Previous empty.  
+**Settings:** Min AGL 500 ft, Buffer 50 ft (default). Confirm buffer floor = 450 ft.
+
+**Pass criteria:**
+1. Towers with AGL 450–499 ft appear in the **Buffer Zone** section, not in Add
+2. Towers with AGL ≥ 500 ft appear in the Add section as normal
+3. Towers with AGL < 450 ft do not appear anywhere
+4. Buffer Zone section is collapsed by default; expands on click
+5. Summary bar shows a Buffer count cell when buffer entries are present
+6. KML export includes buffer entries with the buffer color (default gray)
+7. KML export legend shows the buffer floor altitude
+8. CSV export includes buffer entries with action `BUFFER`
+9. Setting buffer to 0 ft produces no buffer entries (450–499 ft towers disappear entirely)
+10. Setting buffer to 200 ft captures towers down to 300 ft AGL
+
+**TC-14b — Buffer does not affect diff logic**  
+Load 5/21 as Previous, 5/24 as Current.  
+Confirm that buffer entries from the current report do not appear in Remove, Keep, or Add sections — only in Buffer Zone.  
+Confirm that a tower present in both reports at 480 ft AGL appears in Buffer Zone of the current report, not in Keep.
