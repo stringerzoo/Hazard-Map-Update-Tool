@@ -1,6 +1,6 @@
 # NOTAM Hazard Tracker
 
-A standalone browser-based tool for AEL/GMR EMS helicopter bases to track unlit obstruction NOTAMs, maintain physical hazard maps, and generate ForeFlight moving-map overlays.
+A standalone browser-based tool for AEL EMS helicopter bases to track unlit obstruction NOTAMs, maintain physical hazard maps, and generate ForeFlight moving-map overlays.
 
 ## What it does
 
