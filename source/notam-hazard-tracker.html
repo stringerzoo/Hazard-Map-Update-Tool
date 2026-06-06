@@ -20,10 +20,16 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-size:20px;font-weight:400;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;}
 
-.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:18px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-.header-title{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:.08em;color:var(--accent);}
-.header-sep{color:var(--border2);}
-.header-sub{font-size:19px;color:var(--text2);}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.header-left{display:flex;flex-direction:column;gap:3px;}
+.header-main{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.header-appname{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--accent);letter-spacing:.04em;}
+.header-divider{font-family:var(--mono);font-size:18px;color:var(--border2);font-weight:300;}
+.header-base{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--text);}
+.header-sep{color:var(--border2);font-size:16px;}
+.header-loc{font-size:16px;color:var(--text2);}
+.header-version{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.06em;}
+.header-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .header-link{margin-left:auto;font-family:var(--mono);font-size:16px;font-weight:500;color:var(--accent);text-decoration:none;padding:6px 14px;border:1px solid var(--acc-b);border-radius:var(--r);background:var(--acc-l);transition:background .15s;}
 .header-link:hover{background:#c8dcf0;}
 .help-btn{font-family:var(--mono);font-size:16px;font-weight:600;background:none;border:1px solid var(--border2);border-radius:var(--r);color:var(--text3);padding:6px 14px;cursor:pointer;transition:all .15s;}
@@ -53,6 +59,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica
 .dz-clear:hover{border-color:var(--red);color:var(--red);background:var(--red-l);}
 .drop-zone.loaded-prev .dz-clear,.drop-zone.loaded-curr .dz-clear{display:block;}
 
+.section-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:22px;overflow:hidden;}
+.section-body{display:none;padding:0;}
+.section-body.open{display:block;padding:16px 22px 20px;}
 .settings-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:22px;overflow:hidden;}
 .settings-toggle{width:100%;background:var(--bg3);border:none;border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);text-align:left;}
 .settings-toggle:hover{background:#e4e4e4;}
@@ -108,12 +117,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica
 .thresh-swatch{width:24px;height:24px;border-radius:4px;border:1px solid rgba(0,0,0,.2);flex-shrink:0;}
 .thresh-name{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--text);width:80px;flex-shrink:0;}
 .thresh-name.buf{color:var(--text3);}
-.thresh-agl-wrap{display:flex;align-items:center;gap:9px;}
+.thresh-agl-wrap{display:flex;align-items:center;gap:9px;min-width:200px;}
 .thresh-agl-wrap label{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text2);}
 .thresh-agl-wrap input[type=number]{width:90px;font-family:var(--mono);font-size:17px;padding:6px 9px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;}
 .thresh-agl-wrap input[type=number]:focus{border-color:var(--accent);background:var(--bg2);}
 .thresh-agl-unit{font-family:var(--mono);font-size:15px;color:var(--text3);}
-.thresh-color-wrap{display:flex;align-items:center;gap:9px;}
+.thresh-color-wrap{display:flex;align-items:center;gap:9px;min-width:120px;}
 .thresh-color-wrap label{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text2);}
 input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);cursor:pointer;}
 .thresh-desc{font-size:15px;color:var(--text3);font-style:italic;}
@@ -142,12 +151,12 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
 .status-line.ok{color:var(--green);font-style:normal;font-weight:500;}
 
 .summary-bar{display:grid;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px;background:var(--bg2);}
-.summary-cell{padding:18px 22px;border-right:1px solid var(--border);}
+.summary-cell{padding:10px 16px;border-right:1px solid var(--border);}
 .summary-cell:last-child{border-right:none;}
-.s-num{font-family:var(--mono);font-size:40px;font-weight:600;line-height:1;margin-bottom:4px;}
+.s-num{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1;margin-bottom:2px;}
 .s-num.total{color:var(--accent);}.s-num.remove{color:var(--red);}.s-num.keep{color:var(--text3);}.s-num.add{color:var(--green);}.s-num.buf{color:var(--text3);}
-.s-label{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);}
-.s-desc{font-size:15px;color:var(--text3);margin-top:3px;}
+.s-label{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);}
+.s-desc{font-size:13px;color:var(--text3);margin-top:1px;}
 
 .result-section{margin-bottom:12px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
 .rs-head{display:flex;align-items:center;gap:11px;padding:11px 16px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
@@ -174,6 +183,7 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
 .tbl{width:100%;border-collapse:collapse;}
 .tbl th{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);padding:9px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap;}
 .tbl th.r{text-align:right;}
+.tbl th[title]{cursor:help;border-bottom:1px dashed var(--border2);}
 .tbl td{font-family:var(--mono);font-size:15px;padding:8px 16px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap;}
 .tbl tr:last-child td{border-bottom:none;}
 .tbl tr.remove-row td{background:#fdf2f2;}
@@ -206,16 +216,34 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
 .modal-body li{margin-bottom:7px;}
 .modal-body code{font-family:var(--mono);font-size:14px;background:var(--bg3);padding:1px 6px;border-radius:3px;color:var(--text);}
 .modal-body .warn-inline{background:var(--amb-l);border:1px solid var(--amb-b);border-radius:4px;padding:10px 14px;margin:12px 0;font-size:15px;color:var(--amber);}
+
+@media print {
+  .header-right, .controls-row, .settings-panel { display: none !important; }
+  .section-panel { border: none !important; }
+  .settings-toggle, #files-toggle { display: none !important; }
+  #files-body { display: none !important; }
+  .rs-body.collapsed { display: block !important; }
+  body { font-size: 12px; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-title" id="header-title">NOTAM // 6KY1</div>
-  <span class="header-sep">&#xB7;</span>
-  <div class="header-sub" id="header-sub">Obstruction Hazard Tracker &#xB7; AEL Base 173</div>
-  <button class="help-btn" onclick="openHelp()">? How to use</button>
-  <a class="header-link" href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener">FAA NOTAM Search &#x2197;</a>
+  <div class="header-left">
+    <div class="header-main">
+      <span class="header-appname">NOTAM Obstruction Hazard Tracker</span>
+      <span class="header-divider">//</span>
+      <span class="header-base" id="header-base">AE 173</span>
+      <span class="header-sep">&#xB7;</span>
+      <span class="header-loc" id="header-loc">Lebanon, KY</span>
+    </div>
+    <div class="header-version">version 1.4.0</div>
+  </div>
+  <div class="header-right">
+    <button class="help-btn" onclick="openHelp()">? How to use</button>
+    <a class="header-link" href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener">FAA NOTAM Search &#x2197;</a>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modal-overlay" onclick="closeHelpOutside(event)">
@@ -226,26 +254,25 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
     </div>
     <div class="modal-body">
       <h3>Overview</h3>
-      <p>This tool parses FAA obstruction NOTAM PDF exports, identifies unlit towers and stacks meeting your height and range criteria, and produces a hazard map diff and a ForeFlight KML overlay. Run once a month.</p>
+      <p>This tool parses FAA obstruction NOTAM PDF exports, identifies unlit towers and stacks meeting your height and range criteria, and produces a report of towers to add or remove from your base hazard map, along with a KML overlay for ForeFlight or Google Earth. Run once a month.</p>
       <h3>Step 1 &#x2014; Get the NOTAM report</h3>
       <ol>
         <li>Click <strong>FAA NOTAM Search &#x2197;</strong> in the top-right corner.</li>
-        <li>Acknowledge the disclaimer.</li>
         <li>Select <strong>Geography</strong> search type.</li>
-        <li>Enter your base airport identifier and set radius to <strong>70 NM</strong>.</li>
+        <li>Enter your base airport identifier, hospital identifier, or Lat/Lon coordinates and set radius to <strong>70 NM</strong>.</li>
         <li>Under Filter, select <strong>Obstruction</strong>. Select all and export as <strong>PDF</strong>.</li>
       </ol>
       <div class="warn-inline">&#9888; The tool&#x2019;s Max Range must match the FAA query radius. The mismatch detector flags differences over 1 NM.</div>
       <h3>Step 2 &#x2014; Load reports</h3>
-      <p>Drop the <strong>current month</strong> PDF into the right zone. Optionally drop last month&#x2019;s into the left zone for the Remove/Keep/Add diff.</p>
+      <p>Drop the <strong>current month</strong> PDF into the right zone. Optionally drop last month&#x2019;s export PDF into the left zone for a differences analysis, showing which obstructions to add, keep, and remove.</p>
       <h3>Step 3 &#x2014; Check settings</h3>
       <ul>
-        <li><strong>Base</strong> &#x2014; select from the dropdown. Coordinates fill automatically. Use manual override for unlisted bases.</li>
+        <li><strong>Base</strong> &#x2014; select from the dropdown. Coordinates fill automatically. Use the <em>Manual coordinate override</em> section for bases not yet in the list (e.g. AE 189). The Airport ID and Base Name fields there affect only the header display and mismatch detection labels &#x2014; they do not permanently modify the base list.</li>
         <li><strong>Min AGL</strong> &#x2014; hazard map threshold. Default: 500 ft.</li>
         <li><strong>Buffer</strong> &#x2014; KML-only band below min AGL. Default: 50 ft.</li>
         <li><strong>Max range</strong> &#x2014; towers beyond this excluded. Default: 70 NM.</li>
       </ul>
-      <h3>Step 4 &#x2014; Run the diff</h3>
+      <h3>Step 4 &#x2014; Click Parse &amp; Report</h3>
       <ul>
         <li><strong>Remove</strong> &#x2014; pull dots from hazard map.</li>
         <li><strong>Keep</strong> &#x2014; no change needed.</li>
@@ -253,8 +280,10 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
         <li><strong>Buffer Zone</strong> &#x2014; KML only, do not plot on map.</li>
         <li><strong>Out of Range</strong> &#x2014; entries that meet the height filter but fall outside your max range setting. The FAA&#x2019;s geography search uses a bounding box rather than a precise circle, so it sometimes returns towers beyond the stated radius &#x2014; occasionally by a significant distance. These are listed here for transparency so you can confirm they were seen and correctly excluded, not silently dropped.</li>
       </ul>
-      <h3>Step 5 &#x2014; Update hazard map &amp; export KML</h3>
-      <p>Work through Remove and Add to update the wall map. Then click <strong>Export KML for ForeFlight</strong> and import in ForeFlight: <strong>Maps &#x2192; Layers &#x2192; Import File</strong>.</p>
+      <h3>Step 5 &#x2014; Update hazard map &amp; export</h3>
+      <p>Work through Remove and Add to update the wall map. Then click <strong>Export KML for ForeFlight</strong> and import in ForeFlight or Google Earth.</p>
+      <p><strong>Export CSV</strong> produces a full spreadsheet of results with one row per tower, including action (ADD / KEEP / REMOVE / BUFFER), range, bearing, MSL, AGL, and the original NOTAM location reference. Useful for record-keeping, month-to-month comparison, and validating parser output during testing.</p>
+      <p><em>Tip:</em> To save the on-screen report as a PDF, use your browser&#x2019;s <strong>File &#x2192; Print &#x2192; Save as PDF</strong> function.</p>
       <h3>Notes</h3>
       <ul>
         <li>All settings are saved to your browser automatically.</li>
@@ -262,13 +291,25 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
         <li>Coordinates shown and entered in DD MM.mmmm format.</li>
         <li>This tool runs entirely in your browser. No data is sent anywhere.</li>
       </ul>
+      <hr style="border:none;border-top:1px solid var(--border);margin:20px 0;">
+      <p style="font-size:14px;color:var(--text3);">
+        Source code and documentation:
+        <a href="https://github.com/stringerzoo/Hazard-Map-Update-Tool" target="_blank" rel="noopener"
+           style="color:var(--accent);text-decoration:none;font-family:var(--mono);font-size:13px;">
+          github.com/stringerzoo/Hazard-Map-Update-Tool &#x2197;
+        </a>
+      </p>
     </div>
   </div>
 </div>
 
 <div class="main">
-  <div class="slabel">Reports</div>
-  <div class="drop-grid">
+  <div class="section-panel" id="files-panel">
+    <button class="settings-toggle open" id="files-toggle" onclick="toggleFiles()">
+      <span class="arrow" style="transform:rotate(90deg)">&#x25B6;</span> FAA NOTAM Export File(s)
+    </button>
+    <div class="section-body open" id="files-body">
+      <div class="drop-grid">
     <div class="drop-zone" id="dz-prev" onclick="dzClick('prev')">
       <div class="dz-role prev">Previous month</div>
       <div class="dz-icon">&#x1F4C4;</div>
@@ -284,6 +325,8 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
       <div class="dz-hint">Required</div>
       <div class="dz-filename" id="fn-curr"></div>
       <button class="dz-clear" onclick="clearDz(event,'curr')">&#x2715; clear</button>
+    </div>
+    </div>
     </div>
   </div>
 
@@ -365,28 +408,28 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
         <div class="thresh-swatch" id="sw-1"></div>
         <div class="thresh-name">Level 1</div>
         <div class="thresh-agl-wrap"><label>AGL &#x2265;</label><input type="number" id="t1-agl" value="800" min="0" max="5000" step="50"><span class="thresh-agl-unit">ft</span></div>
-        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t1-color" value="#cc0000" oninput="syncSwatch(1)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t1-color" value="#cc0000" oninput="syncSwatch(1)"></div>
         <div class="thresh-desc">Critical</div>
       </div>
       <div class="thresh-row">
         <div class="thresh-swatch" id="sw-2"></div>
         <div class="thresh-name">Level 2</div>
         <div class="thresh-agl-wrap"><label>AGL &#x2265;</label><input type="number" id="t2-agl" value="600" min="0" max="5000" step="50"><span class="thresh-agl-unit">ft</span></div>
-        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t2-color" value="#e07000" oninput="syncSwatch(2)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t2-color" value="#e07000" oninput="syncSwatch(2)"></div>
         <div class="thresh-desc">Caution</div>
       </div>
       <div class="thresh-row">
         <div class="thresh-swatch" id="sw-3"></div>
         <div class="thresh-name">Level 3</div>
         <div class="thresh-range-desc">&lt; Level 2, &#x2265; min AGL</div>
-        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t3-color" value="#1a4f8a" oninput="syncSwatch(3)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t3-color" value="#1a4f8a" oninput="syncSwatch(3)"></div>
         <div class="thresh-desc">Advisory</div>
       </div>
       <div class="thresh-row buf-row">
         <div class="thresh-swatch" id="sw-4"></div>
         <div class="thresh-name buf">Buffer</div>
         <div class="thresh-range-desc">&lt; min AGL, &#x2265; (min &#x2212; buffer)</div>
-        <div class="thresh-color-wrap"><label>Color</label><input type="color" id="t4-color" value="#888888" oninput="syncSwatch(4)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t4-color" value="#888888" oninput="syncSwatch(4)"></div>
         <div class="thresh-desc">KML only</div>
       </div>
 
@@ -437,7 +480,7 @@ var manualMode=false;
 function ddmmToDD(d,m){return d+m/60;}
 function ddToDeg(v){return Math.floor(Math.abs(v));}
 function ddToMin(v){return(Math.abs(v)-Math.floor(Math.abs(v)))*60;}
-function fmtCoord(v){var d=Math.floor(Math.abs(v));var m=(Math.abs(v)-d)*60;return d+'\u00B0 '+m.toFixed(4)+'\u2032';}
+function fmtCoord(v){var d=Math.floor(Math.abs(v));var m=(Math.abs(v)-d)*60;return d+'\u00B0 '+m.toFixed(2)+'\u2032';}
 
 // ── BASE SELECTOR ──────────────────────────────────────────────────────────
 function buildList(q){
@@ -466,13 +509,13 @@ function selectBase(id){
   document.getElementById('base-search').value=base.id+' \u2014 '+base.name+', '+base.state;
   document.getElementById('base-list').classList.remove('open');
   if(base.lat){
-    REF={lat:base.lat,lon:-base.lon,id:base.airport||base.id,name:base.name,baseNum:base.id};
+    REF={lat:base.lat,lon:-base.lon,id:base.airport||base.id,name:base.name,baseNum:base.id,city:base.city,state:base.state};
     document.getElementById('cfg-airport').value=base.airport||'';
     document.getElementById('cfg-name').value=base.name;
     document.getElementById('lat-deg').value=ddToDeg(base.lat);
-    document.getElementById('lat-min').value=ddToMin(base.lat).toFixed(4);
+    document.getElementById('lat-min').value=ddToMin(base.lat).toFixed(2);
     document.getElementById('lon-deg').value=ddToDeg(base.lon);
-    document.getElementById('lon-min').value=ddToMin(base.lon).toFixed(4);
+    document.getElementById('lon-min').value=ddToMin(base.lon).toFixed(2);
     showCoords(base.airport,base.lat,base.lon);
   }else{
     document.getElementById('coords-display').innerHTML='<div style="color:var(--red)">No coordinates on file \u2014 enter manually below.</div>';
@@ -507,19 +550,22 @@ function applyManualCoords(){
 }
 
 function updateHeader(){
-  var title;
+  var baseStr,locStr;
   if(manualMode){
-    // DD MM N DDD MM W format
     var latD=Math.floor(Math.abs(REF.lat));
     var latM=Math.floor((Math.abs(REF.lat)-latD)*60);
     var lonD=Math.floor(Math.abs(REF.lon));
     var lonM=Math.floor((Math.abs(REF.lon)-lonD)*60);
-    title=latD+' '+String(latM).padStart(2,'0')+' N  '+String(lonD).padStart(3,'0')+' '+String(lonM).padStart(2,'0')+' W';
+    baseStr=REF.id||REF.name||'Manual';
+    locStr=latD+' '+String(latM).padStart(2,'0')+' N  '+String(lonD).padStart(3,'0')+' '+String(lonM).padStart(2,'0')+' W';
   }else{
-    title=REF.baseNum||REF.id||REF.name;
+    baseStr=REF.baseNum||REF.id||REF.name;
+    locStr=(REF.name||'')+(REF.state?', '+REF.state:'');
   }
-  document.getElementById('header-title').textContent='NOTAM // '+title;
-  document.getElementById('header-sub').textContent='Obstruction Hazard Tracker \u00B7 '+(REF.name||'');
+  var baseEl=document.getElementById('header-base');
+  var locEl=document.getElementById('header-loc');
+  if(baseEl)baseEl.textContent=baseStr;
+  if(locEl)locEl.textContent=locStr;
 }
 
 var baseSearchEl=document.getElementById('base-search');
@@ -528,6 +574,15 @@ baseSearchEl.addEventListener('focus',function(){buildList(this.value);document.
 baseSearchEl.addEventListener('blur',function(){setTimeout(function(){document.getElementById('base-list').classList.remove('open');},200);});
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────
+function toggleFiles(){
+  var btn=document.getElementById('files-toggle');
+  var body=document.getElementById('files-body');
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+  var arrow=btn.querySelector('.arrow');
+  arrow.style.transform=body.classList.contains('open')?'rotate(90deg)':'rotate(0deg)';
+}
+
 function toggleSettings(){
   document.getElementById('settings-toggle').classList.toggle('open');
   document.getElementById('settings-body').classList.toggle('open');
@@ -747,6 +802,13 @@ async function runDiff(){
   document.getElementById('run-btn').disabled=true;
   document.getElementById('results').innerHTML='';
   setStatus('Parsing current report\u2026');
+  // Collapse file drop zones for cleaner post-parse view and printing
+  var fb=document.getElementById('files-body');
+  var ft=document.getElementById('files-toggle');
+  if(fb&&fb.classList.contains('open')){
+    fb.classList.remove('open');ft.classList.remove('open');
+    var arr=ft.querySelector('.arrow');if(arr)arr.style.transform='rotate(0deg)';
+  }
   try{
     var ct=await extractText(files.curr);
     var cp=parseTowers(ct,thresh);
@@ -783,7 +845,7 @@ function makeSection(rows,cls,title,hint,thresh,collapsed){
       var lv=towerLevel(t.agl,thresh),col=levelColor(lv,thresh);
       return '<tr class="'+cls+'-row"><td><span class="swatch-cell" style="background:'+col+'"></span>'+t.id+'</td><td class="dim">'+t.structType+'</td><td class="r">'+t.nm+'</td><td class="r">'+t.brg+'\u00B0\u00A0'+cardinal(t.brg)+'</td><td class="r">'+(t.msl>0?t.msl.toLocaleString():'\u2014')+'</td><td class="r" style="color:'+col+';font-weight:600">'+t.agl.toLocaleString()+'</td><td class="dim">'+t.unlitReason+'</td><td class="dim">'+t.loc+'</td></tr>';
     }).join('');
-    body='<table class="tbl"><thead><tr><th>NOTAM</th><th>Type</th><th class="r">Range (NM)</th><th class="r">Bearing</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th>Location ref</th></tr></thead><tbody>'+rh+'</tbody></table>';
+    body='<table class="tbl"><thead><tr><th>NOTAM</th><th>Type</th><th class="r" title="Distance from the base reference point selected in Settings">Range (NM) ⓘ</th><th class="r" title="True bearing from the base reference point selected in Settings">Bearing ⓘ</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th title="Location reference as published in the original NOTAM, relative to the nearest charted fix">Location ref ⓘ</th></tr></thead><tbody>'+rh+'</tbody></table>';
   }
   return '<div class="result-section"><div class="rs-head '+cls+'"><span class="rs-title '+cls+'">'+title+'</span><span class="rs-count '+cls+'">'+rows.length+'</span><span class="rs-hint">'+hint+'</span><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:'+(collapsed?'rotate(0deg)':'rotate(90deg)')+'">&#x25B6;</span></div><div class="rs-body'+(collapsed?' collapsed':'')+'">'+body+'</div></div>';
 }
@@ -803,7 +865,7 @@ function renderResults(d,hasPrev,curr,bufEntries,oor,thresh){
   if(bufEntries.length>0)html+=makeSection(bufEntries,'buf','Buffer Zone',thresh.bufFloor+'\u2013'+(thresh.minAgl-1)+' ft AGL \u2014 KML only, do not plot on hazard map',thresh,true);
   if(oor.length>0){
     var or2=oor.map(function(t){return'<tr class="oor-row"><td class="dim">'+t.structType+'</td><td class="dim">'+t.id+'</td><td class="r">'+t.nm+'</td><td class="r">'+t.brg+'\u00B0\u00A0'+cardinal(t.brg)+'</td><td class="r">'+(t.msl>0?t.msl.toLocaleString():'\u2014')+'</td><td class="r">'+t.agl.toLocaleString()+'</td><td class="dim">'+t.unlitReason+'</td><td class="dim">'+t.loc+'</td></tr>';}).join('');
-    html+='<div class="result-section" style="margin-top:20px"><div class="rs-head oor"><span class="rs-title oor">Out of Range</span><span class="rs-count oor">'+oor.length+'</span><span class="rs-hint">meet height filter but outside '+thresh.maxNm+' NM \u2014 the FAA query sometimes returns entries beyond the stated radius; listed for audit, not silently dropped</span><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:rotate(0deg)">&#x25B6;</span></div><div class="rs-body collapsed"><table class="tbl"><thead><tr><th>Type</th><th>NOTAM</th><th class="r">Range (NM)</th><th class="r">Bearing</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th>Location ref</th></tr></thead><tbody>'+or2+'</tbody></table></div></div>';
+    html+='<div class="result-section" style="margin-top:20px"><div class="rs-head oor"><span class="rs-title oor">Out of Range</span><span class="rs-count oor">'+oor.length+'</span><span class="rs-hint">meet height filter but outside '+thresh.maxNm+' NM \u2014 the FAA query sometimes returns entries beyond the stated radius; listed for audit, not silently dropped</span><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:rotate(0deg)">&#x25B6;</span></div><div class="rs-body collapsed"><table class="tbl"><thead><tr><th>Type</th><th>NOTAM</th><th class="r" title="Distance from the base reference point selected in Settings">Range (NM) ⓘ</th><th class="r" title="True bearing from the base reference point selected in Settings">Bearing ⓘ</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th title="Location reference as published in the original NOTAM, relative to the nearest charted fix">Location ref ⓘ</th></tr></thead><tbody>'+or2+'</tbody></table></div></div>';
   }
   html+='<div class="export-row"><button class="export-btn" onclick="exportCSV()">Export CSV</button><button class="export-btn kml" onclick="exportKML()">Export KML for ForeFlight</button><span class="export-ts">Generated '+ts+'</span></div>';
   html+='<div class="kml-legend"><span>KML colors:</span><span><span class="kml-dot" style="background:'+thresh.t1.color+'"></span>Level 1 \u2265 '+thresh.t1.agl+' ft</span><span><span class="kml-dot" style="background:'+thresh.t2.color+'"></span>Level 2 \u2265 '+thresh.t2.agl+' ft</span><span><span class="kml-dot" style="background:'+thresh.t3.color+'"></span>Level 3 \u2265 '+thresh.minAgl+' ft</span>'+(bufEntries.length>0?'<span><span class="kml-dot" style="background:'+thresh.t4.color+'"></span>Buffer '+thresh.bufFloor+'\u2013'+(thresh.minAgl-1)+' ft</span>':'')+'<span style="font-style:italic">\u00B7 KML: '+curr.length+' qualifying + '+bufEntries.length+' buffer</span></div>';
