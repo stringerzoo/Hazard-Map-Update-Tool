@@ -133,3 +133,46 @@ With configurable reference airport now implemented, the tool is ready for distr
 - AE 173 (Lebanon): coordinates updated to 6KY1 SpringView Hospital (37°34.14'N, 85°15.74'W) — permanent base location; aircraft previously hangared at 6I2 during hangar construction
 - AE 174 (Durant): coordinates confirmed at KDUA (33°56.38'N, 96°23.70'W)
 - AE 189 (Anadarko): no address on file — enter manually when known
+
+---
+
+## [1.4.1] — 2026-05-25
+
+### Changed
+- **Header redesign** — new two-line layout: app name + base ID + location on the left, version number below; How to Use and FAA NOTAM Search buttons on the right. Location shows City, ST for list-selected bases and DD MM N DDD MM W for manual override.
+- **Coordinate precision** — reduced from 4 to 2 decimal places of minutes throughout (DD MM.dd), matching company standard and avoiding false precision.
+- **Column header tooltips** — Range and Bearing columns now show an ⓘ indicator with hover text explaining they reference the base reference point in Settings. Location ref column clarifies it is the original NOTAM reference relative to the nearest charted fix.
+- **Color selector alignment** — KML Alert Level rows now align the color picker column vertically across all four levels. Color label updated to indicate clicking selects a color.
+- **Settings panel label** — renamed from "Filter & Alert Settings" to "Settings".
+
+### Fixed (modal content)
+- **Overview** — clarified output: "produces a report of towers to add or remove from your base hazard map, along with a KML overlay for ForeFlight or Google Earth."
+- **Step 1** — removed "Acknowledge the disclaimer" sub-step; updated identifier field description to "airport identifier, hospital identifier, or Lat/Lon coordinates."
+- **Step 2** — revised to: "Optionally drop last month's export PDF into the left zone for a differences analysis, showing which obstructions to add, keep, and remove."
+- **Step 3** — clarified that Airport ID and Base Name fields in manual override affect header display and mismatch detection labels only — they do not permanently modify the base list.
+- **Step 5** — added CSV explanation (record-keeping, month-to-month comparison, test validation) and tip for saving on-screen report as PDF using browser print function.
+
+### Documentation
+- FUTURE.md: added KML-to-ForeFlight EFB transfer friction as a known distribution blocker.
+- FUTURE.md: added formatted PDF report as a planned feature.
+
+---
+
+## [1.5.0] — 2026-06-06
+
+### Added
+- **Collapsible FAA NOTAM Export File(s) panel** — drop zones now sit under a toggle-arrow header matching the Settings panel style. Opens by default on load; automatically collapses when Parse & Report is clicked, leaving a cleaner view of results and a tidier print output.
+- **Print stylesheet** — browser File → Print hides drop zones, Settings panel, and button row. Collapsed result sections are expanded in print output so nothing is cut off.
+- **Version comment in HTML header** — version number, date, and repository URL now appear as a comment at the top of the file for easy identification in any text editor.
+- **GitHub repo link** — added to the bottom of the How to Use modal, below a rule, linking to `https://github.com/stringerzoo/Hazard-Map-Update-Tool`.
+
+### Changed
+- **Summary bar** — numbers reduced from 40px to 22px; cell padding halved; label and description text tightened. Boxes are approximately half their previous height.
+- **Version number** — bumped to 1.5.0 in both the HTML comment and the header display.
+
+### Fixed
+- **Layout regression** — a mangled `</div>div class="settings-panel">` tag (introduced during a prior replacement pass) caused `.main` to never close properly, rendering the Settings panel and Parse & Report button at full viewport width outside the constrained layout. Fixed.
+- **Orphan closing divs** — two extra `</div>` tags left over from the section-panel wrapping process were removed.
+
+### Testing
+- TC-11 validated against 2026-06-05 6KY1 report: MKL 05/228 (442 NM), HUF 03/884 (133.6 NM), and HUF 04/651 (199.1 NM) correctly appeared in Out of Range, confirming the FAA bounding-box filter and audit trail are working as intended.
