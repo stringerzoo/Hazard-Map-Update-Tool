@@ -35,20 +35,58 @@ Fixtures live in `test/fixtures/`. They are real or anonymized NOTAM PDFs that c
 | `sample-current.pdf` | A real obstruction NOTAM export with a known mix of towers: some above 800 ft AGL, some 600–800, some 500–600, some below 500, some outside 70 NM, cranes, and power lines. |
 | `sample-previous.pdf` | An earlier export that shares some towers with `sample-current.pdf` and omits others — enabling diff testing. |
 | `sample-no-qualifiers.pdf` | An obstruction NOTAM export where no towers meet the minimum AGL/range criteria. Should produce an empty result set. |
+| `notams-obst-6ky1-2026-06-05.pdf` | Real 6KY1 report — used for reissue detection testing (TC-18). |
+| `notams-obst-6ky1-2026-06-18.pdf` | Real 6KY1 report — used for reissue detection testing (TC-18). Contains known reissue, genuine remove, and genuine add relative to the June 5 report. |
 
 The first time you run the tool against `sample-current.pdf` and are satisfied the output is correct, save that output as `test/expected/current-only.csv`. This becomes the reference for all future runs.
 
-**Do not modify fixture PDFs.** If a fixture becomes outdated (e.g., a NOTAM expires and you want to reflect reality), create a new fixture file and document it — don't overwrite the original.
+**Do not modify fixture PDFs.** If a fixture becomes outdated, create a new fixture file and document it — don't overwrite the original.
+
+---
+
+## Test case categories
+
+Test cases fall into three categories:
+
+### 🔁 Regression tests
+Run these before every release and after any functional change to parsing, filtering, diff, reissue detection, or export logic. These are the core safety checks.
+
+> **TC-01, TC-02, TC-03, TC-04, TC-05, TC-07, TC-08, TC-09, TC-10, TC-11, TC-14, TC-14b, TC-18, TC-18b**
+
+### ⚙️ Conditional tests
+Run these only when the relevant subsystem has changed. Safe to skip if the affected area was not touched.
+
+| Test | Run when... |
+|---|---|
+| TC-06 | KML export logic or ForeFlight import workflow changes |
+| TC-12 | Mismatch detection or PDF header parsing changes |
+| TC-13 | Modal content or modal interaction behavior changes |
+| TC-15, TC-15b | Base selector, settings persistence, or coordinate handling changes |
+
+### 📋 Historical record
+These tests were one-time validations for specific releases. They document what was verified at the time and do not need to be re-run. Retained for audit trail purposes.
+
+> **TC-16** (v1.4.0 UI), **TC-17** (v1.4.1 regression), **TC-18c** (v1.6.0 arrow placement)
+
+---
+
+## Pre-release checklist
+
+Before tagging any release for operational use:
+
+- [ ] All 🔁 Regression tests pass
+- [ ] Relevant ⚙️ Conditional tests pass for this release's changes
+- [ ] No JavaScript console errors during any test run
+- [ ] CHANGELOG updated with version, date, and test sign-off
+- [ ] Version number matches in HTML comment, header display, and Git tag
 
 ---
 
 ## Test cases
 
-Run all cases in order. Record pass/fail for each.
-
 ---
 
-### TC-01 — Current month only, no previous
+### TC-01 — Current month only, no previous 🔁
 
 **Setup:** Load `sample-current.pdf` as Current. Leave Previous empty.  
 **Settings:** Min AGL 500 ft, Max range 70 NM, Level 1 ≥ 800, Level 2 ≥ 600.
@@ -56,49 +94,36 @@ Run all cases in order. Record pass/fail for each.
 **Expected behavior:**
 - No diff sections (Remove / Keep not shown)
 - All qualifying towers appear in the Add section
-- Summary bar shows only Total and Add counts (no Remove/Keep cells)
+- Summary bar shows only Total and Add counts
 
 **Pass criteria:**
-1. Tower count matches the known count from the fixture (document this number when you establish the fixture)
+1. Tower count matches the known count from the fixture
 2. No tower with AGL < 500 ft appears in results
 3. No tower with range > 70 NM appears in results
 4. No crane, stack, power line, or wind turbine entry appears
-5. Export CSV — open in Excel and verify row count matches on-screen count
-6. Compare CSV to `test/expected/current-only.csv` — all rows must match exactly (NOTAM ID, range, bearing, MSL, AGL, location ref)
+5. Export CSV — row count matches on-screen count
+6. Compare CSV to `test/expected/current-only.csv` — all rows match exactly
 
 ---
 
-### TC-02 — Diff with previous month
+### TC-02 — Diff with previous month 🔁
 
 **Setup:** Load `sample-previous.pdf` as Previous, `sample-current.pdf` as Current.  
 **Settings:** Same as TC-01.
 
-**Expected behavior:**
-- Three sections: Remove, Keep, Add
-- Remove: towers in previous but not current
-- Keep: towers in both
-- Add: towers in current but not previous
-- Remove + Keep + Add = total count from TC-01 (Add + Keep = current total)
-
 **Pass criteria:**
-1. Remove + Keep count equals the qualifying tower count from the previous fixture (establish and document this)
-2. Keep + Add count equals the qualifying tower count from the current fixture (TC-01 result)
+1. Remove + Keep count equals the qualifying tower count from the previous fixture
+2. Keep + Add count equals the qualifying tower count from the current fixture
 3. No tower appears in more than one section
-4. Export CSV — verify Action column contains only REMOVE, KEEP, or ADD
+4. Export CSV — Action column contains only REMOVE, KEEP, ADD, REISSUED, or BUFFER
 5. Compare CSV to `test/expected/diff-normal.csv`
 
 ---
 
-### TC-03 — No qualifying towers
+### TC-03 — No qualifying towers 🔁
 
 **Setup:** Load `sample-no-qualifiers.pdf` as Current. Leave Previous empty.  
 **Settings:** Same as TC-01.
-
-**Expected behavior:**
-- Tool completes without error
-- Summary shows 0 for all counts
-- Add section shows "None"
-- KML export produces a valid file with zero placemarks (or gracefully declines)
 
 **Pass criteria:**
 1. No JavaScript error in browser console
@@ -107,285 +132,258 @@ Run all cases in order. Record pass/fail for each.
 
 ---
 
-### TC-04 — Threshold sensitivity
+### TC-04 — Threshold sensitivity 🔁
 
 **Setup:** Load `sample-current.pdf` as Current. Leave Previous empty.  
-**Settings:** Raise Min AGL to 800 ft (so only Level 1 towers qualify).
+**Settings:** Raise Min AGL to 800 ft.
 
 **Pass criteria:**
 1. Tower count is less than or equal to the TC-01 count
 2. Every tower shown has AGL ≥ 800 ft
-3. Lowering Min AGL back to 500 ft and re-running restores the TC-01 count exactly
+3. Lowering Min AGL back to 500 ft restores the TC-01 count exactly
 
 ---
 
-### TC-05 — Alert level coloring
+### TC-05 — Alert level coloring 🔁
 
 **Setup:** Load `sample-current.pdf` as Current. Leave Previous empty.  
-**Settings:** Default thresholds (Level 1 ≥ 800, Level 2 ≥ 600).
+**Settings:** Default thresholds.
 
 **Pass criteria:**
-1. In the results table, every row with AGL ≥ 800 has a red color swatch
+1. Every row with AGL ≥ 800 has a red swatch
 2. Every row with AGL 600–799 has an amber swatch
 3. Every row with AGL 500–599 has a blue swatch
-4. Change Level 1 color to a custom color — verify the swatch in the settings panel updates immediately and the table updates after re-run
+4. Changing Level 1 color updates the swatch immediately and the table after re-run
 
 ---
 
-### TC-06 — KML structure validation
+### TC-06 — KML structure validation ⚙️
 
 **Setup:** Complete TC-01. Export KML.
 
 **Pass criteria:**
-1. KML file opens in Google Earth (desktop or web) without error
+1. KML file opens in Google Earth without error
 2. Placemark count equals the qualifying tower count from TC-01
 3. Tap a placemark — popup shows NOTAM ID, MSL, AGL, range, bearing, location ref
 4. Icon color matches the alert level color for that tower's AGL
-5. Import into ForeFlight — layer appears on map, placemarks visible, tap callout shows correct data
-6. Re-run TC-01 and re-export KML — the new KML is identical to the previous (deterministic output)
+5. Import into ForeFlight — layer appears on map, tap callout shows correct data
+6. Re-export KML — output is structurally identical (deterministic)
 
 ---
 
-### TC-07 — Repeatability
+### TC-07 — Repeatability 🔁
 
 **Setup:** Run TC-01 twice in a row without changing any input or settings.
 
 **Pass criteria:**
 1. Tower count is identical both times
-2. CSV exports are byte-for-byte identical (except the "Generated" timestamp in the last column)
-3. KML exports are structurally identical (same placemarks, same coordinates)
+2. CSV exports are byte-for-byte identical (except the "Generated" timestamp)
+3. KML exports are structurally identical
 
 ---
 
-### TC-08 — Edge cases (range boundary)
+### TC-08 — Edge cases (range boundary) 🔁
 
-**Setup:** If the fixture contains a tower at or near 70 NM (within ±1 NM of the boundary), confirm it is included or excluded correctly based on its calculated range.
+**Setup:** Fixture must contain a tower at or near 70 NM.
 
 **Pass criteria:**
-1. A tower calculated at exactly 70.0 NM is included (≤ 70 NM criterion)
+1. A tower calculated at exactly 70.0 NM is included
 2. A tower calculated at 70.1 NM is excluded
-3. Changing Max range to 65 NM excludes towers that were included at 70 NM
+3. Changing Max range to 65 NM excludes towers included at 70 NM
 
 ---
 
 ## Bearing and range spot-check
 
-For at least two towers per test run, manually verify the calculated range and bearing against an independent source (ForeFlight ruler tool, SkyVector, or manual haversine calculation from known coordinates).
+After any change to the coordinate parser or haversine calculation, manually verify range and bearing for at least two towers using an independent tool (ForeFlight, SkyVector, or a navigation calculator). Choose one near tower and one far tower.
 
-The `sample-current.pdf` fixture includes `LOU 05/313 6I2` — this NOTAM references 6I2 directly (6.1NM NNW 6I2) and provides a useful sanity check: the tool should return approximately 6.1 NM at a northwesterly bearing.
-
-Document verified spot-check results in the test log.
+Expected precision: range within ±0.1 NM, bearing within ±1°.
 
 ---
 
-## When to run the full protocol
+### TC-09 — Cross-browser compatibility 🔁
 
-Run **all 8 test cases** when:
-- Any change is made to the `parseTowers()` function
-- Any change is made to the `computeDiff()` function
-- Any change is made to `bearingRange()` or `parseDMS()`
-- Any change is made to the KML export logic
-- The PDF.js library version is updated
-- The tool is being set up at a new base for the first time
+**Setup:** Run TC-01 in each supported browser.
 
-Run **TC-01, TC-02, and TC-06 only** (abbreviated check) when:
-- Only UI changes were made (colors, layout, labels)
-- Only settings panel changes were made with no logic changes
-- A new filter option is added but existing filter logic is unchanged
-
----
-
-## Test log
-
-Maintain a running log as a simple table appended to this file, or as a separate `test/test-log.md`.
-
-| Date | Version | Cases run | Pass/Fail | Tester | Notes |
-|---|---|---|---|---|---|
-| 2026-05-23 | v1.0.0 | TC-01 through TC-08 | — | | Initial baseline — establish expected outputs |
-
----
-
-## Establishing expected outputs (first run)
-
-On the very first test run, you cannot compare against expected outputs because they don't exist yet. The procedure is:
-
-1. Run TC-01 against `sample-current.pdf`
-2. Carefully hand-verify the output against the raw PDF — spot-check at least 5 towers for correct NOTAM ID, AGL, MSL, range, and bearing
-3. Verify that excluded entries (cranes, power lines, sub-500ft towers, out-of-range) are correctly absent
-4. If satisfied, export the CSV and save it as `test/expected/current-only.csv`
-5. Repeat for TC-02, saving `test/expected/diff-normal.csv`
-6. These files now become the reference for all future runs
-7. Document the tower counts and spot-checked values in the test log
-
-
----
-
-## TC-09 — Cross-browser compatibility
-
-Run this test case on each supported browser after any functional change, and whenever the tool is deployed to a new environment.
-
-### Browsers to test
-
-| Browser | Platform | Priority | Notes |
-|---|---|---|---|
-| Safari | macOS | Primary | Production environment for Base 173. Has `file://` font scaling quirk — sizes are deliberately over-declared to compensate. |
-| Chrome | macOS | Secondary | Standard rendering, no `file://` quirks. Over-declared font sizes may render slightly large — acceptable for now, documented in `FUTURE.md`. |
-| Chrome | Windows | Secondary | Current work machine environment. Same engine as macOS Chrome. |
-| Edge | Windows | Secondary | Default browser on GMR-issued Windows machines — relevant if tool is shared with other BPS's. Same Chromium engine as Chrome. |
-| Firefox | Any | Optional | Not common in operational environment. Test only if distribution broadens. |
-
-### What to check in each browser
-
-For each browser, run TC-01 (current month only) and TC-06 (KML validation) at minimum. Verify:
-
-1. **Layout** — drop zones, settings panel, results table, and export row all render without overlap or clipping
-2. **Font size** — text is comfortably readable without zooming; note any browser where sizes look significantly off
-3. **PDF parsing** — PDF.js loads from CDN and processes the fixture file without error
-4. **Drag and drop** — files can be dropped onto the drop zones (not just selected via click)
-5. **CSV export** — file downloads correctly and opens in Excel/Numbers
-6. **KML export** — file downloads correctly and is valid KML
-
-### Known rendering differences
-
-- **Safari (macOS, local file):** Font sizes appear smaller than declared due to `file://` scaling. Current stylesheet compensates with ~1.4× over-declaration. If upgrading to web hosting, see `FUTURE.md`.
-- **Chrome/Edge (any platform):** Standard rendering. Font sizes will appear proportionally larger than on Safari local file. This is expected and acceptable in the current version.
-- **All browsers:** PDF.js requires an internet connection on first load to fetch from CDN. Subsequent loads use the browser cache. Test in an offline environment only if offline use is a requirement.
-
-### Browser test log
-
-| Date | Version | Browser | Platform | TC-01 | TC-06 | Layout | Notes |
-|---|---|---|---|---|---|---|---|
-| 2026-05-23 | v1.0.0 | Safari | macOS | — | — | — | Establish baseline |
-| 2026-05-23 | v1.0.0 | Chrome | Windows | — | — | — | Work machine |
-| | | Edge | Windows | — | — | — | |
-| | | Chrome | macOS | — | — | — | |
-
-
----
-
-## TC-10 — NOT LGTD and stack detection
-
-**Setup:** Requires a fixture PDF containing at least one stack with `NOT LGTD` status and at least one tower with `NOT LGTD` status (as opposed to `U/S`). Load as Current only.
+**Browsers:** Chrome (primary), Safari (macOS local file), Firefox, Edge.
 
 **Pass criteria:**
-1. Stacks with `NOT LGTD` and AGL ≥ min threshold appear in results
-2. Towers with `NOT LGTD` and AGL ≥ min threshold appear in results
-3. The **Unlit reason** column shows `NOT LGTD` (not `U/S`) for these entries
-4. The **Type** column shows `STACK` for stack entries and `TOWER` for tower entries
-5. Cranes and wind turbine farms with `NOT LGTD` do not appear in results
+1. Results are identical across browsers
+2. No console errors in any browser
+3. PDF drop works in Safari (page does not navigate away)
+4. File picker works in all browsers
 
 ---
 
-## TC-11 — Out of Range section
+### TC-10 — Coordinate parser edge cases 🔁
 
-**Setup:** Load `sample-current.pdf` as Current. Leave Previous empty.  
-**Settings:** Default (70 NM, 500 ft AGL).
+Test against real NOTAM entries with non-standard formats.
 
 **Pass criteria:**
-1. Out of Range section appears if any entries met the height filter but exceeded 70 NM
-2. Section is collapsed by default and expands on click
-3. Entries in Out of Range do not appear in the Add section (no double-counting)
-4. Range values in Out of Range section are all > 70 NM
-5. AGL values in Out of Range section are all ≥ 500 ft
-6. Out of Range entries are absent from KML export
-7. Known out-of-range entries from the 5/24 fixture: HUF 03/884 (133.6 NM, 600 ft AGL) and MKL 05/228 (442 NM, 650 ft AGL, STACK, NOT LGTD)
+1. `UNKNOWN (650FT AGL)` format parsed correctly (MSL shown as —, AGL correct) — verified against MKL 05/228
+2. Altitude with decimal feet (e.g. `1345.8FT (319.9FT AGL)`) parsed correctly
+3. Coordinates with decimal seconds (e.g. `351839.00N0931406.00W`) parsed correctly
+4. STACK type entries included; CRANE, WIND TURBINE, POWER LINE entries excluded
+5. NOT LGTD trigger includes entries that lack U/S
+6. U/S trigger includes entries that lack NOT LGTD
 
 ---
 
-## TC-12 — Mismatch detection
+### TC-11 — Out of Range audit trail 🔁
 
-Run each sub-case independently.
+**Setup:** Load `notams-obst-6ky1-2026-06-05.pdf` as Current. Base set to AE 173 (6KY1), max range 70 NM.
+
+**Pass criteria:**
+1. Out of Range section is present and collapsed by default
+2. Expanding it shows entries with AGL ≥ buffer floor but range > 70 NM
+3. Out of Range entries do not appear in the main results or KML
+4. Out of Range entries do not appear in the CSV main result rows
+5. Section header tooltip explains why the section exists
+6. Known out-of-range entries from the 5/24 fixture: HUF 03/884 (133.6 NM, 600 ft AGL) and MKL 05/228 (442 NM, 650 ft AGL, STACK, NOT LGTD)
+
+---
+
+### TC-12 — Mismatch detection ⚙️
 
 **TC-12a — Same file in both zones**  
 Load the same PDF into both Previous and Current.  
-*Expected:* Amber banner appears with "same query date" warning.
+*Expected:* Amber banner with "same query date" warning.
 
 **TC-12b — Mismatched reference airport**  
-If a PDF queried around a different airport is available, load it as Current while configured for 6I2.  
+Load a PDF queried around a different airport as Current while tool is configured for 6KY1.  
 *Expected:* Amber banner shows airport mismatch.
 
 **TC-12c — Clean match**  
-Load 5/21 PDF as Previous and 5/24 PDF as Current, tool configured for 6I2, max range 70 NM.  
-*Expected:* No banner. Both PDFs are queried around 6I2 at 70 NM.
+Load June 5 PDF as Previous, June 18 PDF as Current. Tool configured for 6KY1, max range 70 NM.  
+*Expected:* No banner.
 
 **TC-12d — Radius mismatch**  
-Load any valid PDF as Current. Change Max range setting to 50 NM.  
-*Expected:* Amber banner notes radius difference between PDF header (70 NM) and tool setting (50 NM).
+Load any valid PDF as Current. Change Max range to 50 NM.  
+*Expected:* Amber banner notes radius difference.
+
+**Note:** If TC-12c unexpectedly shows a banner, the PDF header parser may have broken. Inspect the raw PDF header text.
 
 ---
 
-## TC-13 — Help modal
+### TC-13 — Help modal ⚙️
 
 **Pass criteria:**
-1. Clicking "? How to use" opens the modal
-2. Modal content is readable and complete (six workflow steps visible)
-3. Modal closes on ✕ button click
-4. Modal closes on click outside the modal panel
-5. Modal closes on Escape key
-6. Page content behind modal is not scrollable while modal is open
-7. FAA NOTAM Search link in Step 1 opens in a new tab
+1. "? How to use" opens the modal
+2. All six workflow steps visible and readable
+3. Reissued section described in Step 4
+4. Modal closes on ✕, outside click, and Escape key
+5. FAA NOTAM Search link opens in a new tab
+6. GitHub repo link at bottom opens in a new tab
 
 ---
 
-## Note on mismatch detection reliability
-
-The mismatch detection in TC-12 depends on the FAA PDF header format: "NOTAMs within N NM around XXX". If the FAA changes this format, detection will silently degrade. As part of TC-12c, verify the header was successfully parsed by confirming **no false-positive banner** appears on a known-good pair of PDFs. If the banner is absent on a clean pair, the parser is working. If it fires unexpectedly, inspect the raw PDF header text.
-
-
----
-
-## TC-14 — Buffer zone
+### TC-14 — Buffer zone 🔁
 
 **Setup:** Load `sample-current.pdf` as Current. Leave Previous empty.  
-**Settings:** Min AGL 500 ft, Buffer 50 ft (default). Confirm buffer floor = 450 ft.
+**Settings:** Min AGL 500 ft, Buffer 50 ft. Confirm buffer floor = 450 ft.
 
 **Pass criteria:**
-1. Towers with AGL 450–499 ft appear in the **Buffer Zone** section, not in Add
-2. Towers with AGL ≥ 500 ft appear in the Add section as normal
+1. Towers with AGL 450–499 ft appear in Buffer Zone, not in Add
+2. Towers with AGL ≥ 500 ft appear in Add as normal
 3. Towers with AGL < 450 ft do not appear anywhere
-4. Buffer Zone section is collapsed by default; expands on click
-5. Summary bar shows a Buffer count cell when buffer entries are present
-6. KML export includes buffer entries with the buffer color (default gray)
-7. KML export legend shows the buffer floor altitude
-8. CSV export includes buffer entries with action `BUFFER`
-9. Setting buffer to 0 ft produces no buffer entries (450–499 ft towers disappear entirely)
-10. Setting buffer to 200 ft captures towers down to 300 ft AGL
+4. Buffer Zone section is collapsed by default
+5. Summary bar shows Buffer count when buffer entries present
+6. KML includes buffer entries with buffer color (default gray)
+7. CSV includes buffer entries with action `BUFFER`
+8. Setting buffer to 0 ft: 450–499 ft towers disappear entirely
+9. Setting buffer to 200 ft: captures towers down to 300 ft AGL
 
-**TC-14b — Buffer does not affect diff logic**  
-Load 5/21 as Previous, 5/24 as Current.  
-Confirm that buffer entries from the current report do not appear in Remove, Keep, or Add sections — only in Buffer Zone.  
-Confirm that a tower present in both reports at 480 ft AGL appears in Buffer Zone of the current report, not in Keep.
-
+**TC-14b — Buffer does not affect diff logic** 🔁  
+Load June 5 as Previous, June 18 as Current.  
+Confirm buffer entries appear only in Buffer Zone, not in Remove/Keep/Add.
 
 ---
 
-## TC-15 — Base selector
-
-**Setup:** Open the tool. Expand Filter & Alert Settings.
+### TC-15 — Base selector ⚙️
 
 **Pass criteria:**
-1. Default base loads as AE 173 with header showing `NOTAM // AE 173`
-2. Typing `Lebanon` in the search field shows AE 173 in the dropdown
-3. Typing `6KY1` finds AE 173
-4. Selecting AE 001 (West Plains) updates the header to `NOTAM // AE 001` and shows correct coordinates
-5. Coordinates display in DD MM.mmmm format
-6. Saving settings and reloading the page restores the selected base
+1. Default base loads as AE 173, header shows `NOTAM Obstruction Hazard Tracker // AE 173 · Lebanon, KY`
+2. Search by base number, name, city, and airport code all work
+3. Selecting a base updates coordinates and header
+4. Coordinates display in DD MM.dd format
+5. Saving and reloading restores selected base
 
-**TC-15b — Manual override**
-1. Expand Manual coordinate override
-2. Enter a known location (e.g. 37° 34.1400' N, 85° 15.7400' W)
-3. Click Apply override
-4. Header shows `NOTAM // 037 34 N 085 15 W`
-5. Save settings — reloading restores the manual override state
+**TC-15b — Manual override** ⚙️  
+1. Enter known coordinates in manual override fields
+2. Click Apply override — header updates to DD MM N DDD MM W format
+3. Save and reload — manual override state restored
 
 ---
 
-## TC-16 — UI / UX changes (v1.4.0)
+### TC-18 — Reissue detection 🔁
+
+**Setup:** Load `notams-obst-6ky1-2026-06-05.pdf` as Previous, `notams-obst-6ky1-2026-06-18.pdf` as Current. Base AE 173, default thresholds.
 
 **Pass criteria:**
-1. Button reads **Parse & Report** (not Run Diff)
-2. Loading one PDF and clicking Parse & Report runs without error (no diff sections shown, only Add)
-3. Loading two PDFs from different reference airports triggers the amber mismatch banner **below** the Parse & Report button — not above the drop zones
-4. Mismatch banner is visible without scrolling after a parse attempt
-5. Dropping a PDF onto the drop zone in Safari loads it correctly — browser does not navigate away
-6. Dropping a PDF outside the drop zones (anywhere else on the page) does nothing
+1. Summary bar: Total 7 · Remove 1 · Keep 5 · Reissued 1 · Add 1 · Buffer 1
+2. Summary bar order: Total, Remove, Keep, Reissued, Add, Buffer
+3. Reissued section appears between Keep and Add
+4. Reissued section shows LEX 04/065 → LEX 06/042, 47.4 NM, 530 ft AGL
+5. Remove section shows HUF 06/101 (961 ft AGL, 55.0 NM)
+6. Add section shows LEX 06/018 (533 ft AGL, 47.6 NM)
+7. Out of Range shows 3 entries (MKL 05/228, HUF 03/884, HUF 04/651)
+8. CSV includes `REISSUED,LEX 04/065 -> LEX 06/042,...`
+
+**TC-18b — No false reissues on single-file run** 🔁  
+Load only the June 18 PDF. Confirm no Reissued section and no Reissued cell in summary bar.
+
+---
+
+## Historical test records
+
+The following tests were one-time validations for specific releases. They do not need to be re-run unless the relevant feature is revisited.
+
+### TC-16 — v1.4.0 UI validation 📋
+*(One-time, 2026-05-24)*
+- Button reads Parse & Report
+- Mismatch banner appears below Parse & Report button
+- Safari drop zone behavior correct
+- Dropping outside drop zones does nothing
+
+### TC-17 — v1.4.1 regression check 📋
+*(One-time, 2026-05-25)*
+- Header format: `NOTAM Obstruction Hazard Tracker // AE 173 · Lebanon, KY` with version below
+- Coordinates display DD MM.dd (2 decimal places)
+- Column header tooltips present on Range, Bearing, Location ref
+- Color pickers vertically aligned in Settings
+- Modal Step 1: no disclaimer step, mentions hospital identifier and Lat/Lon
+- Modal Step 2: mentions "differences analysis"
+- Modal Step 5: CSV purpose explained, print-to-PDF tip present
+
+### TC-18c — v1.6.0 arrow placement 📋
+*(One-time, 2026-06-18)*  
+All result section headers show ▶ toggle arrow on the LEFT, before the section title.
+
+---
+
+## Testing notes log
+
+### 2026-05-25 (v1.4.1)
+
+| # | Issue | Resolution |
+|---|---|---|
+| 1 | Apply Override purpose unclear | Modal Step 3 clarified — fields affect display only, not base list |
+| 2 | Range/Bearing columns lack context | Hover tooltips added |
+| 3 | Header layout unclear | Redesigned: app name // base · location, version below |
+| 4 | Step 1 disclaimer unnecessary; identifier too narrow | Removed; updated to include hospital and Lat/Lon |
+| 5 | "hazard map diff" unclear | Reworded to plain language |
+| 6 | Step 2 didn't describe diff output | Updated to mention add/keep/remove |
+| 7 | KML to ForeFlight transfer complicated on company iPads | Documented in FUTURE.md |
+| 8 | 4dp coordinate precision unnecessary | Reduced to 2dp (DD MM.dd) |
+| 9 | Color pickers misaligned | Fixed with min-width on column |
+| 10 | CSV purpose not explained | Explanation added to modal Step 5 |
+
+### 2026-06-18 (v1.6.0)
+
+| # | Issue | Resolution |
+|---|---|---|
+| 1 | Drop zones non-functional after 1.6 update | Orphan `sCell(cu` fragment from partial replacement caused JS syntax error |
+| 2 | Remove section missing from results | `makeSection(d.remove,...)` call dropped during replacement pass |
+| 3 | Reissued label rendering after hint text | Element order corrected: toggle → title → count → hint |
+| 4 | Reissued summary cell after Add | Cell order corrected to match section render order |
+| 5 | Toggle arrows right-aligned on result sections | Moved to left of all result section headers |
