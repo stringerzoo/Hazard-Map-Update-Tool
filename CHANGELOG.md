@@ -176,3 +176,26 @@ With configurable reference airport now implemented, the tool is ready for distr
 
 ### Testing
 - TC-11 validated against 2026-06-05 6KY1 report: MKL 05/228 (442 NM), HUF 03/884 (133.6 NM), and HUF 04/651 (199.1 NM) correctly appeared in Out of Range, confirming the FAA bounding-box filter and audit trail are working as intended.
+
+---
+
+## [1.6.0] — 2026-06-18
+
+### Added
+- **Reissue detection** — the diff now detects when a NOTAM is cancelled and reissued with a new ID for the same physical tower. Any Remove/Add pair within 0.1 NM of each other is classified as a **Reissued** entry rather than a genuine map change. Reissued entries appear in their own section (between Keep and Add) with an Old NOTAM → New NOTAM column layout. No hazard map action required for reissued entries.
+- **Reissue summary cell** — added to the summary bar between Keep and Add, matching section order.
+- **REISSUED action** in CSV export — reissued pairs exported as `REISSUED,old_id -> new_id,...`
+
+### Changed
+- Section and summary bar order: Remove → Keep → Reissued → Add → Buffer → Out of Range.
+- Toggle arrows moved to the left of all result section headers, consistent with Settings and file drop zone panels.
+- Version comment and displayed version bumped to 1.6.0.
+
+### Fixed
+- **Critical (1.6.0):** Drop zone click and drag-drop buttons stopped working due to a JS syntax error introduced during the summary bar replacement — a fragment of old code (`sCell(cu...`) was left in place immediately before the new replacement block. Removed orphan fragment; syntax verified clean with Node.
+- Remove section was missing from rendered results (the `makeSection(d.remove,...)` call was dropped during a replacement pass). Restored.
+- Reissue section header element order corrected (toggle → title → count → hint); title badge was rendering after hint text.
+- Summary bar Reissued cell was positioned after Add; moved to between Keep and Add to match section render order.
+
+### Operational validation
+- TC-11 confirmed against 2026-06-18 6KY1 report: 33 reissued NOTAMs correctly detected between June 5 and June 18 reports, including LEX 04/065 → LEX 06/042 (0.0 NM, same tower). Genuine remove (HUF 06/101) and genuine add (LEX 06/018) correctly separated from reissues.
