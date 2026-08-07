@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!--
   NOTAM Obstruction Hazard Tracker
-  Version: 1.5.0
-  Last updated: 2026-06-06
+  Version: 1.6.1
+  Last updated: 2026-08-07
   Repository: https://github.com/stringerzoo/Hazard-Map-Update-Tool
   Author: AEL Base 173 / Scott Stringer
 -->
@@ -161,7 +161,7 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
 .summary-cell{padding:10px 16px;border-right:1px solid var(--border);}
 .summary-cell:last-child{border-right:none;}
 .s-num{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1;margin-bottom:2px;}
-.s-num.total{color:var(--accent);}.s-num.remove{color:var(--red);}.s-num.keep{color:var(--text3);}.s-num.add{color:var(--green);}.s-num.buf{color:var(--text3);}
+.s-num.total{color:var(--accent);}.s-num.remove{color:var(--red);}.s-num.keep{color:var(--text3);}.s-num.add{color:var(--green);}.s-num.buf{color:var(--text3);}.s-num.reissue{color:var(--text3);}
 .s-label{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);}
 .s-desc{font-size:13px;color:var(--text3);margin-top:1px;}
 
@@ -181,7 +181,7 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
 .rs-count.buf{background:var(--bg3);color:var(--text3);border:1px solid var(--border2);}
 .rs-count.oor{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
 .rs-hint{font-size:15px;color:var(--text3);font-style:italic;margin-left:2px;}
-.rs-toggle{margin-left:auto;font-size:12px;color:var(--text3);transition:transform .2s;display:inline-block;}
+.rs-toggle{font-size:12px;color:var(--text3);transition:transform .2s;display:inline-block;margin-right:10px;flex-shrink:0;}
 
 .rs-body{background:var(--bg2);}
 .rs-body.collapsed{display:none;}
@@ -245,7 +245,7 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
       <span class="header-sep">&#xB7;</span>
       <span class="header-loc" id="header-loc">Lebanon, KY</span>
     </div>
-    <div class="header-version">version 1.5.0</div>
+    <div class="header-version">version 1.6.1</div>
   </div>
   <div class="header-right">
     <button class="help-btn" onclick="openHelp()">? How to use</button>
@@ -283,13 +283,14 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
       <ul>
         <li><strong>Remove</strong> &#x2014; pull dots from hazard map.</li>
         <li><strong>Keep</strong> &#x2014; no change needed.</li>
+        <li><strong>Reissued</strong> &#x2014; same physical tower, NOTAM number changed. No map update needed. The tool detects these automatically by matching coordinates between the Remove and Add lists.</li>
         <li><strong>Add</strong> &#x2014; plot on hazard map.</li>
         <li><strong>Buffer Zone</strong> &#x2014; KML only, do not plot on map.</li>
         <li><strong>Out of Range</strong> &#x2014; entries that meet the height filter but fall outside your max range setting. The FAA&#x2019;s geography search uses a bounding box rather than a precise circle, so it sometimes returns towers beyond the stated radius &#x2014; occasionally by a significant distance. These are listed here for transparency so you can confirm they were seen and correctly excluded, not silently dropped.</li>
       </ul>
       <h3>Step 5 &#x2014; Update hazard map &amp; export</h3>
       <p>Work through Remove and Add to update the wall map. Then click <strong>Export KML for ForeFlight</strong> and import in ForeFlight or Google Earth.</p>
-      <p><strong>Export CSV</strong> produces a full spreadsheet of results with one row per tower, including action (ADD / KEEP / REMOVE / BUFFER), range, bearing, MSL, AGL, and the original NOTAM location reference. Useful for record-keeping, month-to-month comparison, and validating parser output during testing.</p>
+      <p><strong>Export CSV</strong> produces a full spreadsheet of results with one row per tower, including action (ADD / KEEP / REMOVE / REISSUED / BUFFER), range, bearing, MSL, AGL, and the original NOTAM location reference. Useful for record-keeping, month-to-month comparison, and validating parser output during testing.</p>
       <p><em>Tip:</em> To save the on-screen report as a PDF, use your browser&#x2019;s <strong>File &#x2192; Print &#x2192; Save as PDF</strong> function.</p>
       <h3>Notes</h3>
       <ul>
@@ -415,28 +416,28 @@ input[type=color]{width:40px;height:32px;padding:2px 3px;border:1px solid var(--
         <div class="thresh-swatch" id="sw-1"></div>
         <div class="thresh-name">Level 1</div>
         <div class="thresh-agl-wrap"><label>AGL &#x2265;</label><input type="number" id="t1-agl" value="800" min="0" max="5000" step="50"><span class="thresh-agl-unit">ft</span></div>
-        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t1-color" value="#cc0000" oninput="syncSwatch(1)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t1-color" value="#ff4444" oninput="syncSwatch(1)"></div>
         <div class="thresh-desc">Critical</div>
       </div>
       <div class="thresh-row">
         <div class="thresh-swatch" id="sw-2"></div>
         <div class="thresh-name">Level 2</div>
         <div class="thresh-agl-wrap"><label>AGL &#x2265;</label><input type="number" id="t2-agl" value="600" min="0" max="5000" step="50"><span class="thresh-agl-unit">ft</span></div>
-        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t2-color" value="#e07000" oninput="syncSwatch(2)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t2-color" value="#ffaa00" oninput="syncSwatch(2)"></div>
         <div class="thresh-desc">Caution</div>
       </div>
       <div class="thresh-row">
         <div class="thresh-swatch" id="sw-3"></div>
         <div class="thresh-name">Level 3</div>
         <div class="thresh-range-desc">&lt; Level 2, &#x2265; min AGL</div>
-        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t3-color" value="#1a4f8a" oninput="syncSwatch(3)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t3-color" value="#44aaff" oninput="syncSwatch(3)"></div>
         <div class="thresh-desc">Advisory</div>
       </div>
       <div class="thresh-row buf-row">
         <div class="thresh-swatch" id="sw-4"></div>
         <div class="thresh-name buf">Buffer</div>
         <div class="thresh-range-desc">&lt; min AGL, &#x2265; (min &#x2212; buffer)</div>
-        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t4-color" value="#888888" oninput="syncSwatch(4)"></div>
+        <div class="thresh-color-wrap"><label title="Click to select color">Color</label><input type="color" id="t4-color" value="#cccccc" oninput="syncSwatch(4)"></div>
         <div class="thresh-desc">KML only</div>
       </div>
 
@@ -476,7 +477,7 @@ document.addEventListener('drop',function(e){e.preventDefault();});
 
 var BASE_LIST=[{"id":"AE 001","name":"West Plains","city":"West Plains","state":"MO","airport":"","lat":36.723115,"lon":91.880866},{"id":"AE 003","name":"Sikeston","city":"Sikeston","state":"MO","airport":"","lat":36.942151,"lon":89.535292},{"id":"AE 004","name":"Springdale","city":"Springdale","state":"AR","airport":"","lat":36.181518,"lon":94.137263},{"id":"AE 005","name":"Quincy","city":"Quincy","state":"IL","airport":"","lat":39.936021,"lon":91.398634},{"id":"AE 006","name":"Altus","city":"Altus","state":"OK","airport":"","lat":34.703938,"lon":99.335145},{"id":"AE 007","name":"Jackson","city":"Jackson","state":"TN","airport":"","lat":35.637544,"lon":88.828855},{"id":"AE 008","name":"Farmington","city":"Farmington","state":"MO","airport":"","lat":37.717327,"lon":90.411881},{"id":"AE 009","name":"Lewisburg","city":"Rayville","state":"TN","airport":"","lat":35.499947,"lon":86.807896},{"id":"AE 010","name":"Hopkinsville","city":"Hopkinsville","state":"KY","airport":"","lat":36.860835,"lon":87.497584},{"id":"AE 011","name":"Mount Vernon","city":"Mount Vernon","state":"IL","airport":"","lat":38.319428,"lon":88.852309},{"id":"AE 012","name":"Mountain Home","city":"Mountain Home","state":"AR","airport":"","lat":36.343512,"lon":92.392646},{"id":"AE 014","name":"Albany","city":"Albany","state":"KY","airport":"","lat":36.709167,"lon":85.135278},{"id":"AE 015","name":"Cullman County","city":"Vinemont","state":"AL","airport":"","lat":34.263451,"lon":86.861522},{"id":"AE 016","name":"The Shoals","city":"Tuscumbia","state":"AL","airport":"","lat":34.671703,"lon":87.632729},{"id":"AE 017","name":"Paoli","city":"Paoli","state":"IN","airport":"","lat":38.567898,"lon":86.476134},{"id":"AE 018","name":"Salem","city":"Salem","state":"MO","airport":"","lat":37.660251,"lon":91.570975},{"id":"AE 019","name":"Lafayette","city":"Lafayette","state":"TN","airport":"","lat":36.518397,"lon":86.033013},{"id":"AE 021","name":"Elk City","city":"Elk City","state":"OK","airport":"","lat":35.423773,"lon":99.396556},{"id":"AE 022","name":"Johnson County, AR","city":"Clarksville","state":"AR","airport":"","lat":35.297816,"lon":93.684696},{"id":"AE 024","name":"Poplar Bluff","city":"Poplar Bluff","state":"MO","airport":"","lat":36.787752,"lon":90.445982},{"id":"AE 025","name":"Duncan","city":"Duncan","state":"OK","airport":"","lat":34.474492,"lon":97.964445},{"id":"AE 026","name":"Ada","city":"Ada","state":"OK","airport":"","lat":34.803574,"lon":96.675351},{"id":"AE 027","name":"Jacksonville","city":"Jacksonville","state":"IL","airport":"","lat":39.747728,"lon":90.260389},{"id":"AE 028","name":"Effingham County","city":"Watson","state":"IL","airport":"","lat":39.016944,"lon":88.542222},{"id":"AE 029","name":"Claremore","city":"Claremore","state":"OK","airport":"","lat":36.292451,"lon":95.47695},{"id":"AE 031","name":"Martin","city":"Martin","state":"TN","airport":"","lat":36.325278,"lon":88.868611},{"id":"AE 032","name":"Scottsboro","city":"Scottsboro","state":"AL","airport":"","lat":34.660359,"lon":86.049281},{"id":"AE 033","name":"Middlesboro","city":"Middlesboro","state":"KY","airport":"","lat":36.606389,"lon":83.739444},{"id":"AE 034","name":"Wichita Falls","city":"Wichita Falls","state":"TX","airport":"","lat":33.90367,"lon":98.501999},{"id":"AE 035","name":"Marion","city":"Marion","state":"IL","airport":"","lat":37.738417,"lon":88.99244},{"id":"AE 037","name":"Waverly","city":"Waverly","state":"TN","airport":"","lat":36.075655,"lon":87.794056},{"id":"AE 038","name":"Kirksville","city":"Kirksville","state":"MO","airport":"","lat":40.21233,"lon":92.588742},{"id":"AE 039","name":"Brazil","city":"Brazil","state":"IN","airport":"","lat":39.475338,"lon":87.099583},{"id":"AE 040","name":"Boone County","city":"Harrison","state":"AR","airport":"","lat":36.23819,"lon":93.107594},{"id":"AE 042","name":"Forrest City","city":"Forrest City","state":"AR","airport":"","lat":35.039067,"lon":90.777153},{"id":"AE 043","name":"Campbellsville","city":"Campbellsville","state":"KY","airport":"","lat":37.367745,"lon":85.336427},{"id":"AE 044","name":"Coffee County","city":"Manchester","state":"TN","airport":"","lat":35.427833,"lon":86.025833},{"id":"AE 045","name":"Fayette","city":"Fayette","state":"AL","airport":"","lat":33.713925,"lon":87.816679},{"id":"AE 046","name":"Evansville","city":"Evansville","state":"IN","airport":"","lat":37.984127,"lon":87.57196},{"id":"AE 048","name":"Kerrville","city":"Kerrville","state":"TX","airport":"","lat":29.979582,"lon":99.085789},{"id":"AE 049","name":"Marble Falls","city":"Marble Falls","state":"TX","airport":"","lat":30.578938,"lon":98.280948},{"id":"AE 051","name":"Hillsboro","city":"Hillsboro","state":"TX","airport":"","lat":32.024327,"lon":97.094596},{"id":"AE 052","name":"Brownwood","city":"Brownwood","state":"TX","airport":"","lat":31.679077,"lon":98.993608},{"id":"AE 053","name":"Fairfield","city":"Fairfield","state":"TX","airport":"","lat":31.691762,"lon":96.168921},{"id":"AE 054","name":"Big Spring","city":"Big Spring","state":"TX","airport":"","lat":32.21433,"lon":101.526426},{"id":"AE 055","name":"Mineral Wells","city":"Mineral Wells","state":"TX","airport":"","lat":32.798807,"lon":98.146204},{"id":"AE 056","name":"Danville","city":"Danville","state":"KY","airport":"","lat":37.579844,"lon":84.770202},{"id":"AE 057","name":"Eagle Pass","city":"Eagle Pass","state":"TX","airport":"","lat":28.713311,"lon":100.454017},{"id":"AE 058","name":"Corinth","city":"Corinth","state":"MS","airport":"","lat":34.935128,"lon":88.562603},{"id":"AE 059","name":"Keokuk","city":"Keokuk","state":"IA","airport":"","lat":40.626684,"lon":91.384732},{"id":"AE 060","name":"Sedalia","city":"Sedalia","state":"MO","airport":"","lat":38.727298,"lon":93.228678},{"id":"AE 061","name":"Batesville","city":"Batesville","state":"MS","airport":"","lat":34.30524,"lon":89.916456},{"id":"AE 062","name":"Bowling Green","city":"Bowling Green","state":"KY","airport":"","lat":37.000577,"lon":86.434394},{"id":"AE 063","name":"Abilene","city":"Abilene","state":"TX","airport":"","lat":32.470614,"lon":99.734308},{"id":"AE 065","name":"Texoma","city":"Denison","state":"TX","airport":"","lat":33.709429,"lon":96.583843},{"id":"AE 066","name":"Killeen","city":"Killeen","state":"TX","airport":"","lat":31.113381,"lon":97.802637},{"id":"AE 067","name":"Greenville","city":"Greenville","state":"TX","airport":"","lat":33.062941,"lon":96.071156},{"id":"AE 068","name":"Decatur","city":"Decatur","state":"TX","airport":"","lat":33.216639,"lon":97.593721},{"id":"AE 069","name":"Granbury","city":"Granbury","state":"TX","airport":"","lat":32.433308,"lon":97.803706},{"id":"AE 070","name":"Woodward","city":"Woodward","state":"OK","airport":"","lat":36.438027,"lon":99.399667},{"id":"AE 071","name":"Carrizo Springs","city":"Carrizo Springs","state":"TX","airport":"","lat":28.52321,"lon":99.828941},{"id":"AE 072","name":"Waynesboro","city":"Waynesboro","state":"TN","airport":"","lat":35.326069,"lon":87.77855},{"id":"AE 073","name":"DeQueen","city":"DeQueen","state":"AR","airport":"","lat":34.047876,"lon":94.353617},{"id":"AE 075","name":"Dyersburg","city":"Dyersburg","state":"TN","airport":"","lat":36.049234,"lon":89.38011},{"id":"AE 077","name":"Troup County","city":"LaGrange","state":"GA","airport":"","lat":33.015909,"lon":85.073412},{"id":"AE 079","name":"Corbin","city":"Corbin","state":"KY","airport":"","lat":36.924429,"lon":84.121841},{"id":"AE 080","name":"Perryville","city":"Perryville","state":"MO","airport":"","lat":37.78569,"lon":89.85291},{"id":"AE 083","name":"Muskogee","city":"Muskogee","state":"OK","airport":"","lat":35.749783,"lon":95.406512},{"id":"AE 085","name":"Logan","city":"Logan","state":"WV","airport":"","lat":37.85706,"lon":81.908186},{"id":"AE 086","name":"Americus","city":"Americus","state":"GA","airport":"","lat":32.066834,"lon":84.252844},{"id":"AE 087","name":"Washington County","city":"Greenville","state":"MS","airport":"","lat":33.411557,"lon":91.034065},{"id":"AE 088","name":"Harlan","city":"Harlan","state":"KY","airport":"","lat":36.808735,"lon":83.315069},{"id":"AE 089","name":"Brown County","city":"Georgetown","state":"OH","airport":"","lat":38.859077,"lon":83.895841},{"id":"AE 090","name":"Douglas","city":"Douglas","state":"GA","airport":"","lat":31.476688,"lon":82.854333},{"id":"AE 091","name":"Vidalia","city":"Vidalia","state":"GA","airport":"","lat":32.207831,"lon":82.370415},{"id":"AE 092","name":"Breckinridge County","city":"Hardinsburg","state":"KY","airport":"","lat":37.762185,"lon":86.452858},{"id":"AE 093","name":"Laredo","city":"Laredo","state":"TX","airport":"","lat":27.544244,"lon":99.468252},{"id":"AE 094","name":"Savannah","city":"Savannah","state":"TN","airport":"","lat":35.224326,"lon":88.235017},{"id":"AE 095","name":"Statesboro","city":"Statesboro","state":"GA","airport":"","lat":32.392082,"lon":81.75183},{"id":"AE 096","name":"Jesup","city":"Jesup","state":"GA","airport":"","lat":31.601365,"lon":81.898507},{"id":"AE 097","name":"Portsmouth","city":"Portsmouth","state":"OH","airport":"","lat":38.739541,"lon":82.987987},{"id":"AE 099","name":"Natchez","city":"Natchez","state":"MS","airport":"","lat":31.492883,"lon":91.366149},{"id":"AE 100","name":"Rayville","city":"Rayville","state":"LA","airport":"","lat":32.463514,"lon":91.749967},{"id":"AE 101","name":"Lancaster","city":"Lancaster","state":"OH","airport":"","lat":39.765333,"lon":82.545667},{"id":"AE 102","name":"Dublin","city":"Dublin","state":"GA","airport":"","lat":32.495911,"lon":82.92629},{"id":"AE 103","name":"Summersville","city":"Mount Nebo","state":"WV","airport":"","lat":38.318506,"lon":80.806389},{"id":"AE 107","name":"Licking County","city":"St. Louisville","state":"OH","airport":"","lat":40.165932,"lon":82.420283},{"id":"AE 108","name":"Mayfield","city":"Mayfield","state":"KY","airport":"","lat":36.760278,"lon":88.650556},{"id":"AE 109","name":"Manchester","city":"Manchester","state":"KY","airport":"","lat":37.133799,"lon":83.758475},{"id":"AE 110","name":"Lawrenceburg","city":"Lawrenceburg","state":"TN","airport":"","lat":35.221105,"lon":87.339605},{"id":"AE 112","name":"Carrollton","city":"Carrollton","state":"GA","airport":"","lat":33.617878,"lon":85.09814},{"id":"AE 113","name":"Blytheville","city":"Blytheville","state":"AR","airport":"","lat":35.943421,"lon":89.917731},{"id":"AE 115","name":"Eastland","city":"Eastland","state":"TX","airport":"","lat":32.407604,"lon":98.777458},{"id":"AE 116","name":"Prestonsburg","city":"Prestonsburg","state":"KY","airport":"","lat":37.700659,"lon":82.75031},{"id":"AE 117","name":"Snellville","city":"Snellville","state":"GA","airport":"","lat":33.879047,"lon":84.019099},{"id":"AE 118","name":"Morgan County","city":"West Liberty","state":"KY","airport":"","lat":37.92057,"lon":83.264935},{"id":"AE 119","name":"Moberly","city":"Moberly","state":"MO","airport":"","lat":39.447417,"lon":92.414},{"id":"AE 120","name":"Crittenden County","city":"Marion","state":"KY","airport":"","lat":37.328467,"lon":88.09275},{"id":"AE 121","name":"Beckley County","city":"Mt. Hope","state":"WV","airport":"","lat":37.834395,"lon":81.19721},{"id":"AE 122","name":"Weatherford","city":"Weatherford","state":"OK","airport":"","lat":35.540314,"lon":98.662419},{"id":"AE 123","name":"Henry County","city":"Paris","state":"TN","airport":"","lat":36.340828,"lon":88.376649},{"id":"AE 124","name":"Opelousas","city":"Opelousas","state":"LA","airport":"","lat":30.553667,"lon":92.096477},{"id":"AE 125","name":"Kinder","city":"Kinder","state":"LA","airport":"","lat":30.473989,"lon":92.857745},{"id":"AE 126","name":"Beaumont","city":"Beaumont","state":"TX","airport":"","lat":30.087919,"lon":94.132076},{"id":"AE 127","name":"Houston County","city":"Crockett","state":"TX","airport":"","lat":31.325223,"lon":95.43899},{"id":"AE 128","name":"Ponca City","city":"Ponca City","state":"OK","airport":"","lat":36.725273,"lon":97.102076},{"id":"AE 129","name":"Idabel","city":"Idabel","state":"OK","airport":"","lat":33.883998,"lon":94.810836},{"id":"AE 130","name":"Ardmore","city":"Ardmore","state":"OK","airport":"","lat":34.152571,"lon":97.121694},{"id":"AE 131","name":"Kingfisher","city":"Kingfisher","state":"OK","airport":"","lat":35.809747,"lon":97.945498},{"id":"AE 133","name":"Grant County","city":"Williamstown","state":"KY","airport":"","lat":38.646073,"lon":84.583372},{"id":"AE 134","name":"Del Rio","city":"Del Rio","state":"TX","airport":"","lat":29.374627,"lon":100.891038},{"id":"AE 135","name":"Henryetta","city":"Henryetta","state":"OK","airport":"","lat":35.438702,"lon":96.015831},{"id":"AE 137","name":"Greenville","city":"Greenville","state":"IL","airport":"","lat":38.835012,"lon":89.37436},{"id":"AE 138","name":"Harrisburg","city":"Harrisburg","state":"IL","airport":"","lat":37.732059,"lon":88.523091},{"id":"AE 139","name":"Lamar County","city":"Paris","state":"TX","airport":"","lat":33.689314,"lon":95.548384},{"id":"AE 140","name":"Milledgeville","city":"Milledgeville","state":"GA","airport":"","lat":33.153348,"lon":83.246138},{"id":"AE 141","name":"Decatur County","city":"Parsons","state":"TN","airport":"","lat":35.639154,"lon":88.126571},{"id":"AE 142","name":"Tift County","city":"Tifton","state":"GA","airport":"","lat":31.429476,"lon":83.494881},{"id":"AE 143","name":"Obion County","city":"Troy","state":"TN","airport":"","lat":36.333138,"lon":89.161412},{"id":"AE 144","name":"Macomb","city":"Macomb","state":"IL","airport":"","lat":40.443556,"lon":90.663833},{"id":"AE 145","name":"Mattoon","city":"Mattoon","state":"IL","airport":"","lat":39.489344,"lon":88.274161},{"id":"AE 146","name":"Pike County","city":"Louisiana","state":"Mo","airport":"","lat":39.440735,"lon":91.065603},{"id":"AE 147","name":"Pearsall","city":"Pearsall","state":"TX","airport":"","lat":28.897164,"lon":99.117349},{"id":"AE 148","name":"San Antonio","city":"San Antonio","state":"TX","airport":"","lat":29.507638,"lon":98.571441},{"id":"AE 149","name":"Fort Smith","city":"Fort Smtih","state":"AR","airport":"","lat":35.372881,"lon":94.419393},{"id":"AE 150","name":"Olney","city":"Olney","state":"IL","airport":"","lat":38.703983,"lon":88.083958},{"id":"AE 151","name":"Clarksville","city":"Clarksville","state":"TN","airport":"","lat":36.582868,"lon":87.271039},{"id":"AE 152","name":"Jasper","city":"Jasper","state":"TX","airport":"","lat":30.907552,"lon":94.008891},{"id":"AE 153","name":"Fayette County","city":"Fayetteville","state":"GA","airport":"","lat":33.482266,"lon":84.433196},{"id":"AE 154","name":"Perry","city":"Perry","state":"GA","airport":"","lat":32.458268,"lon":83.710429},{"id":"AE 156","name":"Madison County","city":"Maryville","state":"IL","airport":"","lat":38.735783,"lon":89.94815},{"id":"AE 157","name":"Paducah","city":"Paducah","state":"KY","airport":"","lat":37.088866,"lon":88.677835},{"id":"AE 158","name":"Seminole","city":"Seminole","state":"OK","airport":"","lat":35.27293,"lon":96.672099},{"id":"AE 159","name":"Western County","city":"Paris","state":"TN","airport":"","lat":36.335214,"lon":88.381977},{"id":"AE 160","name":"Natchitoches","city":"Natchitoches","state":"LA","airport":"","lat":31.739324,"lon":93.094666},{"id":"AE 161","name":"Knox","city":"Knox","state":"IN","airport":"","lat":41.328964,"lon":86.660263},{"id":"AE 162","name":"Portland","city":"Portland","state":"IN","airport":"","lat":40.453028,"lon":84.990913},{"id":"AE 163","name":"Wabash","city":"Wabash","state":"IN","airport":"","lat":40.763981,"lon":85.797273},{"id":"AE 165","name":"Grove","city":"Grove","state":"OK","airport":"","lat":36.603979,"lon":94.737418},{"id":"AE 169","name":"Escanaba","city":"Escanaba","state":"MI","airport":"","lat":45.744353,"lon":87.101017},{"id":"AE 170","name":"Osage Beach","city":"Osage Beach","state":"MO","airport":"","lat":38.120702,"lon":92.681723},{"id":"AE 172","name":"Jefferson County (IFR)","city":"Mount Vernon","state":"IL","airport":"KMVN","lat":38.319428,"lon":88.852309},{"id":"AE 173","name":"Lebanon","city":"Lebanon","state":"KY","airport":"6KY1","lat":37.569,"lon":85.262333},{"id":"AE 174","name":"Durant","city":"Durant","state":"OK","airport":"KDUA","lat":33.939667,"lon":96.395},{"id":"AE 175","name":"Murfreesboro","city":"Smyrna","state":"TN","airport":"","lat":36.013468,"lon":86.511043},{"id":"AE 176","name":"Laurens County","city":"Dublin","state":"GA","airport":"","lat":32.563234,"lon":82.980729},{"id":"AE 177","name":"Athens","city":"Tanner","state":"AL","airport":"","lat":34.648793,"lon":86.947368},{"id":"AE 178","name":"Hazard","city":"Chavies","state":"KY","airport":"","lat":37.382295,"lon":83.259756},{"id":"AE 179","name":"London","city":"London","state":"KY","airport":"","lat":37.090439,"lon":84.073976},{"id":"AE 180","name":"Pauls Valley","city":"Pauls Valley","state":"OK","airport":"","lat":34.707128,"lon":97.222058},{"id":"AE 181","name":"Uvalde","city":"Uvalde","state":"TX","airport":"","lat":29.21697,"lon":99.741638},{"id":"AE 182","name":"Macon County","city":"Decatur","state":"IL","airport":"","lat":39.828398,"lon":88.877906},{"id":"AE 183","name":"Waycross","city":"Waycross","state":"GA","airport":"","lat":31.254756,"lon":82.406705},{"id":"AE 184","name":"McCurtain County","city":"Idabel","state":"OK","airport":"","lat":33.908629,"lon":94.857004},{"id":"AE 185","name":"Upson County","city":"Thomaston","state":"GA","airport":"","lat":32.953642,"lon":84.265384},{"id":"AE 188","name":"Madison County, TN","city":"Jackson","state":"TN","airport":"","lat":35.603904,"lon":88.921339},{"id":"AE 189","name":"Anadarko","city":"Anadarko","state":"TBD","airport":"","lat":null,"lon":null}];
 
-var DEFAULTS={baseId:'AE 173',airport:'6KY1',baseName:'Lebanon',latDeg:37,latMin:34.1400,lonDeg:85,lonMin:15.7400,minAgl:500,bufAgl:50,maxNm:70,t1Agl:800,t1Color:'#cc0000',t2Agl:600,t2Color:'#e07000',t3Color:'#1a4f8a',t4Color:'#888888'};
+var DEFAULTS={baseId:'AE 173',airport:'6KY1',baseName:'Lebanon',latDeg:37,latMin:34.1400,lonDeg:85,lonMin:15.7400,minAgl:500,bufAgl:50,maxNm:70,t1Agl:800,t1Color:'#ff4444',t2Agl:600,t2Color:'#ffaa00',t3Color:'#44aaff',t4Color:'#cccccc'};
 var LS_KEY='notam_tracker_v3';
 var REF={lat:37.569000,lon:-85.262333,id:'6KY1',name:'Lebanon'};
 var files={prev:null,curr:null};
@@ -784,7 +785,39 @@ function computeDiff(prev,curr){
   var pm={},cm={};
   prev.forEach(function(t){pm[towerKey(t)]=t;});
   curr.forEach(function(t){cm[towerKey(t)]=t;});
-  return{remove:prev.filter(function(t){return!cm[towerKey(t)];}),keep:curr.filter(function(t){return pm[towerKey(t)];}),add:curr.filter(function(t){return!pm[towerKey(t)];})};
+  var rawRemove=prev.filter(function(t){return!cm[towerKey(t)];});
+  var rawAdd   =curr.filter(function(t){return!pm[towerKey(t)];});
+  var keep     =curr.filter(function(t){return pm[towerKey(t)];});
+
+  // Detect reissues: Remove+Add pairs at the same physical location (<= 0.1 NM)
+  var reissueAdds=new Set();
+  var reissueRemoves=new Set();
+  var reissues=[];
+  rawRemove.forEach(function(r){
+    rawAdd.forEach(function(a){
+      if(reissueAdds.has(towerKey(a)))return;
+      var d=haversineNm(r.lat,r.lon,a.lat,a.lon);
+      if(d<=0.1){
+        reissues.push({old:r,curr:a,nm:d});
+        reissueAdds.add(towerKey(a));
+        reissueRemoves.add(towerKey(r));
+      }
+    });
+  });
+
+  return{
+    remove:  rawRemove.filter(function(t){return!reissueRemoves.has(towerKey(t));}),
+    keep:    keep,
+    add:     rawAdd.filter(function(t){return!reissueAdds.has(towerKey(t));}),
+    reissue: reissues
+  };
+}
+
+function haversineNm(lat1,lon1,lat2,lon2){
+  var R=3440.065,toR=function(d){return d*Math.PI/180;};
+  var p1=toR(lat1),p2=toR(lat2),dp=toR(lat2-lat1),dl=toR(lon2-lon1);
+  var a=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
 function checkMismatches(ch,ph,thresh){
@@ -854,25 +887,65 @@ function makeSection(rows,cls,title,hint,thresh,collapsed){
     }).join('');
     body='<table class="tbl"><thead><tr><th>NOTAM</th><th>Type</th><th class="r" title="Distance from the base reference point selected in Settings">Range (NM) ⓘ</th><th class="r" title="True bearing from the base reference point selected in Settings">Bearing ⓘ</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th title="Location reference as published in the original NOTAM, relative to the nearest charted fix">Location ref ⓘ</th></tr></thead><tbody>'+rh+'</tbody></table>';
   }
-  return '<div class="result-section"><div class="rs-head '+cls+'"><span class="rs-title '+cls+'">'+title+'</span><span class="rs-count '+cls+'">'+rows.length+'</span><span class="rs-hint">'+hint+'</span><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:'+(collapsed?'rotate(0deg)':'rotate(90deg)')+'">&#x25B6;</span></div><div class="rs-body'+(collapsed?' collapsed':'')+'">'+body+'</div></div>';
+  return '<div class="result-section"><div class="rs-head '+cls+'"><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:'+(collapsed?'rotate(0deg)':'rotate(90deg)')+'">&#x25B6;</span><span class="rs-title '+cls+'">'+title+'</span><span class="rs-count '+cls+'">'+rows.length+'</span><span class="rs-hint">'+hint+'</span></div><div class="rs-body'+(collapsed?' collapsed':'')+'">'+body+'</div></div>';
 }
 
 function renderResults(d,hasPrev,curr,bufEntries,oor,thresh){
   var ts=new Date().toLocaleString();
   var bc=bufEntries.length>0?' 1fr':'';
   var html='';
+var rc=d.reissue?d.reissue.length:0;
+  var rcCols=rc>0?' 1fr':'';
   if(hasPrev){
-    html+='<div class="summary-bar" style="grid-template-columns:repeat(4,1fr)'+bc+'">'+sCell(curr.length,'total','Total','U/S towers \u2265 '+thresh.minAgl+' ft AGL')+sCell(d.remove.length,'remove','Remove','Pull from hazard map')+sCell(d.keep.length,'keep','Keep','No change needed')+sCell(d.add.length,'add','Add','Plot on hazard map')+(bufEntries.length>0?sCell(bufEntries.length,'buf','Buffer','KML only'):'')+' </div>';
+    html+='<div class="summary-bar" style="grid-template-columns:repeat(4,1fr)'+bc+rcCols+'">'+
+      sCell(curr.length,'total','Total','U/S towers \u2265 '+thresh.minAgl+' ft AGL')+
+      sCell(d.remove.length,'remove','Remove','Pull from hazard map')+
+      sCell(d.keep.length,  'keep',  'Keep',  'No change needed')+
+      (rc>0?sCell(rc,'reissue','Reissued','Same tower, new NOTAM #'):'')+
+      sCell(d.add.length,   'add',   'Add',   'Plot on hazard map')+
+      (bufEntries.length>0?sCell(bufEntries.length,'buf','Buffer','KML only'):'')+' </div>';
   }else{
-    html+='<div class="summary-bar" style="grid-template-columns:1fr 1fr'+bc+'">'+sCell(curr.length,'total','Total','U/S towers \u2265 '+thresh.minAgl+' ft AGL within '+thresh.maxNm+' NM')+sCell(d.add.length,'add','Add','Plot all on hazard map')+(bufEntries.length>0?sCell(bufEntries.length,'buf','Buffer','KML only'):'')+' </div>';
+    html+='<div class="summary-bar" style="grid-template-columns:1fr 1fr'+bc+'">'+
+      sCell(curr.length,'total','Total','U/S towers \u2265 '+thresh.minAgl+' ft AGL within '+thresh.maxNm+' NM')+
+      sCell(d.add.length,'add','Add','Plot all on hazard map')+
+      (bufEntries.length>0?sCell(bufEntries.length,'buf','Buffer','KML only'):'')+' </div>';
   }
   if(hasPrev){html+=makeSection(d.remove,'remove','Remove','pull these dots from the map',thresh,false);}
   if(hasPrev){html+=makeSection(d.keep,'keep','Keep','dots remain unchanged',thresh,false);}
+  if(d.reissue&&d.reissue.length>0){
+    var reissueRows=d.reissue.map(function(pair){
+      var t=pair.curr;
+      var lv=towerLevel(t.agl,thresh),col=levelColor(lv,thresh);
+      return '<tr class="keep-row">'+
+        '<td><span class="swatch-cell" style="background:'+col+'"></span>'+pair.old.id+'</td>'+
+        '<td class="dim">\u2192 '+t.id+'</td>'+
+        '<td class="r">'+t.nm+'</td>'+
+        '<td class="r">'+t.brg+'\u00B0\u00A0'+cardinal(t.brg)+'</td>'+
+        '<td class="r">'+(t.msl>0?t.msl.toLocaleString():'\u2014')+'</td>'+
+        '<td class="r" style="color:'+col+';font-weight:600">'+t.agl.toLocaleString()+'</td>'+
+        '<td class="dim">'+t.unlitReason+'</td>'+
+        '<td class="dim">'+t.loc+'</td></tr>';
+    }).join('');
+    var reissueBody='<table class="tbl"><thead><tr>'+
+      '<th>Old NOTAM</th><th>New NOTAM</th><th class="r">Range (NM)</th><th class="r">Bearing</th>'+
+      '<th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th>Location ref</th>'+
+      '</tr></thead><tbody>'+reissueRows+'</tbody></table>';
+    html+='<div class="result-section">'+
+      '<div class="rs-head keep">'+
+        '<span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:rotate(90deg)">&#x25B6;</span>'+
+        '<span class="rs-title keep">Reissued</span>'+
+        '<span class="rs-count keep">'+d.reissue.length+'</span>'+
+        '<span class="rs-hint">same physical tower \u2014 NOTAM number changed, no map update needed</span>'+
+      '</div>'+
+      '<div class="rs-body">'+reissueBody+'</div>'+
+      '</div>';
+  }
+
   html+=makeSection(d.add,'add',hasPrev?'Add':'All Towers',hasPrev?'plot these on the map':'plot all on the map',thresh,false);
   if(bufEntries.length>0)html+=makeSection(bufEntries,'buf','Buffer Zone',thresh.bufFloor+'\u2013'+(thresh.minAgl-1)+' ft AGL \u2014 KML only, do not plot on hazard map',thresh,true);
   if(oor.length>0){
     var or2=oor.map(function(t){return'<tr class="oor-row"><td class="dim">'+t.structType+'</td><td class="dim">'+t.id+'</td><td class="r">'+t.nm+'</td><td class="r">'+t.brg+'\u00B0\u00A0'+cardinal(t.brg)+'</td><td class="r">'+(t.msl>0?t.msl.toLocaleString():'\u2014')+'</td><td class="r">'+t.agl.toLocaleString()+'</td><td class="dim">'+t.unlitReason+'</td><td class="dim">'+t.loc+'</td></tr>';}).join('');
-    html+='<div class="result-section" style="margin-top:20px"><div class="rs-head oor"><span class="rs-title oor">Out of Range</span><span class="rs-count oor">'+oor.length+'</span><span class="rs-hint">meet height filter but outside '+thresh.maxNm+' NM \u2014 the FAA query sometimes returns entries beyond the stated radius; listed for audit, not silently dropped</span><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:rotate(0deg)">&#x25B6;</span></div><div class="rs-body collapsed"><table class="tbl"><thead><tr><th>Type</th><th>NOTAM</th><th class="r" title="Distance from the base reference point selected in Settings">Range (NM) ⓘ</th><th class="r" title="True bearing from the base reference point selected in Settings">Bearing ⓘ</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th title="Location reference as published in the original NOTAM, relative to the nearest charted fix">Location ref ⓘ</th></tr></thead><tbody>'+or2+'</tbody></table></div></div>';
+    html+='<div class="result-section" style="margin-top:20px"><div class="rs-head oor"><span class="rs-toggle" style="display:inline-block;transition:transform .2s;transform:rotate(0deg)">&#x25B6;</span><span class="rs-title oor">Out of Range</span><span class="rs-count oor">'+oor.length+'</span><span class="rs-hint">meet height filter but outside '+thresh.maxNm+' NM \u2014 the FAA query sometimes returns entries beyond the stated radius; listed for audit, not silently dropped</span></div><div class="rs-body collapsed"><table class="tbl"><thead><tr><th>Type</th><th>NOTAM</th><th class="r" title="Distance from the base reference point selected in Settings">Range (NM) ⓘ</th><th class="r" title="True bearing from the base reference point selected in Settings">Bearing ⓘ</th><th class="r">MSL (ft)</th><th class="r">AGL (ft)</th><th>Unlit</th><th title="Location reference as published in the original NOTAM, relative to the nearest charted fix">Location ref ⓘ</th></tr></thead><tbody>'+or2+'</tbody></table></div></div>';
   }
   html+='<div class="export-row"><button class="export-btn" onclick="exportCSV()">Export CSV</button><button class="export-btn kml" onclick="exportKML()">Export KML for ForeFlight</button><span class="export-ts">Generated '+ts+'</span></div>';
   html+='<div class="kml-legend"><span>KML colors:</span><span><span class="kml-dot" style="background:'+thresh.t1.color+'"></span>Level 1 \u2265 '+thresh.t1.agl+' ft</span><span><span class="kml-dot" style="background:'+thresh.t2.color+'"></span>Level 2 \u2265 '+thresh.t2.agl+' ft</span><span><span class="kml-dot" style="background:'+thresh.t3.color+'"></span>Level 3 \u2265 '+thresh.minAgl+' ft</span>'+(bufEntries.length>0?'<span><span class="kml-dot" style="background:'+thresh.t4.color+'"></span>Buffer '+thresh.bufFloor+'\u2013'+(thresh.minAgl-1)+' ft</span>':'')+'<span style="font-style:italic">\u00B7 KML: '+curr.length+' qualifying + '+bufEntries.length+' buffer</span></div>';
@@ -894,6 +967,10 @@ function exportCSV(){
   function emit(action,t){var lv=towerLevel(t.agl,thresh);rows.push([action,t.id,t.structType,t.unlitReason,lv,t.nm,t.brg,cardinal(t.brg),t.msl>0?t.msl:'',t.agl,'"'+t.loc+'"'].join(','));}
   if(hasPrev){d.remove.forEach(function(t){emit('REMOVE',t);});d.keep.forEach(function(t){emit('KEEP',t);});}
   d.add.forEach(function(t){emit('ADD',t);});
+  if(d.reissue)d.reissue.forEach(function(pair){
+    var t=pair.curr,lv=towerLevel(t.agl,thresh);
+    rows.push(['REISSUED',pair.old.id+' -> '+t.id,t.structType,t.unlitReason,lv,t.nm,t.brg,cardinal(t.brg),t.msl>0?t.msl:'',t.agl,'"'+t.loc+'"'].join(','));
+  });
   if(lastDiff.bufEntries)lastDiff.bufEntries.forEach(function(t){emit('BUFFER',t);});
   download(rows.join('\n'),'notam_'+(REF.id||'base')+'_'+isoDate()+'.csv','text/csv');
 }
