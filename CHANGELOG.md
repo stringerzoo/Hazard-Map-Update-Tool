@@ -199,3 +199,17 @@ With configurable reference airport now implemented, the tool is ready for distr
 
 ### Operational validation
 - TC-11 confirmed against 2026-06-18 6KY1 report: 33 reissued NOTAMs correctly detected between June 5 and June 18 reports, including LEX 04/065 → LEX 06/042 (0.0 NM, same tower). Genuine remove (HUF 06/101) and genuine add (LEX 06/018) correctly separated from reissues.
+
+---
+
+## \[1.6.1] — 2026-07-07
+
+### Changed
+
+* **KML alert level default colors** updated to higher-contrast values optimized for visibility against dark satellite imagery in Google Earth and ForeFlight:
+
+  * Level 1: `#cc0000` → `#ff4444` (bright red)
+  * Level 2: `#e07000` → `#ffaa00` (bright amber)
+  * Level 3: `#1a4f8a` → `#44aaff` (sky blue)
+  * Buffer:  `#888888` → `#cccccc` (light gray)
+* Users with saved settings will retain their existing colors. Use **Reset to defaults** in the Settings panel to pick up the new palette.
